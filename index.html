@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Защита Президента 3D</title>
+  <title>GET DOWN MR. PRESIDENT!</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * {
@@ -14,9 +14,9 @@
       -webkit-user-select: none;
     }
     body {
-      background-color: #0f0f15;
+      background-color: #0d1117;
       color: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: 'Impact', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overflow: hidden;
       display: flex;
       align-items: center;
@@ -29,9 +29,9 @@
       height: 100vh;
       max-width: 450px;
       max-height: 800px;
-      background: radial-gradient(circle, #f0f3f8 0%, #d8e0e8 100%);
+      background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
     }
     canvas {
       display: block;
@@ -45,54 +45,62 @@
       right: 15px;
       display: flex;
       justify-content: space-between;
-      font-size: 18px;
-      font-weight: 800;
-      color: #1e293b;
+      font-size: 20px;
+      letter-spacing: 1px;
+      color: #f3f4f6;
       pointer-events: none;
-      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+      text-shadow: 2px 2px 0px #000;
     }
-    .game-over-screen {
+    .game-screen {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(0, 0, 0, 0.85);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       color: #fff;
       z-index: 10;
-      backdrop-filter: blur(4px);
+      text-align: center;
+      padding: 20px;
     }
-    .game-over-screen h1 {
-      font-size: 26px;
-      color: #ef4444;
-      margin-bottom: 10px;
+    .game-screen h1 {
+      font-size: 32px;
+      margin-bottom: 15px;
+      text-transform: uppercase;
     }
-    .game-over-screen p {
+    .game-screen h1.win { color: #22c55e; }
+    .game-screen h1.fail { color: #ef4444; }
+    .game-screen p {
       font-size: 18px;
       margin-bottom: 25px;
-      color: #cbd5e1;
+      font-family: sans-serif;
+      color: #d1d5db;
     }
     .btn {
-      background: #2563eb;
+      background: #dc2626;
       color: #fff;
       border: none;
       padding: 14px 32px;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
-      border-radius: 30px;
+      border-radius: 8px;
       cursor: pointer;
-      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
-      transition: transform 0.1s;
+      box-shadow: 0 5px 0 #991b1b;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
     .btn:active {
-      transform: scale(0.95);
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #991b1b;
     }
-    .hidden {
-      display: none !important;
+    .hidden { display: none !important; }
+    #drag-line {
+      position: absolute;
+      pointer-events: none;
     }
   </style>
 </head>
@@ -100,50 +108,49 @@
 
   <div id="game-container">
     <div class="ui-layer">
-      <div id="score-text">Очки: 0</div>
-      <div id="status-text">Защита активна</div>
+      <div id="level-text">Уровень: 1</div>
+      <div id="score-text">Побед: 0</div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
-    <div id="game-over" class="game-over-screen hidden">
-      <h1>ПОПАДАНИЕ В ПРЕЗИДЕНТА!</h1>
-      <p id="final-score">Ваш счет: 0</p>
-      <button class="btn" onclick="resetGame()">ИГРАТЬ СНОВА</button>
+    <!-- Экран состояния -->
+    <div id="overlay-screen" class="game-screen hidden">
+      <h1 id="screen-title">СПАСИТЕ ПРЕЗИДЕНТА!</h1>
+      <p id="screen-desc">Свайпните телохранителя в сторону президента, чтобы перехватить пулю снайпера!</p>
+      <button class="btn" id="main-btn" onclick="nextAction()">СТАРТ</button>
     </div>
   </div>
 
   <script>
     const tg = window.Telegram ? window.Telegram.WebApp : null;
-    if (tg) {
-      tg.ready();
-      tg.expand();
-    }
+    if (tg) { tg.ready(); tg.expand(); }
 
     const canvas = document.getElementById('gameCanvas');
     const ctx = canvas.getContext('2d');
+    const levelEl = document.getElementById('level-text');
     const scoreEl = document.getElementById('score-text');
-    const gameOverEl = document.getElementById('game-over');
-    const finalScoreEl = document.getElementById('final-score');
+    const overlayEl = document.getElementById('overlay-screen');
+    const titleEl = document.getElementById('screen-title');
+    const descEl = document.getElementById('screen-desc');
+    const mainBtn = document.getElementById('main-btn');
 
-    let width, height, centerX, centerY, radius;
-    let score = 0;
-    let isGameOver = false;
+    let width, height;
+    let level = 1;
+    let wins = 0;
+    let gameState = 'START'; // START, AIMING, SHOT, WIN, FAIL
 
-    // Президент (с плавным перемещением)
-    const president = { 
-      x: 0, y: 0, 
-      targetX: 0, targetY: 0, 
-      r: 16, 
-      moveTimer: 0 
-    };
+    // Игровые сущности
+    let president = { x: 0, y: 0, r: 18, saved: false, hit: false, vx: 0, vy: 0 };
+    let guard = { x: 0, y: 0, r: 20, vx: 0, vy: 0, flying: false };
+    let sniper = { x: 0, y: 0 };
+    let bullet = { x: 0, y: 0, vx: 0, vy: 0, r: 5, active: false };
 
-    // Охранник
-    const guard = { x: 0, y: 0, r: 18, angle: 0, distance: 42 };
-
-    let attackers = [];
-    let balls = [];
-    let nextShootTime = 0;
+    let aimTimer = 0;
+    let maxAimTime = 120; // Кадров до выстрела
+    let isDragging = false;
+    let dragStart = { x: 0, y: 0 };
+    let dragCurrent = { x: 0, y: 0 };
 
     function resize() {
       const container = document.getElementById('game-container');
@@ -151,227 +158,287 @@
       height = container.clientHeight;
       canvas.width = width;
       canvas.height = height;
-
-      centerX = width / 2;
-      centerY = height / 2 + 20;
-      radius = Math.min(width, height) * 0.38;
-
-      if (!president.x) {
-        president.x = centerX;
-        president.y = centerY;
-        president.targetX = centerX;
-        president.targetY = centerY;
-      }
     }
 
     window.addEventListener('resize', resize);
     resize();
 
-    // Создание нападающих
-    const totalAttackers = 8;
-    function initAttackers() {
-      attackers = [];
-      for (let i = 0; i < totalAttackers; i++) {
-        const angle = (i * 2 * Math.PI) / totalAttackers;
-        attackers.push({
-          x: centerX + Math.cos(angle) * radius,
-          y: centerY + Math.sin(angle) * radius,
-          angle: angle
-        });
+    function initLevel() {
+      // Позиционирование предметов под уровень
+      president = { 
+        x: width * 0.5, 
+        y: height * 0.35 + (Math.random() * 40 - 20), 
+        r: 18, saved: false, hit: false, vx: 0, vy: 0 
+      };
+
+      // Телохранитель сбоку внизу
+      guard = { 
+        x: width * 0.2 + (Math.random() * 0.6 * width), 
+        y: height * 0.75, 
+        r: 20, vx: 0, vy: 0, flying: false 
+      };
+
+      // Снайпер сверху
+      sniper = { x: width * 0.5 + (Math.random() * 200 - 100), y: 40 };
+
+      bullet = { x: 0, y: 0, vx: 0, vy: 0, r: 5, active: false };
+
+      maxAimTime = Math.max(50, 130 - level * 8); // Со временем снайпер целится быстрее
+      aimTimer = maxAimTime;
+      gameState = 'AIMING';
+      overlayEl.classList.add('hidden');
+    }
+
+    // Управление прыжком (Drag & Release)
+    function onTouchStart(e) {
+      if (gameState !== 'AIMING' || guard.flying) return;
+      const p = getPos(e);
+      const dist = Math.hypot(p.x - guard.x, p.y - guard.y);
+      if (dist < guard.r * 2.5) {
+        isDragging = true;
+        dragStart = { x: guard.x, y: guard.y };
+        dragCurrent = p;
       }
     }
 
-    // Управление
-    function handleMove(e) {
-      if (isGameOver) return;
+    function onTouchMove(e) {
+      if (!isDragging) return;
+      dragCurrent = getPos(e);
+    }
+
+    function onTouchEnd() {
+      if (!isDragging) return;
+      isDragging = false;
+
+      // Сила и вектор броска
+      const dx = dragStart.x - dragCurrent.x;
+      const dy = dragStart.y - dragCurrent.y;
+      
+      const force = Math.min(Math.hypot(dx, dy) * 0.18, 22);
+      const angle = Math.atan2(dy, dx);
+
+      guard.vx = Math.cos(angle) * force;
+      guard.vy = Math.sin(angle) * force;
+      guard.flying = true;
+
+      if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
+    }
+
+    function getPos(e) {
       const rect = canvas.getBoundingClientRect();
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-
-      const mouseX = clientX - rect.left;
-      const mouseY = clientY - rect.top;
-
-      guard.angle = Math.atan2(mouseY - president.y, mouseX - president.x);
+      return { x: clientX - rect.left, y: clientY - rect.top };
     }
 
-    window.addEventListener('mousemove', handleMove);
-    window.addEventListener('touchmove', handleMove);
-    window.addEventListener('touchstart', handleMove);
+    canvas.addEventListener('mousedown', onTouchStart);
+    canvas.addEventListener('mousemove', onTouchMove);
+    window.addEventListener('mouseup', onTouchEnd);
 
-    // Логика выстрелов (случайные одиночные или залп)
-    function scheduleNextShot() {
-      // Случайная задержка от 1 до 5 секунд
-      const delay = Math.floor(Math.random() * 240) + 60; 
-      nextShootTime = delay;
-    }
+    canvas.addEventListener('touchstart', onTouchStart);
+    canvas.addEventListener('touchmove', onTouchMove);
+    window.addEventListener('touchend', onTouchEnd);
 
-    function fireBalls() {
-      // Решаем: стреляет 1 человек или сразу несколько (залп)
-      const isVolley = Math.random() < 0.35; // 35% шанс на залп
-      let countToShoot = isVolley ? Math.floor(Math.random() * 3) + 2 : 1; 
+    function shootSniper() {
+      gameState = 'SHOT';
+      bullet.x = sniper.x;
+      bullet.y = sniper.y;
 
-      // Перемешиваем нападающих для рандома
-      let shuffled = [...attackers].sort(() => 0.5 - Math.random());
+      const angle = Math.atan2(president.y - sniper.y, president.x - sniper.x);
+      const speed = 16 + level * 0.5;
+      bullet.vx = Math.cos(angle) * speed;
+      bullet.vy = Math.sin(angle) * speed;
+      bullet.active = true;
 
-      for (let i = 0; i < Math.min(countToShoot, shuffled.length); i++) {
-        const attacker = shuffled[i];
-        const angle = Math.atan2(president.y - attacker.y, president.x - attacker.x);
-        const speed = 2.2 + Math.min(score * 0.1, 4.5);
-
-        balls.push({
-          x: attacker.x,
-          y: attacker.y,
-          vx: Math.cos(angle) * speed,
-          vy: Math.sin(angle) * speed,
-          r: 9
-        });
-      }
-    }
-
-    function updatePresidentPosition() {
-      // Президент меняет цель каждые ~2-4 секунды
-      president.moveTimer++;
-      if (president.moveTimer > 150) {
-        const offsetRange = 35; // Границы перемещения от центра
-        president.targetX = centerX + (Math.random() * offsetRange * 2 - offsetRange);
-        president.targetY = centerY + (Math.random() * offsetRange * 2 - offsetRange);
-        president.moveTimer = 0;
-      }
-
-      // Плавное движение к новой точке
-      president.x += (president.targetX - president.x) * 0.03;
-      president.y += (president.targetY - president.y) * 0.03;
-    }
-
-    function resetGame() {
-      score = 0;
-      scoreEl.innerText = 'Очки: 0';
-      balls = [];
-      isGameOver = false;
-      gameOverEl.classList.add('hidden');
-      president.x = centerX;
-      president.y = centerY;
-      president.targetX = centerX;
-      president.targetY = centerY;
-      initAttackers();
-      scheduleNextShot();
-      loop();
+      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
     }
 
     function update() {
-      if (isGameOver) return;
-
-      updatePresidentPosition();
-
-      // Позиция охранника зафиксирована вокруг президента
-      guard.x = president.x + Math.cos(guard.angle) * guard.distance;
-      guard.y = president.y + Math.sin(guard.angle) * guard.distance;
-
-      // Таймер стрельбы
-      nextShootTime--;
-      if (nextShootTime <= 0) {
-        fireBalls();
-        scheduleNextShot();
+      // Таймер прицеливания снайпера
+      if (gameState === 'AIMING') {
+        aimTimer--;
+        if (aimTimer <= 0) {
+          shootSniper();
+        }
       }
 
-      // Движение и столкновения мячей
-      for (let i = balls.length - 1; i >= 0; i--) {
-        let b = balls[i];
-        b.x += b.vx;
-        b.y += b.vy;
+      // Движение телохранителя в прыжке
+      if (guard.flying) {
+        guard.x += guard.vx;
+        guard.y += guard.vy;
+        guard.vx *= 0.98; // Трение
+        guard.vy *= 0.98;
 
-        // Отбитие охранником
-        const distGuard = Math.hypot(b.x - guard.x, b.y - guard.y);
-        if (distGuard < b.r + guard.r) {
-          balls.splice(i, 1);
-          score += 1;
-          scoreEl.innerText = `Очки: ${score}`;
-          if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
-          continue;
+        // Коллизия: Телохранитель сбивает Президента с ног (спас его)
+        const distPres = Math.hypot(guard.x - president.x, guard.y - president.y);
+        if (distPres < guard.r + president.r) {
+          president.saved = true;
+          president.vx = guard.vx * 0.8;
+          president.vy = guard.vy * 0.8;
+        }
+      }
+
+      // Движение сбитого президента
+      if (president.saved) {
+        president.x += president.vx;
+        president.y += president.vy;
+        president.vx *= 0.92;
+        president.vy *= 0.92;
+      }
+
+      // Движение пули
+      if (bullet.active) {
+        bullet.x += bullet.vx;
+        bullet.y += bullet.vy;
+
+        // 1. Пуля попала в телохранителя! (Успех)
+        const distGuard = Math.hypot(bullet.x - guard.x, bullet.y - guard.y);
+        if (distGuard < bullet.r + guard.r) {
+          bullet.active = false;
+          winLevel("ВЫ ПРИНЯЛИ ПУЛЮ НА СЕБЯ!");
+          return;
         }
 
-        // Попадание в президента
-        const distPres = Math.hypot(b.x - president.x, b.y - president.y);
-        if (distPres < b.r + president.r) {
-          isGameOver = true;
-          finalScoreEl.innerText = `Ваш счет: ${score}`;
-          gameOverEl.classList.remove('hidden');
-          if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+        // 2. Пуля попала в президента! (Провал)
+        const distPres = Math.hypot(bullet.x - president.x, bullet.y - president.y);
+        if (distPres < bullet.r + president.r) {
+          bullet.active = false;
+          president.hit = true;
+          failLevel("ПРЕЗИДЕНТ УБИТ!");
+          return;
+        }
+
+        // 3. Пуля улетела за экран, а президент спасен (Успех)
+        if (bullet.y > height || bullet.x < 0 || bullet.x > width) {
+          bullet.active = false;
+          if (president.saved) {
+            winLevel("ПРЕЗИДЕНТ УСПЕШНО СПАСЕН!");
+          } else {
+            failLevel("СНАЙПЕР ПРОМАХНУЛСЯ, НО ВЫ НЕ ЗАЩИТИЛИ ПРЕЗИДЕНТА!");
+          }
         }
       }
     }
 
-    // Отрисовка объёмных (3D) сфер и персонажей
-    function draw3DSphere(x, y, r, colorPrimary, colorHighlight) {
-      // Тень под объектом
-      ctx.beginPath();
-      ctx.ellipse(x, y + r * 0.8, r * 0.9, r * 0.3, 0, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-      ctx.fill();
-
-      // Объёмный градиент
-      let grad = ctx.createRadialGradient(
-        x - r * 0.3, y - r * 0.3, r * 0.1,
-        x, y, r
-      );
-      grad.addColorStop(0, colorHighlight);
-      grad.addColorStop(0.8, colorPrimary);
-      grad.addColorStop(1, '#000000');
-
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
+    function winLevel(reason) {
+      gameState = 'WIN';
+      wins++;
+      scoreEl.innerText = `Побед: ${wins}`;
+      titleEl.innerText = "УСПЕХ!";
+      titleEl.className = "win";
+      descEl.innerText = reason;
+      mainBtn.innerText = "СЛЕДУЮЩИЙ УРОВЕНЬ";
+      overlayEl.classList.remove('hidden');
+      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
 
+    function failLevel(reason) {
+      gameState = 'FAIL';
+      titleEl.innerText = "ПРОВАЛ!";
+      titleEl.className = "fail";
+      descEl.innerText = reason;
+      mainBtn.innerText = "ПОПРОБОВАТЬ СНОВА";
+      overlayEl.classList.remove('hidden');
+      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+    }
+
+    function nextAction() {
+      if (gameState === 'WIN') {
+        level++;
+        levelEl.innerText = `Уровень: ${level}`;
+      }
+      initLevel();
+    }
+
+    // Отрисовка игры
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
-      // Разметка круга
+      // Рисуем ковровую дорожку / Сцену
+      ctx.fillStyle = '#b91c1c';
+      ctx.fillRect(width * 0.25, 0, width * 0.5, height);
+
+      // Рисуем Снайпера
+      ctx.fillStyle = '#000';
+      ctx.fillRect(sniper.x - 12, sniper.y - 12, 24, 24);
+      ctx.fillStyle = '#ef4444';
+      ctx.font = '12px sans-serif';
+      ctx.fillText('СНАЙПЕР', sniper.x - 26, sniper.y - 18);
+
+      // Лазерный прицел снайпера
+      if (gameState === 'AIMING') {
+        ctx.beginPath();
+        ctx.moveTo(sniper.x, sniper.y);
+        ctx.lineTo(president.x, president.y);
+        ctx.strokeStyle = `rgba(239, 68, 68, ${0.3 + (1 - aimTimer / maxAimTime) * 0.7})`;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      // Линия натягивания прыжка (подсказка)
+      if (isDragging) {
+        ctx.beginPath();
+        ctx.moveTo(guard.x, guard.y);
+        ctx.lineTo(guard.x + (dragStart.x - dragCurrent.x), guard.y + (dragStart.y - dragCurrent.y));
+        ctx.strokeStyle = '#22c55e';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      }
+
+      // Президент (В костюме с галстуком)
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+      ctx.arc(president.x, president.y, president.r, 0, Math.PI * 2);
+      ctx.fillStyle = president.hit ? '#7f1d1d' : '#15803d';
+      ctx.fill();
       ctx.lineWidth = 3;
+      ctx.strokeStyle = '#fff';
       ctx.stroke();
+      // Текст MR. PRESIDENT
+      ctx.fillStyle = '#fff';
+      ctx.font = '10px sans-serif';
+      ctx.fillText('PRESIDENT', president.x - 24, president.y + 30);
 
-      // Нападающие (серые 3D шары)
-      attackers.forEach(a => {
-        draw3DSphere(a.x, a.y, 15, '#475569', '#94a3b8');
-      });
-
-      // Президент (зеленый 3D шар с красным галстуком)
-      draw3DSphere(president.x, president.y, president.r, '#16a34a', '#86efac');
-      ctx.fillStyle = '#dc2626';
-      ctx.fillRect(president.x - 2, president.y - 4, 4, 10);
-
-      // Охранник (темно-синий 3D шар с очками)
-      draw3DSphere(guard.x, guard.y, guard.r, '#1e293b', '#64748b');
-      ctx.fillStyle = '#0f172a';
-      ctx.fillRect(guard.x - 6, guard.y - 3, 12, 4);
-
-      // Легкая защитная аура у охранника
+      // Телохранитель (В черном)
       ctx.beginPath();
-      ctx.arc(guard.x, guard.y, guard.r + 3, 0, Math.PI * 2);
-      ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
-      ctx.lineWidth = 2;
+      ctx.arc(guard.x, guard.y, guard.r, 0, Math.PI * 2);
+      ctx.fillStyle = '#1e293b';
+      ctx.fill();
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#38bdf8';
       ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.fillText('BODYGUARD', guard.x - 28, guard.y + 32);
 
-      // Летящие мячи (красные 3D шары)
-      balls.forEach(b => {
-        draw3DSphere(b.x, b.y, b.r, '#dc2626', '#fca5a5');
-      });
+      // Пуля (с огненным шлейфом)
+      if (bullet.active) {
+        ctx.beginPath();
+        ctx.arc(bullet.x, bullet.y, bullet.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#facc15';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(bullet.x, bullet.y);
+        ctx.lineTo(bullet.x - bullet.vx * 3, bullet.y - bullet.vy * 3);
+        ctx.strokeStyle = '#f97316';
+        ctx.lineWidth = 4;
+        ctx.stroke();
+      }
     }
 
     function loop() {
       update();
       draw();
-      if (!isGameOver) {
-        requestAnimationFrame(loop);
-      }
+      requestAnimationFrame(loop);
     }
 
-    initAttackers();
-    scheduleNextShot();
+    // Старт игры
+    titleEl.innerText = "GET DOWN MR. PRESIDENT!";
+    descEl.innerText = "Снайпер целится в президента! Оттяните телохранителя и отпустите, чтобы совершить прыжок и закрыть президента собой!";
+    mainBtn.innerText = "ИГРАТЬ";
+    overlayEl.classList.remove('hidden');
+
     loop();
   </script>
 </body>
