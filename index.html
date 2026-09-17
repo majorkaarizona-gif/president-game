@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Mr. President! 3D Mobile Edition</title>
+  <title>Mr. President! 3D Edition</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- 3D Engine & Physics libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -35,8 +35,8 @@
       left: 0;
     }
 
-    /* Подсказка для поворота экрана */
-    #rotate-device-hint {
+    /* Подсказка для альбома */
+    #rotate-hint {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
@@ -48,9 +48,10 @@
       text-align: center;
       padding: 20px;
     }
-    #rotate-device-hint img {
-      width: 80px;
-      margin-bottom: 20px;
+    #rotate-hint svg {
+      width: 70px;
+      height: 70px;
+      margin-bottom: 15px;
       animation: rotateAnim 2s infinite ease-in-out;
     }
     @keyframes rotateAnim {
@@ -59,10 +60,10 @@
     }
 
     @media screen and (orientation: portrait) {
-      #rotate-device-hint { display: flex; }
+      #rotate-hint { display: flex; }
     }
 
-    /* ИНТЕРФЕЙС ИЗ ИГРЫ MR. PRESIDENT! */
+    /* ИНТЕРФЕЙС ИЗ ИГРЫ MR. PRESIDENT */
     .ui-top {
       position: absolute;
       top: 12px;
@@ -104,11 +105,10 @@
       letter-spacing: 1px;
     }
 
-    /* ЭКРАНЫ РЕЗУЛЬТАТОВ */
     .game-screen {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(5, 8, 15, 0.85);
+      background: rgba(5, 8, 15, 0.88);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -158,10 +158,10 @@
 </head>
 <body>
 
-  <div id="rotate-device-hint">
-    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><path d="M12 8v8"></path></svg>
-    <p style="font-weight: 900; font-size: 18px; color: #fff; margin-top: 15px;">ПЕРЕВЕРНИТЕ ТЕЛЕФОН</p>
-    <p style="font-size: 12px; color: #94a3b8; margin-top: 5px;">Для комфортной игры в Mr. President включите альбомный режим</p>
+  <div id="rotate-hint">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><path d="M12 8v8"></path></svg>
+    <p style="font-weight: 900; font-size: 18px; color: #fff;">ПЕРЕВЕРНИТЕ ТЕЛЕФОН</p>
+    <p style="font-size: 12px; color: #94a3b8; margin-top: 5px;">Включите альбомный режим для игры в 3D</p>
   </div>
 
   <div id="canvas-container"></div>
@@ -188,7 +188,6 @@
       if (tg.requestLandscape) tg.requestLandscape();
     }
 
-    // --- 3D И СИМУЛЯЦИЯ ФИЗИКИ (THREE.JS + CANNON.JS) ---
     let scene, camera, renderer, world;
     let level = 1, wins = 0;
     let gameState = 'START';
@@ -208,7 +207,6 @@
     function init3D() {
       const container = document.getElementById('canvas-container');
       
-      // Сцена Three.js
       scene = new THREE.Scene();
       scene.background = new THREE.Color(0x0a0f1d);
       scene.fog = new THREE.FogExp2(0x0a0f1d, 0.015);
@@ -223,7 +221,6 @@
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
       container.appendChild(renderer.domElement);
 
-      // Освещение (Американское шоу / Митинг)
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
       scene.add(ambientLight);
 
@@ -234,7 +231,6 @@
       dirLight.shadow.mapSize.height = 1024;
       scene.add(dirLight);
 
-      // Физика Cannon.js
       world = new CANNON.World();
       world.gravity.set(0, -9.82, 0);
 
@@ -245,9 +241,7 @@
       animate();
     }
 
-    // Создание карты (Сцена выступления Rump)
     function createEnvironment() {
-      // Пол (Красный ковер)
       const floorGeo = new THREE.PlaneGeometry(30, 40);
       const floorMat = new THREE.MeshStandardMaterial({ color: 0x881337, roughness: 0.8 });
       const floor = new THREE.Mesh(floorGeo, floorMat);
@@ -259,32 +253,27 @@
       floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
       world.addBody(floorBody);
 
-      // Флаг США на заднем плане
       const flagGeo = new THREE.PlaneGeometry(16, 8);
       const flagMat = new THREE.MeshBasicMaterial({ color: 0x1e3a8a });
       const flag = new THREE.Mesh(flagGeo, flagMat);
       flag.position.set(0, 6, -10);
       scene.add(flag);
 
-      // Траектория прицеливания свайпом
       const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
       const lineMat = new THREE.LineBasicMaterial({ color: 0xf59e0b, linewidth: 4 });
       trajectoryLine = new THREE.Line(lineGeo, lineMat);
       trajectoryLine.visible = false;
       scene.add(trajectoryLine);
 
-      // Лазер снайпера
       const laserGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
       const laserMat = new THREE.LineBasicMaterial({ color: 0xef4444, linewidth: 2 });
       sniperLine = new THREE.Line(laserGeo, laserMat);
       scene.add(sniperLine);
     }
 
-    // Создание Рональда Рампа
     function createRump(x, z) {
       const group = new THREE.Group();
 
-      // Тело (Синий костюм)
       const bodyGeo = new THREE.CylinderGeometry(0.4, 0.4, 1.2, 12);
       const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a });
       const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
@@ -292,7 +281,6 @@
       bodyMesh.castShadow = true;
       group.add(bodyMesh);
 
-      // Голова и знаменитая желтая прическа
       const headGeo = new THREE.SphereGeometry(0.3, 12, 12);
       const headMat = new THREE.MeshStandardMaterial({ color: 0xfde047 });
       const headMesh = new THREE.Mesh(headGeo, headMat);
@@ -311,11 +299,9 @@
       rumpMesh = group;
     }
 
-    // Создание Телохранителя Дика Джонсона
     function createGuard(x, z) {
       const group = new THREE.Group();
 
-      // Черный костюм
       const bodyGeo = new THREE.BoxGeometry(0.9, 1.4, 0.5);
       const bodyMat = new THREE.MeshStandardMaterial({ color: 0x090d16 });
       const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
@@ -323,7 +309,6 @@
       bodyMesh.castShadow = true;
       group.add(bodyMesh);
 
-      // Голова
       const headGeo = new THREE.SphereGeometry(0.28, 12, 12);
       const headMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8 });
       const headMesh = new THREE.Mesh(headGeo, headMat);
@@ -340,7 +325,6 @@
       guardMesh = group;
     }
 
-    // Создание Трибуны и Разрушаемых объектов
     function createDestructibles() {
       destructibles.forEach(obj => {
         scene.remove(obj.mesh);
@@ -348,7 +332,6 @@
       });
       destructibles = [];
 
-      // Трибуна Президентская
       const boxGeo = new THREE.BoxGeometry(1.6, 1.1, 0.8);
       const boxMat = new THREE.MeshStandardMaterial({ color: 0x78350f });
       const podiumMesh = new THREE.Mesh(boxGeo, boxMat);
@@ -380,7 +363,6 @@
       document.getElementById('overlay-screen').classList.add('hidden');
     }
 
-    // Управление касаниями / Свайпами
     function setupInputListeners() {
       const dom = renderer.domElement;
 
@@ -397,7 +379,6 @@
         const p = e.touches ? e.touches[0] : e;
         touchCurrent = { x: p.clientX, y: p.clientY };
 
-        // Отрисовка вектора броска
         const dx = (touchStart.x - touchCurrent.x) * 0.02;
         const dz = (touchStart.y - touchCurrent.y) * 0.02;
 
@@ -418,7 +399,6 @@
         const force = Math.hypot(dx, dz);
 
         if (force > 1.2) {
-          // Прыжок телохранителя с полной физикой
           guardBody.velocity.set(-dx * 1.8, Math.min(force * 0.8, 12), -dz * 1.8);
           guardBody.angularVelocity.set(Math.random() * 5, Math.random() * 5, Math.random() * 5);
 
@@ -435,7 +415,6 @@
       window.addEventListener('touchend', handleEnd);
     }
 
-    // Выстрел снайпера
     function shootBullet() {
       gameState = 'SHOT';
 
@@ -458,7 +437,6 @@
       const dt = (1 / 60) * timeScale;
       world.step(dt);
 
-      // Синхронизация 3D графики с Cannon.js физикой
       rumpMesh.position.copy(rumpBody.position);
       rumpMesh.quaternion.copy(rumpBody.quaternion);
 
@@ -473,20 +451,17 @@
       if (bulletMesh && bulletBody) {
         bulletMesh.position.copy(bulletBody.position);
 
-        // Коллизия пули с Телохранителем
         if (bulletMesh.position.distanceTo(guardMesh.position) < 0.9) {
           winStage("YOU TOOK THE BULLET FOR RUMP!");
           return;
         }
 
-        // Коллизия пули с Президентом
         if (bulletMesh.position.distanceTo(rumpMesh.position) < 0.7) {
           failStage("PRESIDENT RUMP WAS ASSASSINATED!");
           return;
         }
       }
 
-      // Обновление лазера снайпера
       if (gameState === 'AIMING') {
         const sniperPos = new THREE.Vector3(8, 6, -12);
         sniperLine.geometry.setFromPoints([sniperPos, rumpMesh.position]);
@@ -502,7 +477,7 @@
         countdown -= 1 / 60;
         document.getElementById('timer-display').innerText = Math.max(0, countdown).toFixed(1) + "s";
 
-        if (countdown <= 0.8) timeScale = 0.3; // Slow-Motion перед выстрелом
+        if (countdown <= 0.8) timeScale = 0.3;
 
         if (countdown <= 0) {
           shootBullet();
