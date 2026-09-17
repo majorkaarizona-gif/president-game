@@ -2,9 +2,10 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Mr. President! Full 3D Edition</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- 3D Physics Engine (Three.js & Cannon.js) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"></script>
   <style>
@@ -12,36 +13,47 @@
 
     * {
       box-sizing: border-box;
-      margin: 0; padding: 0;
+      margin: 0;
+      padding: 0;
       user-select: none;
       -webkit-user-select: none;
       touch-action: none;
       font-family: 'Montserrat', sans-serif;
     }
     html, body {
-      width: 100%; height: 100%;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
       background: #000;
       color: #fff;
     }
     #canvas-container {
-      width: 100vw; height: 100vh;
-      position: absolute; top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      position: absolute;
+      top: 0; left: 0;
     }
 
-    /* Подсказка поворота экрана */
+    /* Подсказка для альбома */
     #rotate-hint {
       display: none;
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: #0b0f19; z-index: 999;
-      flex-direction: column; justify-content: center; align-items: center;
-      text-align: center; padding: 20px;
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: #090d16;
+      z-index: 999;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
     }
     #rotate-hint svg {
-      width: 60px; height: 60px; margin-bottom: 12px;
-      animation: rot 2s infinite ease-in-out;
+      width: 70px;
+      height: 70px;
+      margin-bottom: 15px;
+      animation: rotateAnim 2s infinite ease-in-out;
     }
-    @keyframes rot {
+    @keyframes rotateAnim {
       0%, 100% { transform: rotate(0deg); }
       50% { transform: rotate(-90deg); }
     }
@@ -49,79 +61,131 @@
       #rotate-hint { display: flex; }
     }
 
-    /* UI Элементы */
+    /* Верхний UI */
     .ui-top {
-      position: absolute; top: 12px; left: 16px; right: 16px;
-      display: flex; justify-content: space-between; align-items: center;
-      z-index: 10; pointer-events: none;
-    }
-    .badge {
-      background: #dc2626; color: #fff;
-      font-size: 14px; font-weight: 900; font-style: italic;
-      padding: 6px 14px; transform: skew(-10deg);
-      box-shadow: 3px 3px 0px #000; border: 2px solid #fff;
-      text-transform: uppercase;
-    }
-    .badge-yellow { background: #f59e0b; color: #000; }
-    .badge-blue { background: #2563eb; }
-
-    /* Джойстик управления */
-    #joystick-zone {
-      position: absolute; bottom: 30px; left: 30px;
-      width: 120px; height: 120px;
-      background: rgba(255,255,255,0.15);
-      border: 3px solid rgba(255,255,255,0.5);
-      border-radius: 50%;
-      z-index: 15; touch-action: none;
-    }
-    #joystick-knob {
-      position: absolute; top: 35px; left: 35px;
-      width: 50px; height: 50px;
-      background: #f59e0b; border: 2px solid #fff;
-      border-radius: 50%;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      position: absolute;
+      top: 12px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 10;
       pointer-events: none;
     }
+    .badge {
+      background: #dc2626;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      font-style: italic;
+      padding: 6px 14px;
+      transform: skew(-12deg);
+      box-shadow: 3px 3px 0px #000;
+      border: 2px solid #fff;
+      text-transform: uppercase;
+    }
+    .badge-blue { background: #2563eb; }
+    .badge-yellow { background: #f59e0b; color: #000; }
 
-    /* Кнопка Прыжка / Броска */
+    /* Сенсорный Джойстик */
+    #joystick-zone {
+      position: absolute;
+      bottom: 25px;
+      left: 25px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      z-index: 20;
+    }
+    #joystick-stick {
+      position: absolute;
+      top: 35px;
+      left: 35px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #f59e0b;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    /* Кнопка прыжка / тарана */
     #dive-btn {
-      position: absolute; bottom: 35px; right: 35px;
-      width: 90px; height: 90px;
-      background: #dc2626; border: 3px solid #fff;
-      border-radius: 50%; color: #fff;
-      font-size: 16px; font-weight: 900; font-style: italic;
+      position: absolute;
+      bottom: 30px;
+      right: 30px;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: #dc2626;
+      border: 4px solid #fff;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 900;
+      font-style: italic;
       box-shadow: 4px 4px 0px #000;
-      z-index: 15; display: flex; justify-content: center; align-items: center;
-      text-transform: uppercase; transform: skew(-5deg);
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
       cursor: pointer;
     }
     #dive-btn:active {
-      transform: scale(0.95) skew(-5deg);
+      transform: scale(0.92);
       background: #b91c1c;
     }
 
-    /* Экраны Победы / Поражения */
+    /* Экраны Выигрыша / Проигрыша */
     .game-screen {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(5, 8, 15, 0.92);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 20; backdrop-filter: blur(4px);
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(5, 8, 15, 0.88);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      backdrop-filter: blur(4px);
     }
     .screen-title {
-      font-size: 28px; font-weight: 900; font-style: italic;
-      text-transform: uppercase; padding: 10px 28px;
-      transform: skew(-10deg); box-shadow: 5px 5px 0px #000;
-      margin-bottom: 15px; border: 3px solid #fff;
+      font-size: 28px;
+      font-weight: 900;
+      font-style: italic;
+      text-transform: uppercase;
+      padding: 8px 24px;
+      transform: skew(-10deg);
+      box-shadow: 5px 5px 0px #000;
+      margin-bottom: 12px;
+      border: 3px solid #fff;
     }
     .title-win { background: #16a34a; color: #fff; }
     .title-fail { background: #dc2626; color: #fff; }
     .title-start { background: #2563eb; color: #fff; }
 
+    .screen-desc {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: #cbd5e1;
+      max-width: 440px;
+      text-align: center;
+      line-height: 1.3;
+    }
     .btn-action {
-      background: #f59e0b; color: #000; border: 3px solid #fff;
-      padding: 12px 36px; font-size: 18px; font-weight: 900; font-style: italic;
-      text-transform: uppercase; transform: skew(-10deg);
-      box-shadow: 4px 4px 0px #000; cursor: pointer;
+      background: #f59e0b;
+      color: #000;
+      border: 3px solid #fff;
+      padding: 12px 36px;
+      font-size: 18px;
+      font-weight: 900;
+      font-style: italic;
+      text-transform: uppercase;
+      transform: skew(-10deg);
+      box-shadow: 4px 4px 0px #000;
+      cursor: pointer;
     }
     .hidden { display: none !important; }
   </style>
@@ -137,54 +201,53 @@
   <div id="canvas-container"></div>
 
   <div class="ui-top">
-    <div class="badge badge-blue" id="stage-badge">STAGE 1</div>
-    <div class="badge badge-yellow" id="timer-badge">3.0s</div>
-    <div class="badge" id="score-badge">SAVED: 0</div>
+    <div class="badge badge-blue" id="level-text">LEVEL 1</div>
+    <div class="badge badge-yellow" id="timer-display">3.5s</div>
+    <div class="badge" id="score-text">SAVED: 0</div>
   </div>
 
-  <!-- Джойстик и кнопка прыжка -->
+  <!-- Органы управления -->
   <div id="joystick-zone">
-    <div id="joystick-knob"></div>
+    <div id="joystick-stick"></div>
   </div>
-  <div id="dive-btn">DIVE!</div>
+  <div id="dive-btn">DIVE &<br>SAVE!</div>
 
-  <!-- Экран старта / результатов -->
   <div id="overlay-screen" class="game-screen">
     <div class="screen-title title-start" id="screen-title">MR. PRESIDENT!</div>
-    <p style="font-size: 14px; margin-bottom: 20px; color: #cbd5e1; text-align: center; max-width: 400px;" id="screen-desc">
-      Бегите джойстиком во все стороны, сносите конструкции и нажимайте DIVE, чтобы закрыть Президента Рональда Рампа от снайпера!
-    </p>
-    <button class="btn-action" onclick="startStage()">ПОГНАЛИ!</button>
+    <p class="screen-desc" id="screen-desc">Управляйте телохранителем Диком Джонсоном! Бегайте джойстиком, ломайте баррикады и нажимайте DIVE, чтобы закрыть собой Президента Рональда Рампа!</p>
+    <button class="btn-action" id="main-btn" onclick="startOrRetry()">START GAME</button>
   </div>
 
   <script>
     const tg = window.Telegram ? window.Telegram.WebApp : null;
-    if (tg) { tg.ready(); tg.expand(); }
+    if (tg) {
+      tg.ready();
+      tg.expand();
+      if (tg.requestLandscape) tg.requestLandscape();
+    }
 
     let scene, camera, renderer, world;
-    let stage = 1, savedCount = 0;
+    let currentLevel = 1, wins = 0;
     let gameState = 'START';
-    let countdown = 3.0;
+    let countdown = 3.5;
     let timeScale = 1.0;
 
-    let guardMesh, guardBody;
     let rumpMesh, rumpBody;
+    let guardMesh, guardBody;
     let bulletMesh, bulletBody;
     let sniperLine;
+    let destructibles = [];
 
-    let destructibleObjects = [];
+    // Управление
+    let moveInput = { x: 0, z: 0 };
+    let isDiving = false;
 
-    // Джойстик переменные
-    let joyMove = { x: 0, y: 0 };
-    let joyActive = false;
-    let joyTouchId = null;
-
-    function init3D() {
+    function initGame() {
       const container = document.getElementById('canvas-container');
 
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x0f172a);
-      scene.fog = new THREE.FogExp2(0x0f172a, 0.015);
+      scene.background = new THREE.Color(0x0a0f1d);
+      scene.fog = new THREE.FogExp2(0x0a0f1d, 0.012);
 
       camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
 
@@ -197,24 +260,27 @@
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
       scene.add(ambientLight);
 
-      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      dirLight.position.set(10, 20, 10);
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+      dirLight.position.set(12, 25, 12);
       dirLight.castShadow = true;
+      dirLight.shadow.mapSize.width = 1024;
+      dirLight.shadow.mapSize.height = 1024;
       scene.add(dirLight);
 
       world = new CANNON.World();
       world.gravity.set(0, -9.82, 0);
 
       createStaticEnvironment();
-      setupJoystickControls();
+      setupControls();
+      loadLevel(currentLevel);
 
       animate();
     }
 
     function createStaticEnvironment() {
-      // Пол сцены
+      // Пол
       const floorGeo = new THREE.PlaneGeometry(40, 50);
-      const floorMat = new THREE.MeshStandardMaterial({ color: 0x881337, roughness: 0.7 });
+      const floorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 });
       const floor = new THREE.Mesh(floorGeo, floorMat);
       floor.rotation.x = -Math.PI / 2;
       floor.receiveShadow = true;
@@ -224,197 +290,219 @@
       floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
       world.addBody(floorBody);
 
-      // Красная дорожка в центре
-      const rugGeo = new THREE.PlaneGeometry(6, 40);
-      const rugMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c });
-      const rug = new THREE.Mesh(rugGeo, rugMat);
-      rug.rotation.x = -Math.PI / 2;
-      rug.position.y = 0.01;
-      scene.add(rug);
+      // Красный ковер
+      const carpetGeo = new THREE.PlaneGeometry(6, 40);
+      const carpetMat = new THREE.MeshStandardMaterial({ color: 0x991b1b });
+      const carpet = new THREE.Mesh(carpetGeo, carpetMat);
+      carpet.rotation.x = -Math.PI / 2;
+      carpet.position.set(0, 0.01, -2);
+      scene.add(carpet);
 
-      // Лазер снайпера
+      // Лазерная указка снайпера
       const laserGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
       const laserMat = new THREE.LineBasicMaterial({ color: 0xef4444, linewidth: 3 });
       sniperLine = new THREE.Line(laserGeo, laserMat);
       scene.add(sniperLine);
     }
 
-    // Создание Персонажей: Дик Джонсон и Рональд Рамп
-    function createCharacters() {
-      if (guardMesh) { scene.remove(guardMesh); world.remove(guardBody); }
-      if (rumpMesh) { scene.remove(rumpMesh); world.remove(rumpBody); }
+    // Создание Рональда Рампа (Детализированная 3D модель)
+    function createRump(x, z) {
+      const group = new THREE.Group();
 
-      // 1. Телохранитель (Игрок)
-      const gGroup = new THREE.Group();
-      const gSuit = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.3, 0.5), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
-      gSuit.position.y = 0.65;
-      gSuit.castShadow = true;
-      gGroup.add(gSuit);
+      // Синий костюм
+      const bodyGeo = new THREE.CylinderGeometry(0.35, 0.35, 1.3, 12);
+      const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8 });
+      const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+      bodyMesh.position.y = 0.65;
+      bodyMesh.castShadow = true;
+      group.add(bodyMesh);
 
-      const gHead = new THREE.Mesh(new THREE.SphereGeometry(0.25, 12, 12), new THREE.MeshStandardMaterial({ color: 0xf3d2c1 }));
-      gHead.position.y = 1.4;
-      gGroup.add(gHead);
+      // Красный галстук
+      const tieGeo = new THREE.BoxGeometry(0.12, 0.7, 0.05);
+      const tieMat = new THREE.MeshBasicMaterial({ color: 0xdc2626 });
+      const tieMesh = new THREE.Mesh(tieGeo, tieMat);
+      tieMesh.position.set(0, 0.7, 0.36);
+      group.add(tieMesh);
 
-      scene.add(gGroup);
+      // Голова и Золотые Волосы
+      const headGeo = new THREE.SphereGeometry(0.28, 12, 12);
+      const headMat = new THREE.MeshStandardMaterial({ color: 0xfde047 });
+      const headMesh = new THREE.Mesh(headGeo, headMat);
+      headMesh.position.y = 1.45;
+      headMesh.scale.set(1.1, 0.85, 1.2);
+      headMesh.castShadow = true;
+      group.add(headMesh);
 
-      const gShape = new CANNON.Box(new CANNON.Vec3(0.4, 0.65, 0.25));
-      guardBody = new CANNON.Body({ mass: 80, shape: gShape });
-      guardBody.position.set(0, 0.65, 8); // Начинает внизу карты
-      guardBody.fixedRotation = true; // Чтобы стоял ровно пока бежит
-      guardBody.updateMassProperties();
-      world.addBody(guardBody);
-      guardMesh = gGroup;
+      scene.add(group);
 
-      // 2. Президент Рональд Рамп
-      const rGroup = new THREE.Group();
-      const rSuit = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 1.2, 12), new THREE.MeshStandardMaterial({ color: 0x1e3a8a }));
-      rSuit.position.y = 0.6;
-      rSuit.castShadow = true;
-      rGroup.add(rSuit);
-
-      // Прическа Рампа (Ярко-желтая)
-      const rHair = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 12), new THREE.MeshStandardMaterial({ color: 0xfacc15 }));
-      rHair.position.y = 1.35;
-      rHair.scale.set(1.2, 0.7, 1.3);
-      rGroup.add(rHair);
-
-      scene.add(rGroup);
-
-      const rShape = new CANNON.Cylinder(0.35, 0.35, 1.2, 8);
-      rumpBody = new CANNON.Body({ mass: 70, shape: rShape });
-      rumpBody.position.set(0, 0.6, -6); // Стоит на трибуне вверху
+      const shape = new CANNON.Cylinder(0.35, 0.35, 1.4, 8);
+      rumpBody = new CANNON.Body({ mass: 70, shape });
+      rumpBody.position.set(x, 0.7, z);
       world.addBody(rumpBody);
-      rumpMesh = rGroup;
+
+      rumpMesh = group;
     }
 
-    // Создание карты с разрушаемыми коробками/колоннами (карозия/падения)
-    function buildStageMap(stageNum) {
-      destructibleObjects.forEach(o => { scene.remove(o.mesh); world.remove(o.body); });
-      destructibleObjects = [];
+    // Создание Телохранителя Дика Джонсона
+    function createGuard(x, z) {
+      const group = new THREE.Group();
 
-      const boxGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-      const boxMat = new THREE.MeshStandardMaterial({ color: 0xd97706 });
+      // Мощный черный смокинг
+      const bodyGeo = new THREE.BoxGeometry(0.95, 1.4, 0.55);
+      const bodyMat = new THREE.MeshStandardMaterial({ color: 0x090d16 });
+      const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+      bodyMesh.position.y = 0.7;
+      bodyMesh.castShadow = true;
+      group.add(bodyMesh);
 
-      // Строим разрушаемые стены/колонны перед Рампом
-      const rows = Math.min(2 + stageNum, 5);
-      const cols = 5;
+      // Голова и Очки
+      const headGeo = new THREE.SphereGeometry(0.3, 12, 12);
+      const headMat = new THREE.MeshStandardMaterial({ color: 0xf87171 });
+      const headMesh = new THREE.Mesh(headGeo, headMat);
+      headMesh.position.y = 1.5;
 
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          const mesh = new THREE.Mesh(boxGeo, boxMat);
-          mesh.castShadow = true;
-          scene.add(mesh);
+      const glassesGeo = new THREE.BoxGeometry(0.4, 0.1, 0.15);
+      const glassesMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+      const glassesMesh = new THREE.Mesh(glassesGeo, glassesMat);
+      glassesMesh.position.set(0, 1.55, 0.22);
+      group.add(headMesh);
+      group.add(glassesMesh);
 
-          const shape = new CANNON.Box(new CANNON.Vec3(0.4, 0.4, 0.4));
-          const body = new CANNON.Body({ mass: 5, shape });
-          const posX = (c - 2) * 0.9;
-          const posY = 0.4 + r * 0.85;
-          const posZ = 0; // Посередине между игроком и снайпером
+      scene.add(group);
 
-          body.position.set(posX, posY, posZ);
-          world.addBody(body);
+      const shape = new CANNON.Box(new CANNON.Vec3(0.48, 0.7, 0.28));
+      guardBody = new CANNON.Body({ mass: 100, shape });
+      guardBody.position.set(x, 0.7, z);
+      world.addBody(guardBody);
 
-          destructibleObjects.push({ mesh, body });
+      guardMesh = group;
+    }
+
+    // Спавн разрушаемых коробок, трибун и стен
+    function spawnBlock(x, y, z, w, h, d, color = 0xd97706) {
+      const geo = new THREE.BoxGeometry(w, h, d);
+      const mat = new THREE.MeshStandardMaterial({ color });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      scene.add(mesh);
+
+      const shape = new CANNON.Box(new CANNON.Vec3(w / 2, h / 2, d / 2));
+      const body = new CANNON.Body({ mass: 12, shape });
+      body.position.set(x, y, z);
+      world.addBody(body);
+
+      destructibles.push({ mesh, body });
+    }
+
+    // Загрузка Уровней из оригинального геймплея
+    function loadLevel(lvl) {
+      // Очистка предыдущего уровня
+      if (rumpMesh) { scene.remove(rumpMesh); world.remove(rumpBody); }
+      if (guardMesh) { scene.remove(guardMesh); world.remove(guardBody); }
+      if (bulletMesh) { scene.remove(bulletMesh); world.remove(bulletBody); }
+      destructibles.forEach(obj => { scene.remove(obj.mesh); world.remove(obj.body); });
+      destructibles = [];
+
+      isDiving = false;
+      timeScale = 1.0;
+      countdown = Math.max(2.2, 4.0 - lvl * 0.3).toFixed(1);
+
+      createRump(0, -5);
+      createGuard(0, 6);
+
+      if (lvl === 1) {
+        // Уровень 1: Простая трибуна с микрофоном
+        spawnBlock(0, 0.5, -3.5, 2.5, 1.0, 0.8, 0xb45309);
+        spawnBlock(-1.8, 0.6, -2, 1.0, 1.2, 1.0, 0x1e3a8a);
+        spawnBlock(1.8, 0.6, -2, 1.0, 1.2, 1.0, 0x1e3a8a);
+      } else if (lvl === 2) {
+        // Уровень 2: Высокая стена из коробок и трибуны
+        for (let i = -2; i <= 2; i += 1.2) {
+          for (let j = 0.5; j <= 2.5; j += 1.0) {
+            spawnBlock(i, j, 1, 1.1, 0.9, 0.8, 0x78350f);
+          }
+        }
+      } else {
+        // Уровень 3: Сложная полоса препятствий
+        for (let i = -3; i <= 3; i += 1.5) {
+          spawnBlock(i, 0.6, 2, 1.2, 1.2, 0.8, 0xd97706);
+          spawnBlock(i, 0.6, -1, 1.2, 1.2, 0.8, 0xd97706);
         }
       }
+
+      document.getElementById('level-text').innerText = `LEVEL ${lvl}`;
+      gameState = 'PLAYING';
     }
 
-    // Управление Джойстиком
-    function setupJoystickControls() {
+    // Настройка Джойстика и Кнопки Тарана
+    function setupControls() {
+      const stick = document.getElementById('joystick-stick');
       const zone = document.getElementById('joystick-zone');
-      const knob = document.getElementById('joystick-knob');
       const diveBtn = document.getElementById('dive-btn');
 
-      const handleTouchStart = (e) => {
-        const t = e.changedTouches[0];
-        joyTouchId = t.identifier;
-        joyActive = true;
-        updateKnob(t.clientX, t.clientY);
-      };
+      let touchId = null;
+      let center = { x: 0, y: 0 };
 
-      const handleTouchMove = (e) => {
-        if (!joyActive) return;
-        for (let t of e.changedTouches) {
-          if (t.identifier === joyTouchId) {
-            updateKnob(t.clientX, t.clientY);
-            break;
-          }
-        }
-      };
-
-      const handleTouchEnd = (e) => {
-        for (let t of e.changedTouches) {
-          if (t.identifier === joyTouchId) {
-            joyActive = false;
-            joyMove = { x: 0, y: 0 };
-            knob.style.left = '35px';
-            knob.style.top = '35px';
-            break;
-          }
-        }
-      };
-
-      function updateKnob(cx, cy) {
+      zone.addEventListener('touchstart', (e) => {
+        const touch = e.changedTouches[0];
+        touchId = touch.identifier;
         const rect = zone.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
+        center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      });
 
-        let dx = cx - centerX;
-        let dy = cy - centerY;
-        const dist = Math.hypot(dx, dy);
-        const maxR = 40;
+      window.addEventListener('touchmove', (e) => {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          if (e.changedTouches[i].identifier === touchId) {
+            const touch = e.changedTouches[i];
+            const dx = touch.clientX - center.x;
+            const dy = touch.clientY - center.y;
+            const dist = Math.min(Math.hypot(dx, dy), 40);
+            const angle = Math.atan2(dy, dx);
 
-        if (dist > maxR) {
-          dx = (dx / dist) * maxR;
-          dy = (dy / dist) * maxR;
+            stick.style.transform = `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px)`;
+            moveInput.x = (Math.cos(angle) * dist) / 40;
+            moveInput.z = (Math.sin(angle) * dist) / 40;
+          }
         }
+      });
 
-        knob.style.left = `${35 + dx}px`;
-        knob.style.top = `${35 + dy}px`;
+      const resetStick = (e) => {
+        for (let i = 0; i < e.changedTouches.length; i++) {
+          if (e.changedTouches[i].identifier === touchId) {
+            touchId = null;
+            stick.style.transform = `translate(0px, 0px)`;
+            moveInput = { x: 0, z: 0 };
+          }
+        }
+      };
 
-        joyMove.x = dx / maxR;
-        joyMove.y = dy / maxR;
-      }
+      window.addEventListener('touchend', resetStick);
+      window.addEventListener('touchcancel', resetStick);
 
-      zone.addEventListener('touchstart', handleTouchStart);
-      window.addEventListener('touchmove', handleTouchMove);
-      window.addEventListener('touchend', handleTouchEnd);
-
-      // Кнопка DIVE / Прыжок регдоллом
-      diveBtn.addEventListener('click', performDive);
-      diveBtn.addEventListener('touchstart', (e) => { e.preventDefault(); performDive(); });
+      // Кнопка прыжка / Тарана (DIVE)
+      diveBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        performDive();
+      });
+      diveBtn.addEventListener('mousedown', performDive);
     }
 
     function performDive() {
-      if (gameState !== 'PLAYING') return;
+      if (gameState !== 'PLAYING' || isDiving) return;
+      isDiving = true;
 
-      guardBody.fixedRotation = false; // Включаем регдолл-физику вращения
-      guardBody.updateMassProperties();
+      // Мощный импульс вперед и вверх для сноса коробок
+      const forwardX = moveInput.x !== 0 ? moveInput.x * 18 : 0;
+      const forwardZ = moveInput.z !== 0 ? moveInput.z * 18 : -22;
 
-      const forwardX = joyMove.x * 15;
-      const forwardZ = (joyMove.y !== 0 ? joyMove.y : -1) * 18;
-
-      guardBody.velocity.set(forwardX, 7, forwardZ);
-      guardBody.angularVelocity.set(Math.random()*10, Math.random()*10, Math.random()*10);
+      guardBody.velocity.set(forwardX, 10, forwardZ);
+      guardBody.angularVelocity.set(Math.random() * 8, Math.random() * 8, Math.random() * 8);
 
       if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
     }
 
-    function startStage() {
-      createCharacters();
-      buildStageMap(stage);
-
-      countdown = Math.max(1.8, 3.2 - stage * 0.15).toFixed(1);
-      gameState = 'PLAYING';
-      timeScale = 1.0;
-
-      if (bulletMesh) { scene.remove(bulletMesh); world.remove(bulletBody); bulletMesh = null; }
-
-      document.getElementById('stage-badge').innerText = `STAGE ${stage}`;
-      document.getElementById('overlay-screen').classList.add('hidden');
-    }
-
-    function shootSniperBullet() {
+    function shootBullet() {
       gameState = 'SHOT';
 
       const bulletGeo = new THREE.SphereGeometry(0.18, 8, 8);
@@ -422,63 +510,65 @@
       bulletMesh = new THREE.Mesh(bulletGeo, bulletMat);
       scene.add(bulletMesh);
 
-      const startPos = new THREE.Vector3(10, 5, -18);
+      const sniperPos = new THREE.Vector3(10, 8, -18);
       const targetPos = rumpMesh.position.clone();
-      const dir = targetPos.clone().sub(startPos).normalize();
+      const dir = targetPos.clone().sub(sniperPos).normalize();
 
-      bulletBody = new CANNON.Body({ mass: 0.2, shape: new CANNON.Sphere(0.18) });
-      bulletBody.position.set(startPos.x, startPos.y, startPos.z);
-      bulletBody.velocity.set(dir.x * 38, dir.y * 38, dir.z * 38);
+      bulletBody = new CANNON.Body({ mass: 0.1, shape: new CANNON.Sphere(0.18) });
+      bulletBody.position.set(sniperPos.x, sniperPos.y, sniperPos.z);
+      bulletBody.velocity.set(dir.x * 40, dir.y * 40, dir.z * 40);
       world.addBody(bulletBody);
     }
 
-    function updatePhysicsAndGame() {
+    function updatePhysics() {
       const dt = (1 / 60) * timeScale;
       world.step(dt);
 
-      // Движение игрока от джойстика
-      if (gameState === 'PLAYING' && guardBody.fixedRotation) {
-        const speed = 8;
-        guardBody.velocity.x = joyMove.x * speed;
-        guardBody.velocity.z = joyMove.y * speed;
+      // Управление телохранителем (если еще не в прыжке)
+      if (gameState === 'PLAYING' && !isDiving) {
+        guardBody.velocity.x = moveInput.x * 12;
+        guardBody.velocity.z = moveInput.z * 12;
       }
 
-      // Синхронизация трехмерных моделей
-      if (guardMesh) { guardMesh.position.copy(guardBody.position); guardMesh.quaternion.copy(guardBody.quaternion); }
-      if (rumpMesh) { rumpMesh.position.copy(rumpBody.position); rumpMesh.quaternion.copy(rumpBody.quaternion); }
+      // Синхронизация трехмерной графики с физическим движком
+      rumpMesh.position.copy(rumpBody.position);
+      rumpMesh.quaternion.copy(rumpBody.quaternion);
 
-      destructibleObjects.forEach(d => {
+      guardMesh.position.copy(guardBody.position);
+      guardMesh.quaternion.copy(guardBody.quaternion);
+
+      destructibles.forEach(d => {
         d.mesh.position.copy(d.body.position);
         d.mesh.quaternion.copy(d.body.quaternion);
       });
 
-      // Камера следит за телохранителем
-      if (guardMesh) {
-        camera.position.x = guardMesh.position.x * 0.5;
-        camera.position.z = guardMesh.position.z + 8;
-        camera.position.y = 5;
-        camera.lookAt(guardMesh.position.x, 1, guardMesh.position.z - 3);
-      }
+      // Камера следит за Джонсоном
+      camera.position.x = guardMesh.position.x * 0.5;
+      camera.position.y = 5 + guardMesh.position.y * 0.2;
+      camera.position.z = guardMesh.position.z + 8;
+      camera.lookAt(rumpMesh.position.x, 1.5, rumpMesh.position.z);
 
-      // Лазер снайпера
-      if (gameState === 'PLAYING' && rumpMesh) {
-        sniperLine.geometry.setFromPoints([new THREE.Vector3(10, 5, -18), rumpMesh.position]);
-      } else {
-        sniperLine.visible = false;
-      }
-
-      // Проверка попадений пули
+      // Столкновения с пулей
       if (bulletMesh && bulletBody) {
         bulletMesh.position.copy(bulletBody.position);
 
-        if (bulletMesh.position.distanceTo(guardMesh.position) < 1.0) {
-          winStage("ВЫ СПАСЛИ ПРЕЗИДЕНТА!");
+        if (bulletMesh.position.distanceTo(guardMesh.position) < 1.1) {
+          winStage("ВЫ СЕЛИ НА ПУЛЮ И СПАСЛИ РАМПА!");
           return;
         }
+
         if (bulletMesh.position.distanceTo(rumpMesh.position) < 0.8) {
-          failStage("ПРЕЗИДЕНТ РАМП УБИТ!");
+          failStage("ПРЕЗИДЕНТ РАМП БЫЛ УБИТ!");
           return;
         }
+      }
+
+      // Отрисовка прицела снайпера
+      if (gameState === 'PLAYING') {
+        const sniperPos = new THREE.Vector3(10, 8, -18);
+        sniperLine.geometry.setFromPoints([sniperPos, rumpMesh.position]);
+      } else {
+        sniperLine.visible = false;
       }
     }
 
@@ -487,27 +577,27 @@
 
       if (gameState === 'PLAYING') {
         countdown -= 1 / 60;
-        document.getElementById('timer-badge').innerText = Math.max(0, countdown).toFixed(1) + "s";
+        document.getElementById('timer-display').innerText = Math.max(0, countdown).toFixed(1) + "s";
 
-        if (countdown <= 0.8) timeScale = 0.3; // Слоу-мо при подлете пули
+        if (countdown <= 1.0) timeScale = 0.3; // Эффект Slow-Mo замедления времени
 
         if (countdown <= 0) {
-          shootSniperBullet();
+          shootBullet();
         }
       }
 
-      updatePhysicsAndGame();
+      updatePhysics();
       renderer.render(scene, camera);
     }
 
     function winStage(msg) {
       gameState = 'WIN';
-      savedCount++;
-      stage++;
-      document.getElementById('score-badge').innerText = `SAVED: ${savedCount}`;
-      document.getElementById('screen-title').innerText = "STAGE CLEAR!";
+      wins++;
+      document.getElementById('score-text').innerText = `SAVED: ${wins}`;
+      document.getElementById('screen-title').innerText = "LEVEL CLEAR!";
       document.getElementById('screen-title').className = "screen-title title-win";
       document.getElementById('screen-desc').innerText = msg;
+      document.getElementById('main-btn').innerText = "NEXT LEVEL";
       document.getElementById('overlay-screen').classList.remove('hidden');
     }
 
@@ -516,7 +606,14 @@
       document.getElementById('screen-title').innerText = "ASSASSINATED!";
       document.getElementById('screen-title').className = "screen-title title-fail";
       document.getElementById('screen-desc').innerText = msg;
+      document.getElementById('main-btn').innerText = "TRY AGAIN";
       document.getElementById('overlay-screen').classList.remove('hidden');
+    }
+
+    function startOrRetry() {
+      document.getElementById('overlay-screen').classList.add('hidden');
+      if (gameState === 'WIN') currentLevel++;
+      loadLevel(currentLevel);
     }
 
     window.addEventListener('resize', () => {
@@ -525,7 +622,7 @@
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
 
-    window.onload = init3D;
+    window.onload = initGame;
   </script>
 </body>
 </html>
