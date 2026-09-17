@@ -3,8 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Защита Президента</title>
-  <!-- Подключение Telegram WebApp SDK -->
+  <title>Защита Президента 3D</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * {
@@ -15,12 +14,11 @@
       -webkit-user-select: none;
     }
     body {
-      background-color: #121212;
+      background-color: #0f0f15;
       color: #ffffff;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overflow: hidden;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
@@ -31,8 +29,9 @@
       height: 100vh;
       max-width: 450px;
       max-height: 800px;
-      background: #f4f4f6;
+      background: radial-gradient(circle, #f0f3f8 0%, #d8e0e8 100%);
       overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
     canvas {
       display: block;
@@ -47,9 +46,10 @@
       display: flex;
       justify-content: space-between;
       font-size: 18px;
-      font-weight: bold;
-      color: #222;
+      font-weight: 800;
+      color: #1e293b;
       pointer-events: none;
+      text-shadow: 0 1px 2px rgba(255,255,255,0.8);
     }
     .game-over-screen {
       position: absolute;
@@ -57,36 +57,39 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.85);
+      background: rgba(15, 23, 42, 0.9);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       color: #fff;
       z-index: 10;
+      backdrop-filter: blur(4px);
     }
     .game-over-screen h1 {
-      font-size: 28px;
-      color: #ff4d4d;
+      font-size: 26px;
+      color: #ef4444;
       margin-bottom: 10px;
     }
     .game-over-screen p {
       font-size: 18px;
       margin-bottom: 25px;
+      color: #cbd5e1;
     }
     .btn {
-      background: #0088cc;
+      background: #2563eb;
       color: #fff;
       border: none;
-      padding: 12px 28px;
+      padding: 14px 32px;
       font-size: 18px;
       font-weight: bold;
-      border-radius: 25px;
+      border-radius: 30px;
       cursor: pointer;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+      transition: transform 0.1s;
     }
     .btn:active {
-      transform: scale(0.96);
+      transform: scale(0.95);
     }
     .hidden {
       display: none !important;
@@ -98,20 +101,19 @@
   <div id="game-container">
     <div class="ui-layer">
       <div id="score-text">Очки: 0</div>
-      <div id="lives-text">Защита: OK</div>
+      <div id="status-text">Защита активна</div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
     <div id="game-over" class="game-over-screen hidden">
-      <h1>ПРЕЗИДЕНТ ПОРАЖЕН!</h1>
+      <h1>ПОПАДАНИЕ В ПРЕЗИДЕНТА!</h1>
       <p id="final-score">Ваш счет: 0</p>
       <button class="btn" onclick="resetGame()">ИГРАТЬ СНОВА</button>
     </div>
   </div>
 
   <script>
-    // Инициализация Telegram Mini App
     const tg = window.Telegram ? window.Telegram.WebApp : null;
     if (tg) {
       tg.ready();
@@ -128,12 +130,20 @@
     let score = 0;
     let isGameOver = false;
 
-    // Игровые объекты
-    const president = { x: 0, y: 0, r: 18 };
-    const guard = { x: 0, y: 0, r: 16, angle: 0, distance: 45 };
+    // Президент (с плавным перемещением)
+    const president = { 
+      x: 0, y: 0, 
+      targetX: 0, targetY: 0, 
+      r: 16, 
+      moveTimer: 0 
+    };
+
+    // Охранник
+    const guard = { x: 0, y: 0, r: 18, angle: 0, distance: 42 };
+
     let attackers = [];
     let balls = [];
-    let spawnTimer = 0;
+    let nextShootTime = 0;
 
     function resize() {
       const container = document.getElementById('game-container');
@@ -143,17 +153,21 @@
       canvas.height = height;
 
       centerX = width / 2;
-      centerY = height / 2 + 30;
+      centerY = height / 2 + 20;
       radius = Math.min(width, height) * 0.38;
 
-      president.x = centerX;
-      president.y = centerY;
+      if (!president.x) {
+        president.x = centerX;
+        president.y = centerY;
+        president.targetX = centerX;
+        president.targetY = centerY;
+      }
     }
 
     window.addEventListener('resize', resize);
     resize();
 
-    // Генерация нападающих по кругу
+    // Создание нападающих
     const totalAttackers = 8;
     function initAttackers() {
       attackers = [];
@@ -167,7 +181,7 @@
       }
     }
 
-    // Управление (Тач / Мышь)
+    // Управление
     function handleMove(e) {
       if (isGameOver) return;
       const rect = canvas.getBoundingClientRect();
@@ -177,134 +191,174 @@
       const mouseX = clientX - rect.left;
       const mouseY = clientY - rect.top;
 
-      guard.angle = Math.atan2(mouseY - centerY, mouseX - centerX);
+      guard.angle = Math.atan2(mouseY - president.y, mouseX - president.x);
     }
 
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('touchmove', handleMove);
     window.addEventListener('touchstart', handleMove);
 
-    function spawnBall() {
-      const attacker = attackers[Math.floor(Math.random() * attackers.length)];
-      const angle = Math.atan2(centerY - attacker.y, centerX - attacker.x);
-      const speed = 2.5 + Math.min(score * 0.15, 6); // Увеличение скорости
+    // Логика выстрелов (случайные одиночные или залп)
+    function scheduleNextShot() {
+      // Случайная задержка от 1 до 5 секунд
+      const delay = Math.floor(Math.random() * 240) + 60; 
+      nextShootTime = delay;
+    }
 
-      balls.push({
-        x: attacker.x,
-        y: attacker.y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        r: 10
-      });
+    function fireBalls() {
+      // Решаем: стреляет 1 человек или сразу несколько (залп)
+      const isVolley = Math.random() < 0.35; // 35% шанс на залп
+      let countToShoot = isVolley ? Math.floor(Math.random() * 3) + 2 : 1; 
+
+      // Перемешиваем нападающих для рандома
+      let shuffled = [...attackers].sort(() => 0.5 - Math.random());
+
+      for (let i = 0; i < Math.min(countToShoot, shuffled.length); i++) {
+        const attacker = shuffled[i];
+        const angle = Math.atan2(president.y - attacker.y, president.x - attacker.x);
+        const speed = 2.2 + Math.min(score * 0.1, 4.5);
+
+        balls.push({
+          x: attacker.x,
+          y: attacker.y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          r: 9
+        });
+      }
+    }
+
+    function updatePresidentPosition() {
+      // Президент меняет цель каждые ~2-4 секунды
+      president.moveTimer++;
+      if (president.moveTimer > 150) {
+        const offsetRange = 35; // Границы перемещения от центра
+        president.targetX = centerX + (Math.random() * offsetRange * 2 - offsetRange);
+        president.targetY = centerY + (Math.random() * offsetRange * 2 - offsetRange);
+        president.moveTimer = 0;
+      }
+
+      // Плавное движение к новой точке
+      president.x += (president.targetX - president.x) * 0.03;
+      president.y += (president.targetY - president.y) * 0.03;
     }
 
     function resetGame() {
       score = 0;
       scoreEl.innerText = 'Очки: 0';
       balls = [];
-      spawnTimer = 0;
       isGameOver = false;
       gameOverEl.classList.add('hidden');
+      president.x = centerX;
+      president.y = centerY;
+      president.targetX = centerX;
+      president.targetY = centerY;
       initAttackers();
+      scheduleNextShot();
       loop();
     }
 
     function update() {
       if (isGameOver) return;
 
-      // Обновляем позицию охранника
-      guard.x = centerX + Math.cos(guard.angle) * guard.distance;
-      guard.y = centerY + Math.sin(guard.angle) * guard.distance;
+      updatePresidentPosition();
 
-      // Спавн мячей
-      spawnTimer++;
-      const currentSpawnRate = Math.max(25, 90 - score * 2);
-      if (spawnTimer >= currentSpawnRate) {
-        spawnBall();
-        spawnTimer = 0;
+      // Позиция охранника зафиксирована вокруг президента
+      guard.x = president.x + Math.cos(guard.angle) * guard.distance;
+      guard.y = president.y + Math.sin(guard.angle) * guard.distance;
+
+      // Таймер стрельбы
+      nextShootTime--;
+      if (nextShootTime <= 0) {
+        fireBalls();
+        scheduleNextShot();
       }
 
-      // Обновление и физика мячей
+      // Движение и столкновения мячей
       for (let i = balls.length - 1; i >= 0; i--) {
         let b = balls[i];
         b.x += b.vx;
         b.y += b.vy;
 
-        // Коллизия с Охранником (Отбитие мяча)
+        // Отбитие охранником
         const distGuard = Math.hypot(b.x - guard.x, b.y - guard.y);
         if (distGuard < b.r + guard.r) {
           balls.splice(i, 1);
           score += 1;
           scoreEl.innerText = `Очки: ${score}`;
-          if (tg && tg.HapticFeedback) {
-            tg.HapticFeedback.impactOccurred('light');
-          }
+          if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('medium');
           continue;
         }
 
-        // Коллизия с Президентом (Проигрыш)
+        // Попадание в президента
         const distPres = Math.hypot(b.x - president.x, b.y - president.y);
         if (distPres < b.r + president.r) {
           isGameOver = true;
           finalScoreEl.innerText = `Ваш счет: ${score}`;
           gameOverEl.classList.remove('hidden');
-          if (tg && tg.HapticFeedback) {
-            tg.HapticFeedback.notificationOccurred('error');
-          }
+          if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
         }
       }
+    }
+
+    // Отрисовка объёмных (3D) сфер и персонажей
+    function draw3DSphere(x, y, r, colorPrimary, colorHighlight) {
+      // Тень под объектом
+      ctx.beginPath();
+      ctx.ellipse(x, y + r * 0.8, r * 0.9, r * 0.3, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+      ctx.fill();
+
+      // Объёмный градиент
+      let grad = ctx.createRadialGradient(
+        x - r * 0.3, y - r * 0.3, r * 0.1,
+        x, y, r
+      );
+      grad.addColorStop(0, colorHighlight);
+      grad.addColorStop(0.8, colorPrimary);
+      grad.addColorStop(1, '#000000');
+
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = grad;
+      ctx.fill();
     }
 
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
-      // Рисуем круг участников
+      // Разметка круга
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-      ctx.strokeStyle = '#ddd';
-      ctx.lineWidth = 2;
-      ctx.setLineDash([6, 6]);
+      ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+      ctx.lineWidth = 3;
       ctx.stroke();
-      ctx.setLineDash([]);
 
-      // Нападающие по кругу
+      // Нападающие (серые 3D шары)
       attackers.forEach(a => {
-        ctx.beginPath();
-        ctx.arc(a.x, a.y, 14, 0, Math.PI * 2);
-        ctx.fillStyle = '#7f8c8d';
-        ctx.fill();
+        draw3DSphere(a.x, a.y, 15, '#475569', '#94a3b8');
       });
 
-      // Президент (в центре)
-      ctx.beginPath();
-      ctx.arc(president.x, president.y, president.r, 0, Math.PI * 2);
-      ctx.fillStyle = '#2ecc71'; // Зеленый костюм
-      ctx.fill();
-      ctx.strokeStyle = '#27ae60';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      // Галстук Президента
-      ctx.fillStyle = '#e74c3c';
-      ctx.fillRect(president.x - 2, president.y - 8, 4, 12);
+      // Президент (зеленый 3D шар с красным галстуком)
+      draw3DSphere(president.x, president.y, president.r, '#16a34a', '#86efac');
+      ctx.fillStyle = '#dc2626';
+      ctx.fillRect(president.x - 2, president.y - 4, 4, 10);
 
-      // Охранник
-      ctx.beginPath();
-      ctx.arc(guard.x, guard.y, guard.r, 0, Math.PI * 2);
-      ctx.fillStyle = '#34495e';
-      ctx.fill();
-      ctx.strokeStyle = '#2c3e50';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-      // Очки охранника
-      ctx.fillStyle = '#000';
-      ctx.fillRect(guard.x - 6, guard.y - 4, 12, 4);
+      // Охранник (темно-синий 3D шар с очками)
+      draw3DSphere(guard.x, guard.y, guard.r, '#1e293b', '#64748b');
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(guard.x - 6, guard.y - 3, 12, 4);
 
-      // Мячи
+      // Легкая защитная аура у охранника
+      ctx.beginPath();
+      ctx.arc(guard.x, guard.y, guard.r + 3, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(59, 130, 246, 0.5)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Летящие мячи (красные 3D шары)
       balls.forEach(b => {
-        ctx.beginPath();
-        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fillStyle = '#e74c3c';
-        ctx.fill();
+        draw3DSphere(b.x, b.y, b.r, '#dc2626', '#fca5a5');
       });
     }
 
@@ -317,6 +371,7 @@
     }
 
     initAttackers();
+    scheduleNextShot();
     loop();
   </script>
 </body>
