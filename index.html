@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>Mr. President! Full 3D Edition</title>
+  <title>Mr. President! Realistic Ragdoll Edition</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <!-- 3D Physics Engine (Three.js & Cannon.js) -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -34,7 +34,6 @@
       top: 0; left: 0;
     }
 
-    /* Подсказка для альбома */
     #rotate-hint {
       display: none;
       position: fixed;
@@ -61,7 +60,6 @@
       #rotate-hint { display: flex; }
     }
 
-    /* Верхний UI */
     .ui-top {
       position: absolute;
       top: 12px;
@@ -88,7 +86,6 @@
     .badge-blue { background: #2563eb; }
     .badge-yellow { background: #f59e0b; color: #000; }
 
-    /* Сенсорный Джойстик */
     #joystick-zone {
       position: absolute;
       bottom: 25px;
@@ -111,7 +108,6 @@
       box-shadow: 0 0 10px rgba(0,0,0,0.5);
     }
 
-    /* Кнопка прыжка / тарана */
     #dive-btn {
       position: absolute;
       bottom: 30px;
@@ -138,7 +134,6 @@
       background: #b91c1c;
     }
 
-    /* Экраны Выигрыша / Проигрыша */
     .game-screen {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -206,7 +201,6 @@
     <div class="badge" id="score-text">SAVED: 0</div>
   </div>
 
-  <!-- Органы управления -->
   <div id="joystick-zone">
     <div id="joystick-stick"></div>
   </div>
@@ -214,7 +208,7 @@
 
   <div id="overlay-screen" class="game-screen">
     <div class="screen-title title-start" id="screen-title">MR. PRESIDENT!</div>
-    <p class="screen-desc" id="screen-desc">Управляйте телохранителем Диком Джонсоном! Бегайте джойстиком, ломайте баррикады и нажимайте DIVE, чтобы закрыть собой Президента Рональда Рампа!</p>
+    <p class="screen-desc" id="screen-desc">Бегите джойстиком, ломайте ящики и нажимайте DIVE, чтобы сбить Рональда Рампа с ног и заслонить его от пули!</p>
     <button class="btn-action" id="main-btn" onclick="startOrRetry()">START GAME</button>
   </div>
 
@@ -238,9 +232,12 @@
     let sniperLine;
     let destructibles = [];
 
-    // Управление
     let moveInput = { x: 0, z: 0 };
     let isDiving = false;
+    let isRumpFallen = false;
+
+    // Физический материал с трением и отскоком для коробок и тел
+    let physicsMaterial;
 
     function initGame() {
       const container = document.getElementById('canvas-container');
@@ -270,6 +267,13 @@
       world = new CANNON.World();
       world.gravity.set(0, -9.82, 0);
 
+      physicsMaterial = new CANNON.Material('slippery');
+      const contactMat = new CANNON.ContactMaterial(physicsMaterial, physicsMaterial, {
+        friction: 0.1,
+        restitution: 0.4
+      });
+      world.addContactMaterial(contactMat);
+
       createStaticEnvironment();
       setupControls();
       loadLevel(currentLevel);
@@ -278,7 +282,6 @@
     }
 
     function createStaticEnvironment() {
-      // Пол
       const floorGeo = new THREE.PlaneGeometry(40, 50);
       const floorMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.6 });
       const floor = new THREE.Mesh(floorGeo, floorMat);
@@ -286,11 +289,10 @@
       floor.receiveShadow = true;
       scene.add(floor);
 
-      const floorBody = new CANNON.Body({ mass: 0, shape: new CANNON.Plane() });
+      const floorBody = new CANNON.Body({ mass: 0, shape: new CANNON.Plane(), material: physicsMaterial });
       floorBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
       world.addBody(floorBody);
 
-      // Красный ковер
       const carpetGeo = new THREE.PlaneGeometry(6, 40);
       const carpetMat = new THREE.MeshStandardMaterial({ color: 0x991b1b });
       const carpet = new THREE.Mesh(carpetGeo, carpetMat);
@@ -298,18 +300,15 @@
       carpet.position.set(0, 0.01, -2);
       scene.add(carpet);
 
-      // Лазерная указка снайпера
       const laserGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
       const laserMat = new THREE.LineBasicMaterial({ color: 0xef4444, linewidth: 3 });
       sniperLine = new THREE.Line(laserGeo, laserMat);
       scene.add(sniperLine);
     }
 
-    // Создание Рональда Рампа (Детализированная 3D модель)
     function createRump(x, z) {
       const group = new THREE.Group();
 
-      // Синий костюм
       const bodyGeo = new THREE.CylinderGeometry(0.35, 0.35, 1.3, 12);
       const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8 });
       const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
@@ -317,14 +316,12 @@
       bodyMesh.castShadow = true;
       group.add(bodyMesh);
 
-      // Красный галстук
       const tieGeo = new THREE.BoxGeometry(0.12, 0.7, 0.05);
       const tieMat = new THREE.MeshBasicMaterial({ color: 0xdc2626 });
       const tieMesh = new THREE.Mesh(tieGeo, tieMat);
       tieMesh.position.set(0, 0.7, 0.36);
       group.add(tieMesh);
 
-      // Голова и Золотые Волосы
       const headGeo = new THREE.SphereGeometry(0.28, 12, 12);
       const headMat = new THREE.MeshStandardMaterial({ color: 0xfde047 });
       const headMesh = new THREE.Mesh(headGeo, headMat);
@@ -335,19 +332,36 @@
 
       scene.add(group);
 
-      const shape = new CANNON.Cylinder(0.35, 0.35, 1.4, 8);
-      rumpBody = new CANNON.Body({ mass: 70, shape });
+      const shape = new CANNON.Box(new CANNON.Vec3(0.35, 0.7, 0.35));
+      rumpBody = new CANNON.Body({ mass: 45, shape, material: physicsMaterial });
       rumpBody.position.set(x, 0.7, z);
+      
+      // Запрещаем вращение по умолчанию для вертикальной стойки
+      rumpBody.fixedRotation = true;
+      rumpBody.updateMassProperties();
       world.addBody(rumpBody);
 
       rumpMesh = group;
+      isRumpFallen = false;
+
+      // Обработка столкновения телохранителя с Рампом
+      rumpBody.addEventListener('collide', (e) => {
+        if (e.body === guardBody && !isRumpFallen) {
+          isRumpFallen = true;
+          rumpBody.fixedRotation = false; // Включаем падение от физики
+          rumpBody.updateMassProperties();
+
+          const dirX = rumpBody.position.x - guardBody.position.x;
+          const dirZ = rumpBody.position.z - guardBody.position.z;
+          rumpBody.applyImpulse(new CANNON.Vec3(dirX * 15, 8, dirZ * 15), rumpBody.position);
+          rumpBody.angularVelocity.set(Math.random() * 10, Math.random() * 10, Math.random() * 10);
+        }
+      });
     }
 
-    // Создание Телохранителя Дика Джонсона
     function createGuard(x, z) {
       const group = new THREE.Group();
 
-      // Мощный черный смокинг
       const bodyGeo = new THREE.BoxGeometry(0.95, 1.4, 0.55);
       const bodyMat = new THREE.MeshStandardMaterial({ color: 0x090d16 });
       const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
@@ -355,7 +369,6 @@
       bodyMesh.castShadow = true;
       group.add(bodyMesh);
 
-      // Голова и Очки
       const headGeo = new THREE.SphereGeometry(0.3, 12, 12);
       const headMat = new THREE.MeshStandardMaterial({ color: 0xf87171 });
       const headMesh = new THREE.Mesh(headGeo, headMat);
@@ -371,14 +384,14 @@
       scene.add(group);
 
       const shape = new CANNON.Box(new CANNON.Vec3(0.48, 0.7, 0.28));
-      guardBody = new CANNON.Body({ mass: 100, shape });
+      guardBody = new CANNON.Body({ mass: 120, shape, material: physicsMaterial });
       guardBody.position.set(x, 0.7, z);
+      guardBody.fixedRotation = true;
       world.addBody(guardBody);
 
       guardMesh = group;
     }
 
-    // Спавн разрушаемых коробок, трибун и стен
     function spawnBlock(x, y, z, w, h, d, color = 0xd97706) {
       const geo = new THREE.BoxGeometry(w, h, d);
       const mat = new THREE.MeshStandardMaterial({ color });
@@ -388,16 +401,23 @@
       scene.add(mesh);
 
       const shape = new CANNON.Box(new CANNON.Vec3(w / 2, h / 2, d / 2));
-      const body = new CANNON.Body({ mass: 12, shape });
+      const body = new CANNON.Body({ mass: 8, shape, material: physicsMaterial });
       body.position.set(x, y, z);
       world.addBody(body);
 
       destructibles.push({ mesh, body });
+
+      // Толчок ящику при ударе
+      body.addEventListener('collide', (e) => {
+        if (e.body === guardBody) {
+          const forceX = (body.position.x - guardBody.position.x) * 12;
+          const forceZ = (body.position.z - guardBody.position.z) * 12;
+          body.applyImpulse(new CANNON.Vec3(forceX, 4, forceZ), body.position);
+        }
+      });
     }
 
-    // Загрузка Уровней из оригинального геймплея
     function loadLevel(lvl) {
-      // Очистка предыдущего уровня
       if (rumpMesh) { scene.remove(rumpMesh); world.remove(rumpBody); }
       if (guardMesh) { scene.remove(guardMesh); world.remove(guardBody); }
       if (bulletMesh) { scene.remove(bulletMesh); world.remove(bulletBody); }
@@ -412,20 +432,17 @@
       createGuard(0, 6);
 
       if (lvl === 1) {
-        // Уровень 1: Простая трибуна с микрофоном
         spawnBlock(0, 0.5, -3.5, 2.5, 1.0, 0.8, 0xb45309);
         spawnBlock(-1.8, 0.6, -2, 1.0, 1.2, 1.0, 0x1e3a8a);
         spawnBlock(1.8, 0.6, -2, 1.0, 1.2, 1.0, 0x1e3a8a);
       } else if (lvl === 2) {
-        // Уровень 2: Высокая стена из коробок и трибуны
-        for (let i = -2; i <= 2; i += 1.2) {
-          for (let j = 0.5; j <= 2.5; j += 1.0) {
-            spawnBlock(i, j, 1, 1.1, 0.9, 0.8, 0x78350f);
+        for (let i = -2; i <= 2; i += 1.1) {
+          for (let j = 0.5; j <= 2.5; j += 0.9) {
+            spawnBlock(i, j, 1, 1.0, 0.8, 0.8, 0x78350f);
           }
         }
       } else {
-        // Уровень 3: Сложная полоса препятствий
-        for (let i = -3; i <= 3; i += 1.5) {
+        for (let i = -3; i <= 3; i += 1.4) {
           spawnBlock(i, 0.6, 2, 1.2, 1.2, 0.8, 0xd97706);
           spawnBlock(i, 0.6, -1, 1.2, 1.2, 0.8, 0xd97706);
         }
@@ -435,7 +452,6 @@
       gameState = 'PLAYING';
     }
 
-    // Настройка Джойстика и Кнопки Тарана
     function setupControls() {
       const stick = document.getElementById('joystick-stick');
       const zone = document.getElementById('joystick-zone');
@@ -480,7 +496,6 @@
       window.addEventListener('touchend', resetStick);
       window.addEventListener('touchcancel', resetStick);
 
-      // Кнопка прыжка / Тарана (DIVE)
       diveBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         performDive();
@@ -492,11 +507,14 @@
       if (gameState !== 'PLAYING' || isDiving) return;
       isDiving = true;
 
-      // Мощный импульс вперед и вверх для сноса коробок
-      const forwardX = moveInput.x !== 0 ? moveInput.x * 18 : 0;
-      const forwardZ = moveInput.z !== 0 ? moveInput.z * 18 : -22;
+      // Снимаем ограничение вращения при прыжке
+      guardBody.fixedRotation = false;
+      guardBody.updateMassProperties();
 
-      guardBody.velocity.set(forwardX, 10, forwardZ);
+      const forwardX = moveInput.x !== 0 ? moveInput.x * 25 : 0;
+      const forwardZ = moveInput.z !== 0 ? moveInput.z * 25 : -28;
+
+      guardBody.velocity.set(forwardX, 12, forwardZ);
       guardBody.angularVelocity.set(Math.random() * 8, Math.random() * 8, Math.random() * 8);
 
       if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
@@ -524,13 +542,11 @@
       const dt = (1 / 60) * timeScale;
       world.step(dt);
 
-      // Управление телохранителем (если еще не в прыжке)
       if (gameState === 'PLAYING' && !isDiving) {
         guardBody.velocity.x = moveInput.x * 12;
         guardBody.velocity.z = moveInput.z * 12;
       }
 
-      // Синхронизация трехмерной графики с физическим движком
       rumpMesh.position.copy(rumpBody.position);
       rumpMesh.quaternion.copy(rumpBody.quaternion);
 
@@ -542,28 +558,25 @@
         d.mesh.quaternion.copy(d.body.quaternion);
       });
 
-      // Камера следит за Джонсоном
       camera.position.x = guardMesh.position.x * 0.5;
       camera.position.y = 5 + guardMesh.position.y * 0.2;
       camera.position.z = guardMesh.position.z + 8;
       camera.lookAt(rumpMesh.position.x, 1.5, rumpMesh.position.z);
 
-      // Столкновения с пулей
       if (bulletMesh && bulletBody) {
         bulletMesh.position.copy(bulletBody.position);
 
-        if (bulletMesh.position.distanceTo(guardMesh.position) < 1.1) {
+        if (bulletMesh.position.distanceTo(guardMesh.position) < 1.2) {
           winStage("ВЫ СЕЛИ НА ПУЛЮ И СПАСЛИ РАМПА!");
           return;
         }
 
-        if (bulletMesh.position.distanceTo(rumpMesh.position) < 0.8) {
+        if (bulletMesh.position.distanceTo(rumpMesh.position) < 0.9) {
           failStage("ПРЕЗИДЕНТ РАМП БЫЛ УБИТ!");
           return;
         }
       }
 
-      // Отрисовка прицела снайпера
       if (gameState === 'PLAYING') {
         const sniperPos = new THREE.Vector3(10, 8, -18);
         sniperLine.geometry.setFromPoints([sniperPos, rumpMesh.position]);
@@ -579,7 +592,7 @@
         countdown -= 1 / 60;
         document.getElementById('timer-display').innerText = Math.max(0, countdown).toFixed(1) + "s";
 
-        if (countdown <= 1.0) timeScale = 0.3; // Эффект Slow-Mo замедления времени
+        if (countdown <= 1.0) timeScale = 0.3;
 
         if (countdown <= 0) {
           shootBullet();
