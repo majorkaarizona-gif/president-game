@@ -114,7 +114,7 @@
 
     <div id="overlay-screen" class="game-screen hidden">
       <h1 id="screen-title">GET DOWN MR. PRESIDENT!</h1>
-      <p id="screen-desc">Толкайте Президента в безопасную синюю зону или уводите его из-под прицела! Остерегайтесь рикошетов пули от стен.</p>
+      <p id="screen-desc">Толкайте Президента в безопасную синюю зону или закрывайте его собой!</p>
       <button class="btn" id="main-btn" onclick="nextAction()">НАЧАТЬ</button>
     </div>
   </div>
@@ -146,9 +146,10 @@
     let wins = 0;
     let gameState = 'START';
     let timeScale = 1.0;
+    let animTime = 0;
 
-    let president = { x: 0, y: 0, r: 24, vx: 0, vy: 0, angle: 0, vRot: 0, saved: false, hit: false, walkDir: 1 };
-    let guard = { x: 0, y: 0, r: 26, vx: 0, vy: 0, angle: 0, vRot: 0, flying: false };
+    let president = { x: 0, y: 0, r: 24, vx: 0, vy: 0, angle: 0, vRot: 0, saved: false, hit: false, walkDir: 1, animPhase: 0 };
+    let guard = { x: 0, y: 0, r: 26, vx: 0, vy: 0, angle: 0, vRot: 0, flying: false, shoutTimer: 0, animPhase: 0 };
     let safeZone = { x: 0, y: 0, w: 0, h: 0 };
 
     let snipers = [];
@@ -201,6 +202,20 @@
       }
     }
 
+    function createConfetti() {
+      const colors = ['#f43f5e', '#3b82f6', '#22c55e', '#eab308', '#a855f7'];
+      for (let i = 0; i < 60; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: -10,
+          vx: (Math.random() - 0.5) * 6,
+          vy: Math.random() * 5 + 3,
+          life: 2.0,
+          color: colors[Math.floor(Math.random() * colors.length)]
+        });
+      }
+    }
+
     function resize() {
       width = window.innerWidth;
       height = window.innerHeight;
@@ -223,7 +238,8 @@
         x: width * 0.5, 
         y: height * 0.45, 
         r: 24, vx: 0, vy: 0, angle: 0, vRot: 0, 
-        saved: false, hit: false, walkDir: Math.random() > 0.5 ? 1 : -1 
+        saved: false, hit: false, walkDir: Math.random() > 0.5 ? 1 : -1,
+        animPhase: 0
       };
 
       const spawnSides = [
@@ -236,10 +252,10 @@
       guard = { 
         x: randomSpawn.x, 
         y: randomSpawn.y, 
-        r: 26, vx: 0, vy: 0, angle: 0, vRot: 0, flying: false 
+        r: 26, vx: 0, vy: 0, angle: 0, vRot: 0, flying: false, shoutTimer: 0,
+        animPhase: 0
       };
 
-      // Генерация стен (зависит от уровня)
       walls = [];
       const wallCount = Math.min(Math.floor((level - 1) / 2), 4);
       for (let i = 0; i < wallCount; i++) {
@@ -251,7 +267,6 @@
         });
       }
 
-      // Генерация снайперов (зависит от уровня)
       snipers = [];
       const sniperCount = Math.min(1 + Math.floor((level - 1) / 2), 4);
       for (let i = 0; i < sniperCount; i++) {
@@ -259,7 +274,8 @@
           x: (width / (sniperCount + 1)) * (i + 1) + (Math.random() * 20 - 10),
           y: 35 + Math.random() * 15,
           targetX: president.x,
-          targetY: president.y
+          targetY: president.y,
+          swayOffset: Math.random() * Math.PI * 2
         });
       }
 
@@ -298,6 +314,7 @@
         guard.vy = Math.sin(angle) * force;
         guard.vRot = (Math.random() - 0.5) * 0.5;
         guard.flying = true;
+        guard.shoutTimer = 1.2;
 
         if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       }
@@ -343,7 +360,31 @@
              y >= safeZone.y && y <= safeZone.y + safeZone.h;
     }
 
+    // Обработка столкновения круга с прямоугольником (Стена)
+    function resolveCircleWallCollision(circle, wall) {
+      const closeX = Math.max(wall.x - wall.w/2, Math.min(circle.x, wall.x + wall.w/2));
+      const closeY = Math.max(wall.y - wall.h/2, Math.min(circle.y, wall.y + wall.h/2));
+      const distX = circle.x - closeX;
+      const distY = circle.y - closeY;
+      const distance = Math.hypot(distX, distY);
+
+      if (distance < circle.r) {
+        const overlap = circle.r - distance;
+        const nx = distance === 0 ? 0 : distX / distance;
+        const ny = distance === 0 ? -1 : distY / distance;
+
+        circle.x += nx * overlap;
+        circle.y += ny * overlap;
+
+        const dot = circle.vx * nx + circle.vy * ny;
+        circle.vx = (circle.vx - 2 * dot * nx) * 0.6;
+        circle.vy = (circle.vy - 2 * dot * ny) * 0.6;
+      }
+    }
+
     function update() {
+      animTime += 0.05;
+
       if (gameState === 'AIMING' && countdown < 0.6) {
         timeScale = 0.35;
       } else if (gameState === 'SHOT') {
@@ -354,17 +395,25 @@
 
       const dt = (1 / 60) * timeScale;
 
+      if (guard.shoutTimer > 0) guard.shoutTimer -= dt;
+
       if (gameState === 'AIMING') {
         countdown -= dt;
         
         if (!president.saved) {
           president.x += president.walkDir * 0.8;
+          president.animPhase += 0.15;
           if (president.x < width * 0.25 || president.x > width * 0.75) {
             president.walkDir *= -1;
           }
         }
 
-        // ПРОВЕРКА ПОБЕДЫ: Президент в безопасной зоне!
+        // Всплывающее прицеливание снайперов
+        snipers.forEach(s => {
+          s.targetX = president.x + Math.sin(animTime * 2 + s.swayOffset) * 15;
+          s.targetY = president.y + Math.cos(animTime * 2 + s.swayOffset) * 15;
+        });
+
         if (president.saved && isPointInSafeZone(president.x, president.y)) {
           winLevel("ПРЕЗИДЕНТ УСПЕШНО ЭВАКУИРОВАН В БЕЗОПАСНУЮ ЗОНУ!");
           return;
@@ -394,14 +443,7 @@
         if (guard.y - guard.r < 0) { guard.y = guard.r; guard.vy *= -0.7; }
         else if (guard.y + guard.r > height) { guard.y = height - guard.r; guard.vy *= -0.7; }
 
-        // Столкновение со стенами уровня
-        walls.forEach(w => {
-          if (Math.abs(guard.x - w.x) < w.w / 2 + guard.r &&
-              Math.abs(guard.y - w.y) < w.h / 2 + guard.r) {
-            guard.vx *= -0.6;
-            guard.vy *= -0.6;
-          }
-        });
+        walls.forEach(w => resolveCircleWallCollision(guard, w));
 
         // Столкновение с Президентом
         const distPres = Math.hypot(guard.x - president.x, guard.y - president.y);
@@ -432,20 +474,12 @@
         president.vy *= 0.95;
         president.vRot *= 0.95;
 
-        // Отскок от стен экрана
         if (president.x - president.r < 0) { president.x = president.r; president.vx *= -0.6; }
         else if (president.x + president.r > width) { president.x = width - president.r; president.vx *= -0.6; }
         if (president.y - president.r < 0) { president.y = president.r; president.vy *= -0.6; }
         else if (president.y + president.r > height) { president.y = height - president.r; president.vy *= -0.6; }
 
-        // Столкновение со стенами уровня
-        walls.forEach(w => {
-          if (Math.abs(president.x - w.x) < w.w / 2 + president.r &&
-              Math.abs(president.y - w.y) < w.h / 2 + president.r) {
-            president.vx *= -0.6;
-            president.vy *= -0.6;
-          }
-        });
+        walls.forEach(w => resolveCircleWallCollision(president, w));
       }
 
       // Пули и рикошеты
@@ -458,7 +492,6 @@
           b.y += b.vy * timeScale;
           activeBullets++;
 
-          // Рикошет от стен уровня
           walls.forEach(w => {
             if (Math.abs(b.x - w.x) < w.w / 2 + b.r &&
                 Math.abs(b.y - w.y) < w.h / 2 + b.r) {
@@ -472,13 +505,11 @@
             }
           });
 
-          // Рикошет от краев экрана
           if (b.x < 0 || b.x > width) {
             b.vx *= -1;
             b.bounces++;
           }
 
-          // Попадание в телохранителя
           const distGuard = Math.hypot(b.x - guard.x, b.y - guard.y);
           if (distGuard < b.r + guard.r) {
             b.active = false;
@@ -487,7 +518,6 @@
             return;
           }
 
-          // Попадание в Президента (включая рикошеты!)
           const distPres = Math.hypot(b.x - president.x, b.y - president.y);
           if (distPres < b.r + president.r) {
             b.active = false;
@@ -523,6 +553,7 @@
       descEl.innerText = reason;
       mainBtn.innerText = "СЛЕДУЮЩИЙ УРОВЕНЬ";
       overlayEl.classList.remove('hidden');
+      createConfetti();
       if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
 
@@ -544,7 +575,8 @@
       initLevel();
     }
 
-    function draw3DHuman(x, y, type, angle = 0) {
+    // Анимированная 3D-модель человека с процедурными конечностями
+    function draw3DHuman(x, y, type, angle = 0, isRagdoll = false, walkPhase = 0) {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(angle);
@@ -555,18 +587,33 @@
       ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
       ctx.fill();
 
+      const legSwing = isRagdoll ? Math.sin(animTime * 12) * 14 : Math.sin(walkPhase) * 10;
+      const armSwing = isRagdoll ? Math.cos(animTime * 12) * 16 : -Math.sin(walkPhase) * 12;
+
+      // Ноги
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(-12, 10, 8, 12 + legSwing * 0.3);
+      ctx.fillRect(4, 10, 8, 12 - legSwing * 0.3);
+
       if (type === 'president') {
+        // Костюм Президента (Зеленый/Синий пиджак)
         ctx.fillStyle = '#15803d';
         ctx.beginPath();
-        ctx.roundRect(-16, -5, 32, 25, 6);
+        ctx.roundRect(-16, -5, 32, 22, 6);
         ctx.fill();
 
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(-5, -5, 10, 12);
+        ctx.fillRect(-5, -5, 10, 10);
 
         ctx.fillStyle = '#dc2626';
-        ctx.fillRect(-2, -3, 4, 12);
+        ctx.fillRect(-2, -3, 4, 10);
 
+        // Руки
+        ctx.fillStyle = '#15803d';
+        ctx.fillRect(-20, -3 + armSwing * 0.3, 6, 16);
+        ctx.fillRect(14, -3 - armSwing * 0.3, 6, 16);
+
+        // Голова
         let headGrad = ctx.createRadialGradient(-3, -18, 3, 0, -15, 12);
         headGrad.addColorStop(0, '#fde047');
         headGrad.addColorStop(1, '#ca8a04');
@@ -575,14 +622,21 @@
         ctx.fillStyle = headGrad;
         ctx.fill();
       } else {
-        ctx.fillStyle = '#1e293b';
+        // Костюм Телохранителя (Черный смокинг)
+        ctx.fillStyle = '#0f172a';
         ctx.beginPath();
-        ctx.roundRect(-18, -6, 36, 28, 8);
+        ctx.roundRect(-18, -6, 36, 25, 8);
         ctx.fill();
 
         ctx.fillStyle = '#0284c7';
-        ctx.fillRect(-8, -2, 16, 18);
+        ctx.fillRect(-8, -2, 16, 16);
 
+        // Руки
+        ctx.fillStyle = '#0f172a';
+        ctx.fillRect(-22, -3 + armSwing * 0.4, 6, 18);
+        ctx.fillRect(16, -3 - armSwing * 0.4, 6, 18);
+
+        // Голова
         let headGrad = ctx.createRadialGradient(-3, -18, 3, 0, -15, 12);
         headGrad.addColorStop(0, '#94a3b8');
         headGrad.addColorStop(1, '#334155');
@@ -591,6 +645,7 @@
         ctx.fillStyle = headGrad;
         ctx.fill();
 
+        // Очки
         ctx.fillStyle = '#000000';
         ctx.fillRect(-8, -18, 16, 5);
       }
@@ -658,8 +713,28 @@
         ctx.stroke();
       }
 
-      draw3DHuman(president.x, president.y, 'president', president.angle);
-      draw3DHuman(guard.x, guard.y, 'guard', guard.angle);
+      // Анимированные персонажи
+      draw3DHuman(president.x, president.y, 'president', president.angle, president.saved, president.animPhase);
+      draw3DHuman(guard.x, guard.y, 'guard', guard.angle, guard.flying, 0);
+
+      // Комиксный балун "GET DOWN!"
+      if (guard.shoutTimer > 0) {
+        ctx.save();
+        ctx.translate(guard.x, guard.y - 45);
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.roundRect(-50, -20, 100, 30, 8);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = '#dc2626';
+        ctx.font = '900 13px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText("GET DOWN!", 0, 0);
+        ctx.restore();
+      }
 
       // Пули
       bullets.forEach(b => {
@@ -677,7 +752,7 @@
         ctx.stroke();
       });
 
-      // Частицы
+      // Частицы и конфетти
       particles.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
