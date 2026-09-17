@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Защита Президента</title>
+  <!-- Подключение Telegram WebApp SDK -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    body {
+      background-color: #121212;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    #game-container {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      max-width: 450px;
+      max-height: 800px;
+      background: #f4f4f6;
+      overflow: hidden;
+    }
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+    .ui-layer {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      right: 15px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 18px;
+      font-weight: bold;
+      color: #222;
+      pointer-events: none;
+    }
+    .game-over-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      z-index: 10;
+    }
+    .game-over-screen h1 {
+      font-size: 28px;
+      color: #ff4d4d;
+      margin-bottom: 10px;
+    }
+    .game-over-screen p {
+      font-size: 18px;
+      margin-bottom: 25px;
+    }
+    .btn {
+      background: #0088cc;
+      color: #fff;
+      border: none;
+      padding: 12px 28px;
+      font-size: 18px;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+    .btn:active {
+      transform: scale(0.96);
+    }
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="game-container">
+    <div class="ui-layer">
+      <div id="score-text">Очки: 0</div>
+      <div id="lives-text">Защита: OK</div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="game-over" class="game-over-screen hidden">
+      <h1>ПРЕЗИДЕНТ ПОРАЖЕН!</h1>
+      <p id="final-score">Ваш счет: 0</p>
+      <button class="btn" onclick="resetGame()">ИГРАТЬ СНОВА</button>
+    </div>
+  </div>
+
+  <script>
+    // Инициализация Telegram Mini App
+    const tg = window.Telegram ? window.Telegram.WebApp : null;
+    if (tg) {
+      tg.ready();
+      tg.expand();
+    }
+
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score-text');
+    const gameOverEl = document.getElementById('game-over');
+    const finalScoreEl = document.getElementById('final-score');
+
+    let width, height, centerX, centerY, radius;
+    let score = 0;
+    let isGameOver = false;
+
+    // Игровые объекты
+    const president = { x: 0, y: 0, r: 18 };
+    const guard = { x: 0, y: 0, r: 16, angle: 0, distance: 45 };
+    let attackers = [];
+    let balls = [];
+    let spawnTimer = 0;
+
+    function resize() {
+      const container = document.getElementById('game-container');
+      width = container.clientWidth;
+      height = container.clientHeight;
+      canvas.width = width;
+      canvas.height = height;
+
+      centerX = width / 2;
+      centerY = height / 2 + 30;
+      radius = Math.min(width, height) * 0.38;
+
+      president.x = centerX;
+      president.y = centerY;
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+
+    // Генерация нападающих по кругу
+    const totalAttackers = 8;
+    function initAttackers() {
+      attackers = [];
+      for (let i = 0; i < totalAttackers; i++) {
+        const angle = (i * 2 * Math.PI) / totalAttackers;
+        attackers.push({
+          x: centerX + Math.cos(angle) * radius,
+          y: centerY + Math.sin(angle) * radius,
+          angle: angle
+        });
+      }
+    }
+
+    // Управление (Тач / Мышь)
+    function handleMove(e) {
+      if (isGameOver) return;
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+      const mouseX = clientX - rect.left;
+      const mouseY = clientY - rect.top;
+
+      guard.angle = Math.atan2(mouseY - centerY, mouseX - centerX);
+    }
+
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('touchstart', handleMove);
+
+    function spawnBall() {
+      const attacker = attackers[Math.floor(Math.random() * attackers.length)];
+      const angle = Math.atan2(centerY - attacker.y, centerX - attacker.x);
+      const speed = 2.5 + Math.min(score * 0.15, 6); // Увеличение скорости
+
+      balls.push({
+        x: attacker.x,
+        y: attacker.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        r: 10
+      });
+    }
+
+    function resetGame() {
+      score = 0;
+      scoreEl.innerText = 'Очки: 0';
+      balls = [];
+      spawnTimer = 0;
+      isGameOver = false;
+      gameOverEl.classList.add('hidden');
+      initAttackers();
+      loop();
+    }
+
+    function update() {
+      if (isGameOver) return;
+
+      // Обновляем позицию охранника
+      guard.x = centerX + Math.cos(guard.angle) * guard.distance;
+      guard.y = centerY + Math.sin(guard.angle) * guard.distance;
+
+      // Спавн мячей
+      spawnTimer++;
+      const currentSpawnRate = Math.max(25, 90 - score * 2);
+      if (spawnTimer >= currentSpawnRate) {
+        spawnBall();
+        spawnTimer = 0;
+      }
+
+      // Обновление и физика мячей
+      for (let i = balls.length - 1; i >= 0; i--) {
+        let b = balls[i];
+        b.x += b.vx;
+        b.y += b.vy;
+
+        // Коллизия с Охранником (Отбитие мяча)
+        const distGuard = Math.hypot(b.x - guard.x, b.y - guard.y);
+        if (distGuard < b.r + guard.r) {
+          balls.splice(i, 1);
+          score += 1;
+          scoreEl.innerText = `Очки: ${score}`;
+          if (tg && tg.HapticFeedback) {
+            tg.HapticFeedback.impactOccurred('light');
+          }
+          continue;
+        }
+
+        // Коллизия с Президентом (Проигрыш)
+        const distPres = Math.hypot(b.x - president.x, b.y - president.y);
+        if (distPres < b.r + president.r) {
+          isGameOver = true;
+          finalScoreEl.innerText = `Ваш счет: ${score}`;
+          gameOverEl.classList.remove('hidden');
+          if (tg && tg.HapticFeedback) {
+            tg.HapticFeedback.notificationOccurred('error');
+          }
+        }
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Рисуем круг участников
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      ctx.strokeStyle = '#ddd';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 6]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Нападающие по кругу
+      attackers.forEach(a => {
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, 14, 0, Math.PI * 2);
+        ctx.fillStyle = '#7f8c8d';
+        ctx.fill();
+      });
+
+      // Президент (в центре)
+      ctx.beginPath();
+      ctx.arc(president.x, president.y, president.r, 0, Math.PI * 2);
+      ctx.fillStyle = '#2ecc71'; // Зеленый костюм
+      ctx.fill();
+      ctx.strokeStyle = '#27ae60';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      // Галстук Президента
+      ctx.fillStyle = '#e74c3c';
+      ctx.fillRect(president.x - 2, president.y - 8, 4, 12);
+
+      // Охранник
+      ctx.beginPath();
+      ctx.arc(guard.x, guard.y, guard.r, 0, Math.PI * 2);
+      ctx.fillStyle = '#34495e';
+      ctx.fill();
+      ctx.strokeStyle = '#2c3e50';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      // Очки охранника
+      ctx.fillStyle = '#000';
+      ctx.fillRect(guard.x - 6, guard.y - 4, 12, 4);
+
+      // Мячи
+      balls.forEach(b => {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fillStyle = '#e74c3c';
+        ctx.fill();
+      });
+    }
+
+    function loop() {
+      update();
+      draw();
+      if (!isGameOver) {
+        requestAnimationFrame(loop);
+      }
+    }
+
+    initAttackers();
+    loop();
+  </script>
+</body>
+</html>
