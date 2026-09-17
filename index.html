@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mr. President 3D Action</title>
+  <title>Mr. President 3D Pro Physics</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * {
@@ -12,7 +12,7 @@
       padding: 0;
       user-select: none;
       -webkit-user-select: none;
-      touch-action: none; /* Запрещает свайпы браузера */
+      touch-action: none;
     }
     html, body {
       width: 100%;
@@ -113,24 +113,20 @@
     <canvas id="gameCanvas"></canvas>
 
     <div id="overlay-screen" class="game-screen hidden">
-      <h1 id="screen-title">СПАСИТЕ ПРЕЗИДЕНТА!</h1>
-      <p id="screen-desc">Снайперы готовят выстрел! Зажмите экран в любом месте и потяните пальцем, чтобы запустить телохранителя!</p>
+      <h1 id="screen-title">GET DOWN MR. PRESIDENT!</h1>
+      <p id="screen-desc">Зажмите экран и толкните телохранителя! Использование трибуны защитит Президента от снайперов.</p>
       <button class="btn" id="main-btn" onclick="nextAction()">НАЧАТЬ</button>
     </div>
   </div>
 
   <script>
-    // Фиксация Telegram WebApp от закрытия
     const tg = window.Telegram ? window.Telegram.WebApp : null;
     if (tg) {
       tg.ready();
       tg.expand();
-      if (tg.disableVerticalSwipes) {
-        tg.disableVerticalSwipes(); // Блокирует свайп вниз для закрытия окна
-      }
+      if (tg.disableVerticalSwipes) tg.disableVerticalSwipes();
     }
 
-    // Запрет стандарной прокрутки браузера при касании
     document.body.addEventListener('touchmove', function(e) {
       e.preventDefault();
     }, { passive: false });
@@ -149,13 +145,16 @@
     let level = 1;
     let wins = 0;
     let gameState = 'START';
+    let timeScale = 1.0; // Для Слоумо
 
-    let targetPoint = { x: 0, y: 0 };
-    let president = { x: 0, y: 0, r: 22, saved: false, hit: false, vx: 0, vy: 0 };
-    let guard = { x: 0, y: 0, r: 24, vx: 0, vy: 0, flying: false, angle: 0 };
-    
+    let president = { x: 0, y: 0, r: 22, vx: 0, vy: 0, angle: 0, vRot: 0, saved: false, hit: false, walkDir: 1 };
+    let guard = { x: 0, y: 0, r: 24, vx: 0, vy: 0, angle: 0, vRot: 0, flying: false };
+    let podium = { x: 0, y: 0, w: 70, h: 30, destroyed: false };
+
     let snipers = [];
     let bullets = [];
+    let particles = [];
+    let debris = [];
 
     let countdown = 3.0;
     let isDragging = false;
@@ -168,13 +167,10 @@
         const bufferSize = audioCtx.sampleRate * 0.3;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-          data[i] = Math.random() * 2 - 1;
-        }
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
 
         const noise = audioCtx.createBufferSource();
         noise.buffer = buffer;
-
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
         filter.frequency.setValueAtTime(1200, audioCtx.currentTime);
@@ -191,6 +187,38 @@
       } catch (e) {}
     }
 
+    function createHitParticles(x, y, color, count = 12) {
+      for (let i = 0; i < count; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const spd = Math.random() * 6 + 2;
+        particles.push({
+          x, y,
+          vx: Math.cos(ang) * spd,
+          vy: Math.sin(ang) * spd,
+          life: 1.0,
+          color
+        });
+      }
+    }
+
+    function destroyPodium() {
+      if (podium.destroyed) return;
+      podium.destroyed = true;
+      for (let i = 0; i < 15; i++) {
+        debris.push({
+          x: podium.x + (Math.random() - 0.5) * podium.w,
+          y: podium.y + (Math.random() - 0.5) * podium.h,
+          vx: (Math.random() - 0.5) * 12,
+          vy: (Math.random() - 0.5) * 12,
+          size: Math.random() * 10 + 4,
+          angle: Math.random() * Math.PI,
+          vRot: (Math.random() - 0.5) * 0.3,
+          life: 1.0
+        });
+      }
+      createHitParticles(podium.x, podium.y, '#854d0e', 18);
+    }
+
     function resize() {
       width = window.innerWidth;
       height = window.innerHeight;
@@ -202,46 +230,54 @@
     resize();
 
     function initLevel() {
-      // Президент спавнится ближе к центру верхней части
       president = { 
         x: width * 0.5, 
         y: height * 0.35, 
-        r: 22, saved: false, hit: false, vx: 0, vy: 0 
+        r: 22, vx: 0, vy: 0, angle: 0, vRot: 0, 
+        saved: false, hit: false, walkDir: Math.random() > 0.5 ? 1 : -1 
       };
 
-      targetPoint = { x: president.x, y: president.y };
+      podium = {
+        x: width * 0.5,
+        y: height * 0.45,
+        w: 80,
+        h: 35,
+        destroyed: false
+      };
 
-      // Спавн телохранителя снизу/сбоку
       const spawnSides = [
-        { x: width * 0.2, y: height * 0.75 },
-        { x: width * 0.8, y: height * 0.75 },
-        { x: width * 0.5, y: height * 0.8 }
+        { x: width * 0.2, y: height * 0.78 },
+        { x: width * 0.8, y: height * 0.78 },
+        { x: width * 0.5, y: height * 0.82 }
       ];
       const randomSpawn = spawnSides[Math.floor(Math.random() * spawnSides.length)];
 
       guard = { 
         x: randomSpawn.x, 
         y: randomSpawn.y, 
-        r: 24, vx: 0, vy: 0, flying: false, angle: 0 
+        r: 24, vx: 0, vy: 0, angle: 0, vRot: 0, flying: false 
       };
 
-      // Спавн снайперов сверху
       snipers = [];
       const sniperCount = Math.min(1 + Math.floor((level - 1) / 2), 3);
       for (let i = 0; i < sniperCount; i++) {
         snipers.push({
           x: (width / (sniperCount + 1)) * (i + 1) + (Math.random() * 30 - 15),
-          y: 35 + Math.random() * 15
+          y: 35 + Math.random() * 15,
+          targetX: president.x,
+          targetY: president.y
         });
       }
 
       bullets = [];
-      countdown = Math.max(1.5, (3.5 - Math.random() * 1.5).toFixed(1));
+      particles = [];
+      debris = [];
+      timeScale = 1.0;
+      countdown = Math.max(1.8, (3.5 - Math.random() * 1.2).toFixed(1));
       gameState = 'AIMING';
       overlayEl.classList.add('hidden');
     }
 
-    // Нажатие в любом месте экрана для удобства управления
     function onTouchStart(e) {
       if (gameState !== 'AIMING' || guard.flying) return;
       const p = getPos(e);
@@ -261,13 +297,13 @@
 
       const dx = dragStart.x - dragCurrent.x;
       const dy = dragStart.y - dragCurrent.y;
-      const force = Math.min(Math.hypot(dx, dy) * 0.18, 25);
+      const force = Math.min(Math.hypot(dx, dy) * 0.18, 26);
       
       if (force > 2) {
         const angle = Math.atan2(dy, dx);
         guard.vx = Math.cos(angle) * force;
         guard.vy = Math.sin(angle) * force;
-        guard.angle = angle;
+        guard.vRot = (Math.random() - 0.5) * 0.4;
         guard.flying = true;
 
         if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
@@ -293,7 +329,7 @@
       playGunshotSound();
 
       snipers.forEach(s => {
-        const angle = Math.atan2(targetPoint.y - s.y, targetPoint.x - s.x);
+        const angle = Math.atan2(s.targetY - s.y, s.targetX - s.x);
         const speed = 22;
         bullets.push({
           x: s.x,
@@ -309,8 +345,28 @@
     }
 
     function update() {
+      // Динамическое замедление времени (Slow-Motion)
+      if (gameState === 'AIMING' && countdown < 0.6) {
+        timeScale = 0.3; // Слоумо перед самым выстрелом
+      } else if (gameState === 'SHOT') {
+        timeScale = 0.4; // Слоумо во время полета пуль
+      } else {
+        timeScale = 1.0;
+      }
+
+      const dt = (1 / 60) * timeScale;
+
       if (gameState === 'AIMING') {
-        countdown -= 1 / 60;
+        countdown -= dt;
+        
+        // Ходьба Президента перед выстрелом
+        if (!president.saved) {
+          president.x += president.walkDir * 0.8;
+          if (president.x < width * 0.3 || president.x > width * 0.7) {
+            president.walkDir *= -1;
+          }
+        }
+
         if (countdown <= 0) {
           countdown = 0;
           timerEl.innerText = "0.0s";
@@ -320,64 +376,122 @@
         }
       }
 
+      // Физика телохранителя
       if (guard.flying) {
-        guard.x += guard.vx;
-        guard.y += guard.vy;
-        guard.vx *= 0.98;
-        guard.vy *= 0.98;
+        guard.x += guard.vx * timeScale;
+        guard.y += guard.vy * timeScale;
+        guard.angle += guard.vRot * timeScale;
+        guard.vx *= 0.985;
+        guard.vy *= 0.985;
+        guard.vRot *= 0.97;
 
+        // Столкновение с трибуной
+        if (!podium.destroyed && 
+            Math.abs(guard.x - podium.x) < podium.w / 2 + guard.r &&
+            Math.abs(guard.y - podium.y) < podium.h / 2 + guard.r) {
+          destroyPodium();
+          guard.vx *= -0.5;
+          guard.vy *= -0.5;
+        }
+
+        // Столкновение с президентом
         const distPres = Math.hypot(guard.x - president.x, guard.y - president.y);
         if (distPres < guard.r + president.r) {
+          if (!president.saved) {
+            createHitParticles((guard.x + president.x)/2, (guard.y + president.y)/2, '#facc15', 15);
+            if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('rigid');
+          }
           president.saved = true;
-          president.vx = guard.vx * 0.85;
-          president.vy = guard.vy * 0.85;
+          const hitAngle = Math.atan2(president.y - guard.y, president.x - guard.x);
+          const force = Math.hypot(guard.vx, guard.vy);
+          
+          president.vx = Math.cos(hitAngle) * force * 0.9;
+          president.vy = Math.sin(hitAngle) * force * 0.9;
+          president.vRot = (Math.random() - 0.5) * 0.6;
+
+          guard.vx *= 0.4;
+          guard.vy *= 0.4;
         }
       }
 
+      // Физика Президента
       if (president.saved) {
-        president.x += president.vx;
-        president.y += president.vy;
-        president.vx *= 0.93;
-        president.vy *= 0.93;
+        president.x += president.vx * timeScale;
+        president.y += president.vy * timeScale;
+        president.angle += president.vRot * timeScale;
+        president.vx *= 0.94;
+        president.vy *= 0.94;
+        president.vRot *= 0.95;
+
+        if (!podium.destroyed && 
+            Math.abs(president.x - podium.x) < podium.w / 2 + president.r &&
+            Math.abs(president.y - podium.y) < podium.h / 2 + president.r) {
+          destroyPodium();
+        }
       }
 
+      // Пули и их столкновения
       if (gameState === 'SHOT') {
         let activeBullets = 0;
 
         bullets.forEach(b => {
           if (!b.active) return;
-          b.x += b.vx;
-          b.y += b.vy;
+          b.x += b.vx * timeScale;
+          b.y += b.vy * timeScale;
           activeBullets++;
 
+          // Пуля попадает в трибуну
+          if (!podium.destroyed && 
+              Math.abs(b.x - podium.x) < podium.w / 2 &&
+              Math.abs(b.y - podium.y) < podium.h / 2) {
+            b.active = false;
+            createHitParticles(b.x, b.y, '#854d0e', 8);
+            return;
+          }
+
+          // Попадание в телохранителя
           const distGuard = Math.hypot(b.x - guard.x, b.y - guard.y);
           if (distGuard < b.r + guard.r) {
             b.active = false;
+            createHitParticles(b.x, b.y, '#ef4444', 16);
             winLevel("ВЫ ПРИНЯЛИ ПУЛЮ НА СЕБЯ!");
             return;
           }
 
+          // Попадание в президента
           const distPres = Math.hypot(b.x - president.x, b.y - president.y);
           if (distPres < b.r + president.r) {
             b.active = false;
             president.hit = true;
+            createHitParticles(b.x, b.y, '#dc2626', 20);
             failLevel("ПРЕЗИДЕНТ УБИТ!");
             return;
           }
 
-          if (b.y > height || b.x < 0 || b.x > width) {
-            b.active = false;
-          }
+          if (b.y > height || b.x < 0 || b.x > width) b.active = false;
         });
 
         if (activeBullets === 0 && gameState === 'SHOT') {
-          if (president.saved) {
-            winLevel("ПРЕЗИДЕНТ УСПЕШНО СПАСЕН!");
-          } else {
-            failLevel("СНАЙПЕР ПОПАЛ В ЦЕЛЬ!");
-          }
+          if (president.saved) winLevel("ПРЕЗИДЕНТ УСПЕШНО СПАСЕН!");
+          else failLevel("СНАЙПЕР ПОПАЛ В ЦЕЛЬ!");
         }
       }
+
+      // Обновление частиц и обломков
+      particles.forEach((p, idx) => {
+        p.x += p.vx * timeScale;
+        p.y += p.vy * timeScale;
+        p.life -= dt * 1.5;
+        if (p.life <= 0) particles.splice(idx, 1);
+      });
+
+      debris.forEach((d, idx) => {
+        d.x += d.vx * timeScale;
+        d.y += d.vy * timeScale;
+        d.angle += d.vRot * timeScale;
+        d.life -= dt;
+        if (d.life <= 0) debris.splice(idx, 1);
+      });
     }
 
     function winLevel(reason) {
@@ -413,8 +527,9 @@
     function draw3DHuman(x, y, type, angle = 0) {
       ctx.save();
       ctx.translate(x, y);
-      if (angle !== 0) ctx.rotate(angle + Math.PI / 2);
+      ctx.rotate(angle);
 
+      // Тень
       ctx.beginPath();
       ctx.ellipse(0, 15, 20, 8, 0, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
@@ -439,8 +554,7 @@
         ctx.arc(0, -15, 12, 0, Math.PI * 2);
         ctx.fillStyle = headGrad;
         ctx.fill();
-      } 
-      else if (type === 'guard') {
+      } else {
         ctx.fillStyle = '#1e293b';
         ctx.beginPath();
         ctx.roundRect(-18, -6, 36, 28, 8);
@@ -467,11 +581,32 @@
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
-      // Красная дорожка адаптивной ширины
+      // Ковровая дорожка
       ctx.fillStyle = 'rgba(185, 28, 28, 0.2)';
       ctx.fillRect(width * 0.25, 0, width * 0.5, height);
 
-      // Снайперы
+      // Отрисовка трибуны
+      if (!podium.destroyed) {
+        ctx.fillStyle = '#a16207';
+        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+        ctx.shadowBlur = 10;
+        ctx.fillRect(podium.x - podium.w / 2, podium.y - podium.h / 2, podium.w, podium.h);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#ca8a04';
+        ctx.fillRect(podium.x - podium.w / 2 + 4, podium.y - podium.h / 2 + 4, podium.w - 8, podium.h - 8);
+      }
+
+      // Обломки трибуны
+      debris.forEach(d => {
+        ctx.save();
+        ctx.translate(d.x, d.y);
+        ctx.rotate(d.angle);
+        ctx.fillStyle = `rgba(161, 98, 7, ${d.life})`;
+        ctx.fillRect(-d.size/2, -d.size/2, d.size, d.size);
+        ctx.restore();
+      });
+
+      // Снайперы и лазеры
       snipers.forEach(s => {
         ctx.fillStyle = '#0f172a';
         ctx.beginPath();
@@ -483,7 +618,7 @@
         if (gameState === 'AIMING') {
           ctx.beginPath();
           ctx.moveTo(s.x, s.y);
-          ctx.lineTo(targetPoint.x, targetPoint.y);
+          ctx.lineTo(s.targetX, s.targetY);
           ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
           ctx.lineWidth = 2;
           ctx.setLineDash([6, 6]);
@@ -492,11 +627,10 @@
         }
       });
 
-      // Линия броска от телохранителя
+      // Вектор броска
       if (isDragging) {
         const dx = dragStart.x - dragCurrent.x;
         const dy = dragStart.y - dragCurrent.y;
-        
         ctx.beginPath();
         ctx.moveTo(guard.x, guard.y);
         ctx.lineTo(guard.x + dx, guard.y + dy);
@@ -505,9 +639,10 @@
         ctx.stroke();
       }
 
-      draw3DHuman(president.x, president.y, 'president');
+      draw3DHuman(president.x, president.y, 'president', president.angle);
       draw3DHuman(guard.x, guard.y, 'guard', guard.angle);
 
+      // Пули
       bullets.forEach(b => {
         if (!b.active) return;
         ctx.beginPath();
@@ -522,6 +657,16 @@
         ctx.lineWidth = 5;
         ctx.stroke();
       });
+
+      // Частицы
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.life;
+        ctx.fill();
+        ctx.globalAlpha = 1.0;
+      });
     }
 
     function loop() {
@@ -531,7 +676,7 @@
     }
 
     titleEl.innerText = "GET DOWN MR. PRESIDENT!";
-    descEl.innerText = "Зажмите экран и потяните в сторону, чтобы запустить телохранителя!";
+    descEl.innerText = "Толкните телохранителя, чтобы сбить Президента с ног или закрыть его собой!";
     mainBtn.innerText = "ИГРАТЬ";
     overlayEl.classList.remove('hidden');
 
