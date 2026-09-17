@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Mr. President 3D</title>
+  <title>Mr. President 3D Action</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     * {
@@ -110,7 +110,7 @@
   <div id="game-container">
     <div class="ui-layer">
       <div id="level-text">Уровень: 1</div>
-      <div id="timer-display">5.0s</div>
+      <div id="timer-display">3.0s</div>
       <div id="score-text">Побед: 0</div>
     </div>
 
@@ -118,7 +118,7 @@
 
     <div id="overlay-screen" class="game-screen hidden">
       <h1 id="screen-title">СПАСИТЕ ПРЕЗИДЕНТА!</h1>
-      <p id="screen-desc">Снайпер выстрелит ровно через 5 секунд! Оттяните телохранителя и запрыгните в президента, чтобы сбить его с ног или закрыть собой!</p>
+      <p id="screen-desc">Снайперы готовят выстрел! Запрыгните в президента, чтобы сбить его с ног или закрыть собой!</p>
       <button class="btn" id="main-btn" onclick="nextAction()">НАЧАТЬ</button>
     </div>
   </div>
@@ -142,26 +142,24 @@
     let wins = 0;
     let gameState = 'START';
 
-    // Фиксированная цель снайпера
     let targetPoint = { x: 0, y: 0 };
-    let president = { x: 0, y: 0, r: 20, saved: false, hit: false, vx: 0, vy: 0 };
-    let guard = { x: 0, y: 0, r: 22, vx: 0, vy: 0, flying: false };
-    let sniper = { x: 0, y: 0 };
-    let bullet = { x: 0, y: 0, vx: 0, vy: 0, r: 6, active: false };
+    let president = { x: 0, y: 0, r: 22, saved: false, hit: false, vx: 0, vy: 0 };
+    let guard = { x: 0, y: 0, r: 24, vx: 0, vy: 0, flying: false, angle: 0 };
+    
+    let snipers = [];
+    let bullets = [];
 
-    let countdown = 5.0; // Ровно 5 секунд
+    let countdown = 3.0;
     let isDragging = false;
     let dragStart = { x: 0, y: 0 };
     let dragCurrent = { x: 0, y: 0 };
 
-    // Звуковой эффект выстрела (Web Audio API)
     function playGunshotSound() {
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const bufferSize = audioCtx.sampleRate * 0.4;
+        const bufferSize = audioCtx.sampleRate * 0.3;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = buffer.getChannelData(0);
-
         for (let i = 0; i < bufferSize; i++) {
           data[i] = Math.random() * 2 - 1;
         }
@@ -171,21 +169,18 @@
 
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(1000, audioCtx.currentTime);
-        filter.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + 0.3);
+        filter.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.25);
 
         const gain = audioCtx.createGain();
         gain.gain.setValueAtTime(1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
 
         noise.connect(filter);
         filter.connect(gain);
         gain.connect(audioCtx.destination);
-
         noise.start();
-      } catch (e) {
-        console.log("Audio not supported");
-      }
+      } catch (e) {}
     }
 
     function resize() {
@@ -202,28 +197,46 @@
     function initLevel() {
       president = { 
         x: width * 0.5, 
-        y: height * 0.38, 
-        r: 20, saved: false, hit: false, vx: 0, vy: 0 
+        y: height * 0.4, 
+        r: 22, saved: false, hit: false, vx: 0, vy: 0 
       };
 
-      // Фиксируем прицел на начальную позицию президента
       targetPoint = { x: president.x, y: president.y };
 
+      // Спавн телохранителя с разных сторон (слева, справа, внизу)
+      const spawnSides = [
+        { x: width * 0.2, y: height * 0.75 },
+        { x: width * 0.8, y: height * 0.75 },
+        { x: width * 0.15, y: height * 0.45 },
+        { x: width * 0.85, y: height * 0.45 },
+        { x: width * 0.5, y: height * 0.8 }
+      ];
+      const randomSpawn = spawnSides[Math.floor(Math.random() * spawnSides.length)];
+
       guard = { 
-        x: width * 0.5, 
-        y: height * 0.78, 
-        r: 22, vx: 0, vy: 0, flying: false 
+        x: randomSpawn.x, 
+        y: randomSpawn.y, 
+        r: 24, vx: 0, vy: 0, flying: false, angle: 0 
       };
 
-      sniper = { x: width * 0.5 + (Math.random() * 240 - 120), y: 40 };
-      bullet = { x: 0, y: 0, vx: 0, vy: 0, r: 6, active: false };
+      // Спавн снайперов в зависимости от уровня (1 до 3+)
+      snipers = [];
+      const sniperCount = Math.min(1 + Math.floor((level - 1) / 2), 3);
+      for (let i = 0; i < sniperCount; i++) {
+        snipers.push({
+          x: (width / (sniperCount + 1)) * (i + 1) + (Math.random() * 40 - 20),
+          y: 40 + Math.random() * 20
+        });
+      }
 
-      countdown = 5.0;
+      bullets = [];
+
+      // Время выстрела меняется рандомно
+      countdown = Math.max(1.5, (3.5 - Math.random() * 1.5).toFixed(1));
       gameState = 'AIMING';
       overlayEl.classList.add('hidden');
     }
 
-    // Управление прыжком
     function onTouchStart(e) {
       if (gameState !== 'AIMING' || guard.flying) return;
       const p = getPos(e);
@@ -251,6 +264,7 @@
 
       guard.vx = Math.cos(angle) * force;
       guard.vy = Math.sin(angle) * force;
+      guard.angle = angle;
       guard.flying = true;
 
       if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
@@ -271,44 +285,44 @@
     canvas.addEventListener('touchmove', onTouchMove);
     window.addEventListener('touchend', onTouchEnd);
 
-    function shootSniper() {
+    function shootSnipers() {
       gameState = 'SHOT';
       playGunshotSound();
 
-      bullet.x = sniper.x;
-      bullet.y = sniper.y;
-
-      // Пуля летит ровно в ФИКСИРОВАННУЮ начальную точку
-      const angle = Math.atan2(targetPoint.y - sniper.y, targetPoint.x - sniper.x);
-      const speed = 22;
-      bullet.vx = Math.cos(angle) * speed;
-      bullet.vy = Math.sin(angle) * speed;
-      bullet.active = true;
+      snipers.forEach(s => {
+        const angle = Math.atan2(targetPoint.y - s.y, targetPoint.x - s.x);
+        const speed = 22;
+        bullets.push({
+          x: s.x,
+          y: s.y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          r: 6,
+          active: true
+        });
+      });
 
       if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
     }
 
     function update() {
-      // Отсчет 5 секунд
       if (gameState === 'AIMING') {
         countdown -= 1 / 60;
         if (countdown <= 0) {
           countdown = 0;
           timerEl.innerText = "0.0s";
-          shootSniper();
+          shootSnipers();
         } else {
           timerEl.innerText = countdown.toFixed(1) + "s";
         }
       }
 
-      // Полет телохранителя
       if (guard.flying) {
         guard.x += guard.vx;
         guard.y += guard.vy;
         guard.vx *= 0.98;
         guard.vy *= 0.98;
 
-        // Физика столкновения с президентом (сбиваем с ног)
         const distPres = Math.hypot(guard.x - president.x, guard.y - president.y);
         if (distPres < guard.r + president.r) {
           president.saved = true;
@@ -317,7 +331,6 @@
         }
       }
 
-      // Движение сбитого президента
       if (president.saved) {
         president.x += president.vx;
         president.y += president.vy;
@@ -325,31 +338,36 @@
         president.vy *= 0.93;
       }
 
-      // Движение пули
-      if (bullet.active) {
-        bullet.x += bullet.vx;
-        bullet.y += bullet.vy;
+      if (gameState === 'SHOT') {
+        let activeBullets = 0;
 
-        // Попадание в телохранителя
-        const distGuard = Math.hypot(bullet.x - guard.x, bullet.y - guard.y);
-        if (distGuard < bullet.r + guard.r) {
-          bullet.active = false;
-          winLevel("ВЫ ПРИНЯЛИ ПУЛЮ НА СЕБЯ!");
-          return;
-        }
+        bullets.forEach(b => {
+          if (!b.active) return;
+          b.x += b.vx;
+          b.y += b.vy;
+          activeBullets++;
 
-        // Попадание в президента
-        const distPres = Math.hypot(bullet.x - president.x, bullet.y - president.y);
-        if (distPres < bullet.r + president.r) {
-          bullet.active = false;
-          president.hit = true;
-          failLevel("ПРЕЗИДЕНТ УБИТ!");
-          return;
-        }
+          const distGuard = Math.hypot(b.x - guard.x, b.y - guard.y);
+          if (distGuard < b.r + guard.r) {
+            b.active = false;
+            winLevel("ВЫ ПРИНЯЛИ ПУЛЮ НА СЕБЯ!");
+            return;
+          }
 
-        // Пуля пролетела мимо
-        if (bullet.y > height || bullet.x < 0 || bullet.x > width) {
-          bullet.active = false;
+          const distPres = Math.hypot(b.x - president.x, b.y - president.y);
+          if (distPres < b.r + president.r) {
+            b.active = false;
+            president.hit = true;
+            failLevel("ПРЕЗИДЕНТ УБИТ!");
+            return;
+          }
+
+          if (b.y > height || b.x < 0 || b.x > width) {
+            b.active = false;
+          }
+        });
+
+        if (activeBullets === 0 && gameState === 'SHOT') {
           if (president.saved) {
             winLevel("ПРЕЗИДЕНТ УСПЕШНО СПАСЕН!");
           } else {
@@ -389,84 +407,98 @@
       initLevel();
     }
 
-    // 3D-отрисовка персонажей
-    function draw3DCharacter(x, y, r, type) {
-      // Тень под персонажем
+    // 3D Модели персонажей (Президент и Охранник с туловищем и костюмом)
+    function draw3DHuman(x, y, type, angle = 0) {
+      ctx.save();
+      ctx.translate(x, y);
+      if (angle !== 0) ctx.rotate(angle + Math.PI / 2);
+
+      // Тень под телом
       ctx.beginPath();
-      ctx.ellipse(x, y + r * 0.8, r * 0.9, r * 0.3, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 15, 20, 8, 0, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
       ctx.fill();
 
-      // Градиент объема (3D шар/голова)
-      let grad = ctx.createRadialGradient(
-        x - r * 0.3, y - r * 0.3, r * 0.1,
-        x, y, r
-      );
-
       if (type === 'president') {
-        grad.addColorStop(0, '#86efac');
-        grad.addColorStop(0.7, '#16a34a');
-        grad.addColorStop(1, '#052e16');
-      } else if (type === 'guard') {
-        grad.addColorStop(0, '#94a3b8');
-        grad.addColorStop(0.7, '#334155');
-        grad.addColorStop(1, '#0f172a');
-      }
-
-      ctx.beginPath();
-      ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fillStyle = grad;
-      ctx.fill();
-
-      // Детали костюма
-      if (type === 'president') {
-        // Красный галстук
-        ctx.fillStyle = '#ef4444';
-        ctx.fillRect(x - 2, y - 4, 4, 12);
-      } else if (type === 'guard') {
-        // Очки и микрофон
-        ctx.fillStyle = '#000';
-        ctx.fillRect(x - 8, y - 5, 16, 5);
-        ctx.strokeStyle = '#38bdf8';
-        ctx.lineWidth = 2;
+        // Костюм Президент (зеленый/темный пиджак)
+        ctx.fillStyle = '#15803d';
         ctx.beginPath();
-        ctx.arc(x, y, r + 2, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.roundRect(-16, -5, 32, 25, 6);
+        ctx.fill();
+
+        // Рубашка
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(-5, -5, 10, 12);
+
+        // Красный галстук
+        ctx.fillStyle = '#dc2626';
+        ctx.fillRect(-2, -3, 4, 12);
+
+        // Голова
+        let headGrad = ctx.createRadialGradient(-3, -18, 3, 0, -15, 12);
+        headGrad.addColorStop(0, '#fde047');
+        headGrad.addColorStop(1, '#ca8a04');
+        ctx.beginPath();
+        ctx.arc(0, -15, 12, 0, Math.PI * 2);
+        ctx.fillStyle = headGrad;
+        ctx.fill();
+      } 
+      else if (type === 'guard') {
+        // Костюм Телохранитель (темно-синий спецназ)
+        ctx.fillStyle = '#1e293b';
+        ctx.beginPath();
+        ctx.roundRect(-18, -6, 36, 28, 8);
+        ctx.fill();
+
+        // Бронежилет / Опознаватель
+        ctx.fillStyle = '#0284c7';
+        ctx.fillRect(-8, -2, 16, 18);
+
+        // Голова
+        let headGrad = ctx.createRadialGradient(-3, -18, 3, 0, -15, 12);
+        headGrad.addColorStop(0, '#94a3b8');
+        headGrad.addColorStop(1, '#334155');
+        ctx.beginPath();
+        ctx.arc(0, -15, 12, 0, Math.PI * 2);
+        ctx.fillStyle = headGrad;
+        ctx.fill();
+
+        // Очки и Гарнитура
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(-8, -18, 16, 5);
       }
+
+      ctx.restore();
     }
 
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
-      // Ковровая дорожка
-      ctx.fillStyle = 'rgba(185, 28, 28, 0.25)';
+      // Дорожка
+      ctx.fillStyle = 'rgba(185, 28, 28, 0.2)';
       ctx.fillRect(width * 0.2, 0, width * 0.6, height);
 
-      // Снайпер
-      ctx.fillStyle = '#0f172a';
-      ctx.beginPath();
-      ctx.arc(sniper.x, sniper.y, 16, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#ef4444';
-      ctx.fillRect(sniper.x - 2, sniper.y, 4, 10);
-
-      // Фиксированный лазерный прицел
-      if (gameState === 'AIMING') {
+      // Снайперы
+      snipers.forEach(s => {
+        ctx.fillStyle = '#0f172a';
         ctx.beginPath();
-        ctx.moveTo(sniper.x, sniper.y);
-        ctx.lineTo(targetPoint.x, targetPoint.y);
-        ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([6, 6]);
-        ctx.stroke();
-        ctx.setLineDash([]);
+        ctx.arc(s.x, s.y, 16, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(s.x - 2, s.y, 4, 10);
 
-        // Крестик прицела
-        ctx.beginPath();
-        ctx.arc(targetPoint.x, targetPoint.y, 10, 0, Math.PI * 2);
-        ctx.strokeStyle = '#ef4444';
-        ctx.stroke();
-      }
+        // Лазеры
+        if (gameState === 'AIMING') {
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(targetPoint.x, targetPoint.y);
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.6)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([6, 6]);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      });
 
       // Линия броска
       if (isDragging) {
@@ -478,25 +510,25 @@
         ctx.stroke();
       }
 
-      // Отрисовка 3D Президента и Телохранителя
-      draw3DCharacter(president.x, president.y, president.r, 'president');
-      draw3DCharacter(guard.x, guard.y, guard.r, 'guard');
+      // Отрисовка 3D персонажей
+      draw3DHuman(president.x, president.y, 'president');
+      draw3DHuman(guard.x, guard.y, 'guard', guard.angle);
 
-      // Летит пуля
-      if (bullet.active) {
+      // Пули
+      bullets.forEach(b => {
+        if (!b.active) return;
         ctx.beginPath();
-        ctx.arc(bullet.x, bullet.y, bullet.r, 0, Math.PI * 2);
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
         ctx.fillStyle = '#facc15';
         ctx.fill();
 
-        // Огненный шлейф
         ctx.beginPath();
-        ctx.moveTo(bullet.x, bullet.y);
-        ctx.lineTo(bullet.x - bullet.vx * 2, bullet.y - bullet.vy * 2);
+        ctx.moveTo(b.x, b.y);
+        ctx.lineTo(b.x - b.vx * 2, b.y - b.vy * 2);
         ctx.strokeStyle = '#f97316';
         ctx.lineWidth = 5;
         ctx.stroke();
-      }
+      });
     }
 
     function loop() {
@@ -506,7 +538,7 @@
     }
 
     titleEl.innerText = "GET DOWN MR. PRESIDENT!";
-    descEl.innerText = "У вас есть 5 секунд! Оттяните телохранителя пальцем и запрыгните в президента, чтобы сбить его с прицела или принять пулю!";
+    descEl.innerText = "Снайперы наготове! Оттяните телохранителя пальцем и прыгайте, чтобы защитить президента!";
     mainBtn.innerText = "ИГРАТЬ";
     overlayEl.classList.remove('hidden');
 
