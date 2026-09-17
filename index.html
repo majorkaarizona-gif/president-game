@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Mr. President! Mobile Ragdoll Edition</title>
+  <title>Mr. President! Full Mobile Game</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,900;1,900&display=swap');
@@ -29,7 +29,7 @@
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      background: #0b1120;
+      background: #0f172a;
     }
     canvas {
       display: block;
@@ -37,8 +37,8 @@
       height: 100%;
     }
 
-    /* ИНТЕРФЕЙС BOLD MR. PRESIDENT STYLING */
-    .ui-top {
+    /* ИНТЕРФЕЙС B ИГРОВОМ СТИЛЕ MR. PRESIDENT */
+    .ui-header {
       position: absolute;
       top: 12px;
       left: 12px;
@@ -55,24 +55,23 @@
       font-size: 13px;
       font-weight: 900;
       font-style: italic;
-      padding: 8px 14px;
+      padding: 6px 14px;
       transform: skew(-12deg);
-      box-shadow: 4px 4px 0px #000;
+      box-shadow: 3px 3px 0px #000;
       border: 2px solid #fff;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
     }
     .badge-blue { background: #2563eb; }
     .badge-yellow { background: #f59e0b; color: #000; }
 
-    /* ЭКРАНЫ ПОБЕДЫ И ПРОВАЛА */
+    /* ЭКРАН МЕНЮ И УРОВНЕЙ */
     .game-screen {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(5, 8, 17, 0.88);
+      background: rgba(5, 8, 17, 0.92);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -83,84 +82,99 @@
       backdrop-filter: blur(8px);
     }
     .screen-title {
-      font-size: 30px;
+      font-size: 28px;
       font-weight: 900;
       font-style: italic;
       text-transform: uppercase;
-      padding: 12px 28px;
+      padding: 10px 20px;
       transform: skew(-10deg);
-      box-shadow: 6px 6px 0px #000;
-      margin-bottom: 16px;
+      box-shadow: 5px 5px 0px #000;
+      margin-bottom: 12px;
       border: 3px solid #fff;
     }
-    .title-win { background: #16a34a; color: #fff; }
-    .title-fail { background: #dc2626; color: #fff; }
-    .title-start { background: #2563eb; color: #fff; }
+    .title-win { background: #16a34a; }
+    .title-fail { background: #dc2626; }
+    .title-start { background: #2563eb; }
 
-    .screen-desc {
-      font-size: 14px;
-      font-weight: 700;
-      margin-bottom: 24px;
-      color: #cbd5e1;
-      max-width: 360px;
-      line-height: 1.4;
-      text-shadow: 0 2px 4px #000;
-    }
     .btn-action {
       background: #f59e0b;
       color: #000;
       border: 3px solid #fff;
-      padding: 16px 42px;
+      padding: 14px 32px;
       font-size: 18px;
       font-weight: 900;
       font-style: italic;
       text-transform: uppercase;
       transform: skew(-10deg);
-      box-shadow: 5px 5px 0px #000;
+      box-shadow: 4px 4px 0px #000;
       cursor: pointer;
+      margin-top: 10px;
+      pointer-events: auto;
     }
     .btn-action:active {
       transform: skew(-10deg) translate(2px, 2px);
-      box-shadow: 3px 3px 0px #000;
+      box-shadow: 2px 2px 0px #000;
     }
-    .hidden { display: none !important; }
 
-    #touch-hint {
+    #controls-layer {
       position: absolute;
-      bottom: 20px;
+      bottom: 15px;
+      left: 0;
       width: 100%;
-      text-align: center;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 6;
+      padding: 0 15px;
+      pointer-events: none;
+    }
+    .control-btn {
+      pointer-events: auto;
+      background: rgba(37, 99, 235, 0.85);
+      border: 2px solid #fff;
+      color: #fff;
       font-size: 14px;
       font-weight: 900;
       font-style: italic;
-      color: #f59e0b;
-      text-shadow: 0 2px 4px #000;
-      pointer-events: none;
-      z-index: 5;
+      padding: 12px 20px;
+      transform: skew(-10deg);
+      box-shadow: 3px 3px 0px #000;
     }
+    .control-btn:active {
+      background: #f59e0b;
+      color: #000;
+    }
+
+    .hidden { display: none !important; }
   </style>
 </head>
 <body>
 
   <div id="game-container">
-    <div class="ui-top">
-      <div class="badge badge-blue" id="level-text">STAGE 1</div>
+    <div class="ui-header">
+      <div class="badge badge-blue" id="level-text">LEVEL 1</div>
       <div class="badge badge-yellow" id="timer-display">3.0s</div>
-      <div class="badge" id="score-text">SAVED: 0</div>
+      <div class="badge" id="score-text">WINS: 0</div>
     </div>
-
-    <div id="touch-hint">SWIPE FAST TO DIVE & TACKLE RUMP!</div>
 
     <canvas id="gameCanvas"></canvas>
 
+    <div id="controls-layer">
+      <button class="control-btn" onclick="triggerSlowMo()">SLOW-MO</button>
+      <button class="control-btn" onclick="toggleOrientation()">ROTATE SCREEN</button>
+    </div>
+
     <div id="overlay-screen" class="game-screen hidden">
       <div class="screen-title title-start" id="screen-title">MR. PRESIDENT!</div>
-      <p class="screen-desc" id="screen-desc">Делайте прыжок в стиле «Супермена», сбивайте Президента Rump и защитите его от снайпера!</p>
-      <button class="btn-action" id="main-btn" onclick="nextAction()">START MISSION</button>
+      <p style="margin-bottom: 20px; max-width: 350px; font-size: 14px; line-height: 1.4;" id="screen-desc">
+        Защитите Президента Rump! Прыгайте под пули, используйте батуты и разгребайте завалы!
+      </p>
+      <button class="btn-action" id="main-btn" onclick="nextAction()">START GAME</button>
     </div>
   </div>
 
   <script>
+    // Инициализация Telegram Mini App
     const tg = window.Telegram ? window.Telegram.WebApp : null;
     if (tg) {
       tg.ready();
@@ -185,54 +199,19 @@
     let wins = 0;
     let gameState = 'START';
     let timeScale = 1.0;
-    let globalTime = 0;
+    let slowMoTimer = 0;
 
-    // Персонажи с физикой Ragdoll
-    let president = { x: 0, y: 0, r: 24, vx: 0, vy: 0, angle: 0, vRot: 0, saved: false, hit: false, walkDir: 1, animPhase: 0, ragdoll: false };
-    let guard = { x: 0, y: 0, r: 26, vx: 0, vy: 0, angle: 0, vRot: 0, flying: false, shoutTimer: 0, ragdoll: false };
+    // Ragdoll персонажи
+    let president = { x: 0, y: 0, r: 22, vx: 0, vy: 0, angle: 0, vRot: 0, saved: false, hit: false, walkDir: 1 };
+    let guard = { x: 0, y: 0, r: 24, vx: 0, vy: 0, angle: 0, vRot: 0, flying: false, shoutTimer: 0 };
+    
     let safeZone = { x: 0, y: 0, w: 0, h: 0 };
-
-    let snipers = [];
-    let bullets = [];
-    let particles = [];
-    let destructibles = []; // Разрушаемые объекты (коробки, стеклянные щиты)
-
+    let snipers = [], bullets = [], particles = [], obstacles = [], jumpPads = [];
     let countdown = 3.0;
+
     let isDragging = false;
     let dragStart = { x: 0, y: 0 };
     let dragCurrent = { x: 0, y: 0 };
-
-    function playAudioFx(freq, type, duration) {
-      try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + duration);
-        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
-    }
-
-    function createDebris(x, y, color, count = 12) {
-      for (let i = 0; i < count; i++) {
-        const ang = Math.random() * Math.PI * 2;
-        const spd = Math.random() * 8 + 2;
-        particles.push({
-          x, y,
-          vx: Math.cos(ang) * spd,
-          vy: Math.sin(ang) * spd,
-          life: 1.2,
-          size: Math.random() * 6 + 3,
-          color
-        });
-      }
-    }
 
     function resize() {
       width = window.innerWidth;
@@ -240,43 +219,53 @@
       canvas.width = width;
       canvas.height = height;
     }
-
     window.addEventListener('resize', resize);
     resize();
 
+    // Запрос переворота экрана
+    function toggleOrientation() {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else {
+        document.documentElement.requestFullscreen().then(() => {
+          if (screen.orientation && screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(() => {});
+          }
+        }).catch(() => {});
+      }
+    }
+
+    function triggerSlowMo() {
+      slowMoTimer = 2.0;
+    }
+
     function initLevel() {
-      safeZone = {
-        x: width * 0.15,
-        y: height * 0.08,
-        w: width * 0.7,
-        h: height * 0.16
-      };
+      safeZone = { x: width * 0.2, y: height * 0.08, w: width * 0.6, h: height * 0.15 };
 
       president = { 
-        x: width * 0.5, 
-        y: height * 0.44, 
-        r: 24, vx: 0, vy: 0, angle: 0, vRot: 0, 
-        saved: false, hit: false, walkDir: Math.random() > 0.5 ? 1 : -1,
-        animPhase: 0, ragdoll: false
+        x: width * 0.5, y: height * 0.42, r: 22, vx: 0, vy: 0, angle: 0, vRot: 0, 
+        saved: false, hit: false, walkDir: 1 
       };
 
       guard = { 
-        x: width * 0.5, 
-        y: height * 0.82, 
-        r: 26, vx: 0, vy: 0, angle: 0, vRot: 0, flying: false, shoutTimer: 0, ragdoll: false
+        x: width * 0.5, y: height * 0.82, r: 24, vx: 0, vy: 0, angle: 0, vRot: 0, 
+        flying: false, shoutTimer: 0 
       };
 
-      // Разрушаемые баррикады и препятствия
-      destructibles = [];
-      const obsCount = Math.min(2 + level, 7);
+      // Генерируем препятствия (коробки, батуты) из видео
+      obstacles = [];
+      jumpPads = [];
+      
+      if (level % 2 === 0) {
+        jumpPads.push({ x: width * 0.5, y: height * 0.68, w: 80, h: 18 });
+      }
+
+      const obsCount = Math.min(Math.floor(level / 2), 4);
       for (let i = 0; i < obsCount; i++) {
-        destructibles.push({
+        obstacles.push({
           x: width * (0.2 + (i % 3) * 0.3),
-          y: height * (0.32 + Math.floor(i / 3) * 0.18),
-          w: 45,
-          h: 45,
-          destroyed: false,
-          color: i % 2 === 0 ? '#b45309' : '#38bdf8' // Дерево или стекло
+          y: height * (0.32 + Math.floor(i / 3) * 0.2),
+          w: 90, h: 20, destructible: i % 2 === 0
         });
       }
 
@@ -285,20 +274,19 @@
       for (let i = 0; i < sniperCount; i++) {
         snipers.push({
           x: (width / (sniperCount + 1)) * (i + 1),
-          y: 35,
-          targetX: president.x,
-          targetY: president.y
+          y: 40,
+          targetX: president.x, targetY: president.y
         });
       }
 
       bullets = [];
       particles = [];
-      timeScale = 1.0;
-      countdown = Math.max(2.2, (3.5 - level * 0.1).toFixed(1));
+      countdown = Math.max(1.8, 3.5 - level * 0.1);
       gameState = 'AIMING';
       overlayEl.classList.add('hidden');
     }
 
+    // Управление касанием (Свайп прыжка)
     function onTouchStart(e) {
       if (gameState !== 'AIMING') return;
       const p = getPos(e);
@@ -318,18 +306,17 @@
 
       const dx = dragStart.x - dragCurrent.x;
       const dy = dragStart.y - dragCurrent.y;
-      const force = Math.min(Math.hypot(dx, dy) * 0.28, 36);
-      
+      const force = Math.min(Math.hypot(dx, dy) * 0.22, 35);
+
       if (force > 3) {
         const angle = Math.atan2(dy, dx);
         guard.vx = Math.cos(angle) * force;
         guard.vy = Math.sin(angle) * force;
         guard.vRot = (Math.random() - 0.5) * 0.8;
         guard.flying = true;
-        guard.ragdoll = true;
-        guard.shoutTimer = 1.2;
+        guard.shoutTimer = 1.0;
+        slowMoTimer = 1.2; // Slow-mo эффект прыжка
 
-        playAudioFx(300, 'sawtooth', 0.15);
         if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('heavy');
       }
     }
@@ -350,55 +337,36 @@
 
     function shootSnipers() {
       gameState = 'SHOT';
-      playAudioFx(150, 'square', 0.3);
-
       snipers.forEach(s => {
         const angle = Math.atan2(s.targetY - s.y, s.targetX - s.x);
         bullets.push({
-          x: s.x,
-          y: s.y,
-          vx: Math.cos(angle) * 26,
-          vy: Math.sin(angle) * 26,
-          r: 5,
-          active: true
+          x: s.x, y: s.y,
+          vx: Math.cos(angle) * 22, vy: Math.sin(angle) * 22,
+          r: 5, active: true
         });
       });
-
       if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
     }
 
     function update() {
-      globalTime += 0.05;
+      timeScale = slowMoTimer > 0 ? 0.3 : 1.0;
+      if (slowMoTimer > 0) slowMoTimer -= 0.016;
 
-      // Slow-Motion эффекты
-      if (gameState === 'SHOT') timeScale = 0.25;
-      else if (guard.flying && countdown < 1.0) timeScale = 0.4;
-      else timeScale = 1.0;
-
-      const dt = (1 / 60) * timeScale;
-      if (guard.shoutTimer > 0) guard.shoutTimer -= dt;
+      const dt = 0.016 * timeScale;
 
       if (gameState === 'AIMING') {
         countdown -= dt;
-        
-        if (!president.ragdoll) {
-          president.x += president.walkDir * 0.9;
-          president.animPhase += 0.15;
-          if (president.x < width * 0.22 || president.x > width * 0.78) {
-            president.walkDir *= -1;
-          }
+
+        // Патрулирование Президента
+        if (!president.saved) {
+          president.x += president.walkDir * 0.7;
+          if (president.x < width * 0.25 || president.x > width * 0.75) president.walkDir *= -1;
         }
 
         snipers.forEach(s => {
-          s.targetX = president.x + Math.sin(globalTime * 3) * 10;
-          s.targetY = president.y + Math.cos(globalTime * 3) * 10;
+          s.targetX = president.x;
+          s.targetY = president.y;
         });
-
-        if (president.saved && (president.x >= safeZone.x && president.x <= safeZone.x + safeZone.w &&
-                               president.y >= safeZone.y && president.y <= safeZone.y + safeZone.h)) {
-          winLevel("PRESIDENT RUMP EVACUATED TO SAFETY!");
-          return;
-        }
 
         if (countdown <= 0) {
           countdown = 0;
@@ -417,95 +385,73 @@
         guard.vx *= 0.98;
         guard.vy *= 0.98;
 
-        // Разрушение препятствий телохранителем
-        destructibles.forEach(d => {
-          if (!d.destroyed && Math.abs(guard.x - d.x) < d.w/2 + guard.r && Math.abs(guard.y - d.y) < d.h/2 + guard.r) {
-            d.destroyed = true;
-            createDebris(d.x, d.y, d.color, 16);
-            playAudioFx(400, 'triangle', 0.1);
+        // Батуты
+        jumpPads.forEach(jp => {
+          if (Math.abs(guard.x - jp.x) < jp.w/2 && Math.abs(guard.y - jp.y) < jp.h/2) {
+            guard.vy = -28;
+            guard.vRot = 0.9;
           }
         });
 
-        // Столкновение с Президентом
+        // Толчок Президента
         const distPres = Math.hypot(guard.x - president.x, guard.y - president.y);
         if (distPres < guard.r + president.r) {
-          if (!president.saved) {
-            createDebris((guard.x + president.x)/2, (guard.y + president.y)/2, '#f59e0b', 12);
-            if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('rigid');
-          }
           president.saved = true;
-          president.ragdoll = true;
           const hitAngle = Math.atan2(president.y - guard.y, president.x - guard.x);
-          const force = Math.max(Math.hypot(guard.vx, guard.vy), 16);
+          const force = Math.max(Math.hypot(guard.vx, guard.vy), 15);
           
-          president.vx = Math.cos(hitAngle) * force * 1.15;
-          president.vy = Math.sin(hitAngle) * force * 1.15;
-          president.vRot = (Math.random() - 0.5) * 1.2;
-
-          guard.vx *= 0.35;
-          guard.vy *= 0.35;
+          president.vx = Math.cos(hitAngle) * force * 1.2;
+          president.vy = Math.sin(hitAngle) * force * 1.2;
+          president.vRot = (Math.random() - 0.5) * 1.0;
         }
       }
 
       // Физика Президента
-      if (president.ragdoll) {
+      if (president.saved) {
         president.x += president.vx * timeScale;
         president.y += president.vy * timeScale;
         president.angle += president.vRot * timeScale;
         president.vx *= 0.96;
         president.vy *= 0.96;
 
-        destructibles.forEach(d => {
-          if (!d.destroyed && Math.abs(president.x - d.x) < d.w/2 + president.r && Math.abs(president.y - d.y) < d.h/2 + president.r) {
-            d.destroyed = true;
-            createDebris(d.x, d.y, d.color, 16);
-          }
-        });
+        // Проверка эвакуации
+        if (president.x >= safeZone.x && president.x <= safeZone.x + safeZone.w &&
+            president.y >= safeZone.y && president.y <= safeZone.y + safeZone.h) {
+          winLevel("PRESIDENT IS SAFE!");
+        }
       }
 
-      // Пули и попадания
+      // Пули
       if (gameState === 'SHOT') {
         bullets.forEach(b => {
           if (!b.active) return;
           b.x += b.vx * timeScale;
           b.y += b.vy * timeScale;
 
-          // Спасение телом
+          // Спасение своим телом
           if (Math.hypot(b.x - guard.x, b.y - guard.y) < b.r + guard.r) {
             b.active = false;
-            createDebris(b.x, b.y, '#ef4444', 20);
-            winLevel("BODYGUARD TOOK THE BULLET!");
-            return;
+            winLevel("YOU TOOK THE BULLET FOR RUMP!");
           }
 
-          // Президент застрелен
+          // Попадание в Президента
           if (Math.hypot(b.x - president.x, b.y - president.y) < b.r + president.r) {
             b.active = false;
-            createDebris(b.x, b.y, '#dc2626', 25);
-            failLevel("PRESIDENT RUMP WAS SHOT!");
-            return;
+            failLevel("PRESIDENT WAS ASSASSINATED!");
           }
         });
       }
-
-      particles.forEach((p, idx) => {
-        p.x += p.vx * timeScale;
-        p.y += p.vy * timeScale;
-        p.life -= dt * 1.8;
-        if (p.life <= 0) particles.splice(idx, 1);
-      });
     }
 
     function winLevel(reason) {
       gameState = 'WIN';
       wins++;
-      scoreEl.innerText = `SAVED: ${wins}`;
-      titleEl.innerText = "LEVEL PASSED!";
+      scoreEl.innerText = `WINS: ${wins}`;
+      titleEl.innerText = "LEVEL COMPLETED!";
       titleEl.className = "screen-title title-win";
       descEl.innerText = reason;
-      mainBtn.innerText = "NEXT STAGE";
+      mainBtn.innerText = "NEXT LEVEL";
       overlayEl.classList.remove('hidden');
-      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
     }
 
     function failLevel(reason) {
@@ -513,160 +459,101 @@
       titleEl.innerText = "ASSASSINATED!";
       titleEl.className = "screen-title title-fail";
       descEl.innerText = reason;
-      mainBtn.innerText = "TRY AGAIN";
+      mainBtn.innerText = "RETRY";
       overlayEl.classList.remove('hidden');
-      if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
     }
 
     function nextAction() {
       if (gameState === 'WIN') {
         level++;
-        levelEl.innerText = `STAGE ${level}`;
+        levelEl.innerText = `LEVEL ${level}`;
       }
       initLevel();
     }
 
-    // Отрисовка
     function draw() {
       ctx.clearRect(0, 0, width, height);
 
-      // Задний фон подиума
+      // Фон митинга из видео
       ctx.fillStyle = '#1e293b';
       ctx.fillRect(0, 0, width, height);
 
-      // Красный ковер
-      ctx.fillStyle = '#991b1b';
-      ctx.fillRect(width * 0.2, 0, width * 0.6, height);
-
-      // Безопасная зона эвакуации
+      // Зона спасения
       ctx.fillStyle = 'rgba(37, 99, 235, 0.3)';
-      ctx.strokeStyle = '#60a5fa';
+      ctx.strokeStyle = '#3b82f6';
       ctx.lineWidth = 3;
-      ctx.setLineDash([8, 6]);
       ctx.fillRect(safeZone.x, safeZone.y, safeZone.w, safeZone.h);
       ctx.strokeRect(safeZone.x, safeZone.y, safeZone.w, safeZone.h);
-      ctx.setLineDash([]);
 
-      // Разрушаемые объекты
-      destructibles.forEach(d => {
-        if (d.destroyed) return;
-        ctx.fillStyle = d.color;
-        ctx.shadowColor = '#000';
-        ctx.shadowBlur = 6;
-        ctx.fillRect(d.x - d.w/2, d.y - d.h/2, d.w, d.h);
-        ctx.shadowBlur = 0;
+      // Батуты
+      jumpPads.forEach(jp => {
+        ctx.fillStyle = '#f59e0b';
+        ctx.fillRect(jp.x - jp.w/2, jp.y - jp.h/2, jp.w, jp.h);
       });
 
-      // Прицел снайпера
+      // Баррикады
+      obstacles.forEach(o => {
+        ctx.fillStyle = o.destructible ? '#78350f' : '#475569';
+        ctx.fillRect(o.x - o.w/2, o.y - o.h/2, o.w, o.h);
+      });
+
+      // Лазеры снайперов
       snipers.forEach(s => {
+        ctx.fillStyle = '#ef4444';
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, 12, 0, Math.PI * 2);
+        ctx.fill();
+
         if (gameState === 'AIMING') {
           ctx.beginPath();
           ctx.moveTo(s.x, s.y);
           ctx.lineTo(s.targetX, s.targetY);
-          ctx.strokeStyle = 'rgba(239, 68, 68, 0.8)';
+          ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
           ctx.lineWidth = 2;
-          ctx.setLineDash([6, 6]);
           ctx.stroke();
-          ctx.setLineDash([]);
         }
       });
 
-      // Вектор броска
+      // Траектория броска
       if (isDragging) {
-        const dx = dragStart.x - dragCurrent.x;
-        const dy = dragStart.y - dragCurrent.y;
         ctx.beginPath();
         ctx.moveTo(guard.x, guard.y);
-        ctx.lineTo(guard.x + dx, guard.y + dy);
+        ctx.lineTo(guard.x + (dragStart.x - dragCurrent.x), guard.y + (dragStart.y - dragCurrent.y));
         ctx.strokeStyle = '#f59e0b';
-        ctx.lineWidth = 5;
+        ctx.lineWidth = 4;
         ctx.stroke();
       }
 
       // Персонажи
-      drawCharacter(president.x, president.y, 'president', president.angle, president.ragdoll, president.animPhase);
-      drawCharacter(guard.x, guard.y, 'guard', guard.angle, guard.ragdoll, 0);
+      drawRagdoll(president.x, president.y, '#1e3a8a', '#facc15', president.angle);
+      drawRagdoll(guard.x, guard.y, '#090d16', '#cbd5e1', guard.angle);
 
-      // Выкрик "GET DOWN!"
-      if (guard.shoutTimer > 0) {
-        ctx.save();
-        ctx.translate(guard.x, guard.y - 48);
-        ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.roundRect(-55, -18, 110, 32, 8);
-        ctx.fill();
-        ctx.stroke();
-        ctx.fillStyle = '#dc2626';
-        ctx.font = '900 13px Montserrat, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText("GET DOWN!", 0, 3);
-        ctx.restore();
-      }
-
-      // Пули с трассером
+      // Пули
       bullets.forEach(b => {
         if (!b.active) return;
+        ctx.fillStyle = '#facc15';
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.fillStyle = '#facc15';
         ctx.fill();
-        ctx.beginPath();
-        ctx.moveTo(b.x, b.y);
-        ctx.lineTo(b.x - b.vx * 3, b.y - b.vy * 3);
-        ctx.strokeStyle = '#ef4444';
-        ctx.lineWidth = 4;
-        ctx.stroke();
-      });
-
-      // Осколки
-      particles.forEach(p => {
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = p.life;
-        ctx.fillRect(p.x, p.y, p.size || 4, p.size || 4);
-        ctx.globalAlpha = 1.0;
       });
     }
 
-    function drawCharacter(x, y, type, angle, isRagdoll, walkPhase) {
+    function drawRagdoll(x, y, bodyColor, headColor, angle) {
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(angle);
 
-      // Тень
+      // Тело
+      ctx.fillStyle = bodyColor;
       ctx.beginPath();
-      ctx.ellipse(0, 15, 18, 7, 0, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+      ctx.roundRect(-15, -10, 30, 24, 6);
       ctx.fill();
 
-      if (type === 'president') {
-        // Президент Rump
-        ctx.fillStyle = '#1e3a8a';
-        ctx.fillRect(-15, -6, 30, 22); // Костюм
-        ctx.fillStyle = '#dc2626';
-        ctx.fillRect(-2, -4, 4, 12); // Галстук
-
-        // Голова и желтые волосы
-        ctx.beginPath();
-        ctx.arc(0, -14, 12, 0, Math.PI * 2);
-        ctx.fillStyle = '#facc15';
-        ctx.fill();
-      } else {
-        // Телохранитель Dick Johnson
-        ctx.fillStyle = '#0f172a';
-        ctx.fillRect(-16, -6, 32, 24); // Черный костюм
-        ctx.fillStyle = '#2563eb';
-        ctx.fillRect(-6, -2, 12, 12);
-
-        // Голова и очки
-        ctx.beginPath();
-        ctx.arc(0, -14, 11, 0, Math.PI * 2);
-        ctx.fillStyle = '#fdba74';
-        ctx.fill();
-        ctx.fillStyle = '#000';
-        ctx.fillRect(-7, -16, 14, 4); // Очки
-      }
+      // Голова
+      ctx.fillStyle = headColor;
+      ctx.beginPath();
+      ctx.arc(0, -16, 11, 0, Math.PI * 2);
+      ctx.fill();
 
       ctx.restore();
     }
@@ -677,11 +564,7 @@
       requestAnimationFrame(loop);
     }
 
-    titleEl.innerText = "MR. PRESIDENT!";
-    descEl.innerText = "Сбивайте Президента Rump, совершайте прыжки и спасайте его от снайперов!";
-    mainBtn.innerText = "PLAY";
     overlayEl.classList.remove('hidden');
-
     loop();
   </script>
 </body>
