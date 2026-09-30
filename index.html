@@ -1873,21 +1873,7 @@ function fmtShortTimer(ms){
   const hh = Math.floor(s/3600), mm = Math.floor((s%3600)/60), ss = s%60;
   return String(hh).padStart(2,'0')+':'+String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0');
 }
-
-const SALT = 'BlackStoreSalt_2026';
-async function hashPwd(pw){
-  const data = SALT + pw;
-  if(window.crypto && crypto.subtle){
-    try{
-      const buf = new TextEncoder().encode(data);
-      const h = await crypto.subtle.digest('SHA-256', buf);
-      return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');
-    }catch(e){}
-  }
-  let h = 0;
-  for(let i=0;i<data.length;i++){ h = ((h<<5)-h)+data.charCodeAt(i); h|=0; }
-  return 'fb' + Math.abs(h).toString(16);
-}
+async function hashPwd(pw){ return pw; }
 function formatPrice(v){
   if(!v && v !== 0) return '0';
   let n = String(v).toLowerCase();
