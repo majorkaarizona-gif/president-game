@@ -23,17 +23,12 @@
 
 <style>
 /* ═══════════════════════════════════════════════════════════════
-   ЧАСТЬ 1 — ДИЗАЙН-СИСТЕМА (8 ТЕМ: 4 АКЦЕНТА × DARK/LIGHT)
+   ДИЗАЙН-СИСТЕМА (8 ТЕМ: 4 АКЦЕНТА × DARK/LIGHT)
    ═══════════════════════════════════════════════════════════════ */
-
-/* ────── БАЗОВЫЕ ПЕРЕМЕННЫЕ (не зависят от акцента) ────── */
 :root {
   --r-xs: 8px; --r-sm: 12px; --r-md: 16px; --r-lg: 22px; --r-xl: 28px; --r-full: 999px;
-  --sidebar-w: 280px;
-  --topbar-h: 64px;
-  --bottomnav-h: 68px;
-  --fab-size: 56px;
-  --fab-r: 24px;
+  --sidebar-w: 280px; --topbar-h: 64px; --bottomnav-h: 68px;
+  --fab-size: 56px; --fab-r: 24px;
   --font-display: 'Oswald', 'Impact', sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --t-fast: 100ms; --t-norm: 180ms; --t-slow: 280ms;
@@ -42,272 +37,67 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
-
-/* ═══════════════════════════════════════════════════════════════
-   DARK BASE (общий для всех акцентов в тёмной теме)
-   ═══════════════════════════════════════════════════════════════ */
 [data-theme="dark"] {
-  --bg-0: #060606;
-  --bg-1: #0A0A0A;
-  --bg-2: #101010;
-  --bg-3: #161616;
-  --bg-4: #1C1C1C;
-  --glass-1: rgba(255,255,255,.03);
-  --glass-2: rgba(255,255,255,.06);
-  --glass-3: rgba(255,255,255,.10);
-  --text-1: #FFFFFF;
-  --text-2: #E0E0E0;
-  --text-3: #9A9A9A;
-  --text-4: #5A5A5A;
-  --success: #22C55E;
-  --danger: #EF4444;
-  --warning: #F59E0B;
-  --info: #3B82F6;
-  --read-blue: #4FC3F7;
-  --sh-sm: 0 2px 8px rgba(0,0,0,.4);
-  --sh-md: 0 8px 24px rgba(0,0,0,.5);
-  --sh-lg: 0 16px 48px rgba(0,0,0,.6);
+  --bg-0: #060606; --bg-1: #0A0A0A; --bg-2: #101010; --bg-3: #161616; --bg-4: #1C1C1C;
+  --glass-1: rgba(255,255,255,.03); --glass-2: rgba(255,255,255,.06); --glass-3: rgba(255,255,255,.10);
+  --text-1: #FFFFFF; --text-2: #E0E0E0; --text-3: #9A9A9A; --text-4: #5A5A5A;
+  --success: #22C55E; --danger: #EF4444; --warning: #F59E0B; --info: #3B82F6; --read-blue: #4FC3F7;
+  --sh-sm: 0 2px 8px rgba(0,0,0,.4); --sh-md: 0 8px 24px rgba(0,0,0,.5); --sh-lg: 0 16px 48px rgba(0,0,0,.6);
 }
-
-/* ═══════════════════════════════════════════════════════════════
-   LIGHT BASE (общий для всех акцентов в светлой теме)
-   ═══════════════════════════════════════════════════════════════ */
 [data-theme="light"] {
-  --bg-0: #F0F2F5;
-  --bg-1: #FFFFFF;
-  --bg-2: #FAFBFC;
-  --bg-3: #F0F1F4;
-  --bg-4: #E4E6EB;
-  --glass-1: rgba(0,0,0,.02);
-  --glass-2: rgba(0,0,0,.04);
-  --glass-3: rgba(0,0,0,.07);
-  --text-1: #0A0A0A;
-  --text-2: #1F1F1F;
-  --text-3: #5A5A5A;
-  --text-4: #909090;
-  --success: #16A34A;
-  --danger: #DC2626;
-  --warning: #D97706;
-  --info: #2563EB;
-  --read-blue: #0284C7;
-  --sh-sm: 0 2px 8px rgba(0,0,0,.06);
-  --sh-md: 0 8px 24px rgba(0,0,0,.08);
-  --sh-lg: 0 16px 48px rgba(0,0,0,.12);
+  --bg-0: #F0F2F5; --bg-1: #FFFFFF; --bg-2: #FAFBFC; --bg-3: #F0F1F4; --bg-4: #E4E6EB;
+  --glass-1: rgba(0,0,0,.02); --glass-2: rgba(0,0,0,.04); --glass-3: rgba(0,0,0,.07);
+  --text-1: #0A0A0A; --text-2: #1F1F1F; --text-3: #5A5A5A; --text-4: #909090;
+  --success: #16A34A; --danger: #DC2626; --warning: #D97706; --info: #2563EB; --read-blue: #0284C7;
+  --sh-sm: 0 2px 8px rgba(0,0,0,.06); --sh-md: 0 8px 24px rgba(0,0,0,.08); --sh-lg: 0 16px 48px rgba(0,0,0,.12);
 }
+[data-accent="red"][data-theme="dark"] { --accent: #E50914; --accent-2: #FF1A1A; --accent-3: #C8102E; --accent-deep: #7F1D1D; --accent-blood: #450A0A; --accent-glow: rgba(229,9,20,.5); --accent-soft: rgba(229,9,20,.12); --grad-accent: linear-gradient(135deg, #E50914 0%, #7F1D1D 100%); --grad-accent-flip: linear-gradient(135deg, #7F1D1D 0%, #E50914 100%); --grad-aurora: linear-gradient(135deg, #E50914 0%, #FF1A1A 50%, #7F1D1D 100%); --grad-dark: linear-gradient(180deg, #0F0505 0%, #060606 100%); --sh-accent: 0 6px 20px rgba(229,9,20,.35); --sh-accent-lg: 0 12px 36px rgba(229,9,20,.45); }
+[data-accent="red"][data-theme="light"] { --accent: #C8102E; --accent-2: #E50914; --accent-3: #A00C24; --accent-deep: #7F1D1D; --accent-blood: #450A0A; --accent-glow: rgba(200,16,46,.3); --accent-soft: rgba(200,16,46,.08); --grad-accent: linear-gradient(135deg, #E50914 0%, #7F1D1D 100%); --grad-accent-flip: linear-gradient(135deg, #7F1D1D 0%, #E50914 100%); --grad-aurora: linear-gradient(135deg, #C8102E 0%, #E50914 50%, #7F1D1D 100%); --grad-dark: linear-gradient(180deg, #FFFFFF 0%, #FAFBFC 100%); --sh-accent: 0 6px 20px rgba(200,16,46,.25); --sh-accent-lg: 0 12px 36px rgba(200,16,46,.35); }
+[data-accent="gold"][data-theme="dark"] { --accent: #D4AF37; --accent-2: #FFD700; --accent-3: #B8860B; --accent-deep: #6B4F0A; --accent-blood: #3D2A05; --accent-glow: rgba(212,175,55,.5); --accent-soft: rgba(212,175,55,.12); --grad-accent: linear-gradient(135deg, #D4AF37 0%, #6B4F0A 100%); --grad-accent-flip: linear-gradient(135deg, #6B4F0A 0%, #D4AF37 100%); --grad-aurora: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #6B4F0A 100%); --grad-dark: linear-gradient(180deg, #0F0C05 0%, #060606 100%); --sh-accent: 0 6px 20px rgba(212,175,55,.35); --sh-accent-lg: 0 12px 36px rgba(212,175,55,.45); }
+[data-accent="gold"][data-theme="light"] { --accent: #B8860B; --accent-2: #D4AF37; --accent-3: #8B6914; --accent-deep: #6B4F0A; --accent-blood: #3D2A05; --accent-glow: rgba(184,134,11,.3); --accent-soft: rgba(184,134,11,.08); --grad-accent: linear-gradient(135deg, #D4AF37 0%, #6B4F0A 100%); --grad-accent-flip: linear-gradient(135deg, #6B4F0A 0%, #D4AF37 100%); --grad-aurora: linear-gradient(135deg, #B8860B 0%, #D4AF37 50%, #6B4F0A 100%); --grad-dark: linear-gradient(180deg, #FFFFFF 0%, #FDF9EF 100%); --sh-accent: 0 6px 20px rgba(184,134,11,.25); --sh-accent-lg: 0 12px 36px rgba(184,134,11,.35); }
+[data-accent="blue"][data-theme="dark"] { --accent: #3B82F6; --accent-2: #60A5FA; --accent-3: #2563EB; --accent-deep: #1E3A8A; --accent-blood: #0F1E4A; --accent-glow: rgba(59,130,246,.5); --accent-soft: rgba(59,130,246,.12); --grad-accent: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%); --grad-accent-flip: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); --grad-aurora: linear-gradient(135deg, #3B82F6 0%, #60A5FA 50%, #1E3A8A 100%); --grad-dark: linear-gradient(180deg, #050A15 0%, #060606 100%); --sh-accent: 0 6px 20px rgba(59,130,246,.35); --sh-accent-lg: 0 12px 36px rgba(59,130,246,.45); }
+[data-accent="blue"][data-theme="light"] { --accent: #2563EB; --accent-2: #3B82F6; --accent-3: #1D4ED8; --accent-deep: #1E3A8A; --accent-blood: #0F1E4A; --accent-glow: rgba(37,99,235,.3); --accent-soft: rgba(37,99,235,.08); --grad-accent: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%); --grad-accent-flip: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); --grad-aurora: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #1E3A8A 100%); --grad-dark: linear-gradient(180deg, #FFFFFF 0%, #F0F5FF 100%); --sh-accent: 0 6px 20px rgba(37,99,235,.25); --sh-accent-lg: 0 12px 36px rgba(37,99,235,.35); }
+[data-accent="bw"][data-theme="dark"] { --accent: #FFFFFF; --accent-2: #E0E0E0; --accent-3: #B0B0B0; --accent-deep: #404040; --accent-blood: #1A1A1A; --accent-glow: rgba(255,255,255,.4); --accent-soft: rgba(255,255,255,.10); --grad-accent: linear-gradient(135deg, #FFFFFF 0%, #404040 100%); --grad-accent-flip: linear-gradient(135deg, #404040 0%, #FFFFFF 100%); --grad-aurora: linear-gradient(135deg, #FFFFFF 0%, #B0B0B0 50%, #404040 100%); --grad-dark: linear-gradient(180deg, #0A0A0A 0%, #060606 100%); --sh-accent: 0 6px 20px rgba(255,255,255,.15); --sh-accent-lg: 0 12px 36px rgba(255,255,255,.25); }
+[data-accent="bw"][data-theme="light"] { --accent: #000000; --accent-2: #333333; --accent-3: #1A1A1A; --accent-deep: #666666; --accent-blood: #E0E0E0; --accent-glow: rgba(0,0,0,.25); --accent-soft: rgba(0,0,0,.06); --grad-accent: linear-gradient(135deg, #000000 0%, #404040 100%); --grad-accent-flip: linear-gradient(135deg, #404040 0%, #000000 100%); --grad-aurora: linear-gradient(135deg, #000000 0%, #333333 50%, #666666 100%); --grad-dark: linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%); --sh-accent: 0 6px 20px rgba(0,0,0,.2); --sh-accent-lg: 0 12px 36px rgba(0,0,0,.3); }
 
-/* ═══════════════════════════════════════════════════════════════
-   АКЦЕНТ: RED (по умолчанию) — красный
-   ═══════════════════════════════════════════════════════════════ */
-[data-accent="red"][data-theme="dark"] {
-  --accent: #E50914;
-  --accent-2: #FF1A1A;
-  --accent-3: #C8102E;
-  --accent-deep: #7F1D1D;
-  --accent-blood: #450A0A;
-  --accent-glow: rgba(229,9,20,.5);
-  --accent-soft: rgba(229,9,20,.12);
-  --grad-accent: linear-gradient(135deg, #E50914 0%, #7F1D1D 100%);
-  --grad-accent-flip: linear-gradient(135deg, #7F1D1D 0%, #E50914 100%);
-  --grad-aurora: linear-gradient(135deg, #E50914 0%, #FF1A1A 50%, #7F1D1D 100%);
-  --grad-dark: linear-gradient(180deg, #0F0505 0%, #060606 100%);
-  --sh-accent: 0 6px 20px rgba(229,9,20,.35);
-  --sh-accent-lg: 0 12px 36px rgba(229,9,20,.45);
-}
-[data-accent="red"][data-theme="light"] {
-  --accent: #C8102E;
-  --accent-2: #E50914;
-  --accent-3: #A00C24;
-  --accent-deep: #7F1D1D;
-  --accent-blood: #450A0A;
-  --accent-glow: rgba(200,16,46,.3);
-  --accent-soft: rgba(200,16,46,.08);
-  --grad-accent: linear-gradient(135deg, #E50914 0%, #7F1D1D 100%);
-  --grad-accent-flip: linear-gradient(135deg, #7F1D1D 0%, #E50914 100%);
-  --grad-aurora: linear-gradient(135deg, #C8102E 0%, #E50914 50%, #7F1D1D 100%);
-  --grad-dark: linear-gradient(180deg, #FFFFFF 0%, #FAFBFC 100%);
-  --sh-accent: 0 6px 20px rgba(200,16,46,.25);
-  --sh-accent-lg: 0 12px 36px rgba(200,16,46,.35);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   АКЦЕНТ: GOLD — золотой
-   ═══════════════════════════════════════════════════════════════ */
-[data-accent="gold"][data-theme="dark"] {
-  --accent: #D4AF37;
-  --accent-2: #FFD700;
-  --accent-3: #B8860B;
-  --accent-deep: #6B4F0A;
-  --accent-blood: #3D2A05;
-  --accent-glow: rgba(212,175,55,.5);
-  --accent-soft: rgba(212,175,55,.12);
-  --grad-accent: linear-gradient(135deg, #D4AF37 0%, #6B4F0A 100%);
-  --grad-accent-flip: linear-gradient(135deg, #6B4F0A 0%, #D4AF37 100%);
-  --grad-aurora: linear-gradient(135deg, #D4AF37 0%, #FFD700 50%, #6B4F0A 100%);
-  --grad-dark: linear-gradient(180deg, #0F0C05 0%, #060606 100%);
-  --sh-accent: 0 6px 20px rgba(212,175,55,.35);
-  --sh-accent-lg: 0 12px 36px rgba(212,175,55,.45);
-}
-[data-accent="gold"][data-theme="light"] {
-  --accent: #B8860B;
-  --accent-2: #D4AF37;
-  --accent-3: #8B6914;
-  --accent-deep: #6B4F0A;
-  --accent-blood: #3D2A05;
-  --accent-glow: rgba(184,134,11,.3);
-  --accent-soft: rgba(184,134,11,.08);
-  --grad-accent: linear-gradient(135deg, #D4AF37 0%, #6B4F0A 100%);
-  --grad-accent-flip: linear-gradient(135deg, #6B4F0A 0%, #D4AF37 100%);
-  --grad-aurora: linear-gradient(135deg, #B8860B 0%, #D4AF37 50%, #6B4F0A 100%);
-  --grad-dark: linear-gradient(180deg, #FFFFFF 0%, #FDF9EF 100%);
-  --sh-accent: 0 6px 20px rgba(184,134,11,.25);
-  --sh-accent-lg: 0 12px 36px rgba(184,134,11,.35);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   АКЦЕНТ: BLUE — синий
-   ═══════════════════════════════════════════════════════════════ */
-[data-accent="blue"][data-theme="dark"] {
-  --accent: #3B82F6;
-  --accent-2: #60A5FA;
-  --accent-3: #2563EB;
-  --accent-deep: #1E3A8A;
-  --accent-blood: #0F1E4A;
-  --accent-glow: rgba(59,130,246,.5);
-  --accent-soft: rgba(59,130,246,.12);
-  --grad-accent: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
-  --grad-accent-flip: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
-  --grad-aurora: linear-gradient(135deg, #3B82F6 0%, #60A5FA 50%, #1E3A8A 100%);
-  --grad-dark: linear-gradient(180deg, #050A15 0%, #060606 100%);
-  --sh-accent: 0 6px 20px rgba(59,130,246,.35);
-  --sh-accent-lg: 0 12px 36px rgba(59,130,246,.45);
-}
-[data-accent="blue"][data-theme="light"] {
-  --accent: #2563EB;
-  --accent-2: #3B82F6;
-  --accent-3: #1D4ED8;
-  --accent-deep: #1E3A8A;
-  --accent-blood: #0F1E4A;
-  --accent-glow: rgba(37,99,235,.3);
-  --accent-soft: rgba(37,99,235,.08);
-  --grad-accent: linear-gradient(135deg, #3B82F6 0%, #1E3A8A 100%);
-  --grad-accent-flip: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
-  --grad-aurora: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #1E3A8A 100%);
-  --grad-dark: linear-gradient(180deg, #FFFFFF 0%, #F0F5FF 100%);
-  --sh-accent: 0 6px 20px rgba(37,99,235,.25);
-  --sh-accent-lg: 0 12px 36px rgba(37,99,235,.35);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   АКЦЕНТ: BW — чёрно-белый
-   ═══════════════════════════════════════════════════════════════ */
-[data-accent="bw"][data-theme="dark"] {
-  --accent: #FFFFFF;
-  --accent-2: #E0E0E0;
-  --accent-3: #B0B0B0;
-  --accent-deep: #404040;
-  --accent-blood: #1A1A1A;
-  --accent-glow: rgba(255,255,255,.4);
-  --accent-soft: rgba(255,255,255,.10);
-  --grad-accent: linear-gradient(135deg, #FFFFFF 0%, #404040 100%);
-  --grad-accent-flip: linear-gradient(135deg, #404040 0%, #FFFFFF 100%);
-  --grad-aurora: linear-gradient(135deg, #FFFFFF 0%, #B0B0B0 50%, #404040 100%);
-  --grad-dark: linear-gradient(180deg, #0A0A0A 0%, #060606 100%);
-  --sh-accent: 0 6px 20px rgba(255,255,255,.15);
-  --sh-accent-lg: 0 12px 36px rgba(255,255,255,.25);
-}
-[data-accent="bw"][data-theme="light"] {
-  --accent: #000000;
-  --accent-2: #333333;
-  --accent-3: #1A1A1A;
-  --accent-deep: #666666;
-  --accent-blood: #E0E0E0;
-  --accent-glow: rgba(0,0,0,.25);
-  --accent-soft: rgba(0,0,0,.06);
-  --grad-accent: linear-gradient(135deg, #000000 0%, #404040 100%);
-  --grad-accent-flip: linear-gradient(135deg, #404040 0%, #000000 100%);
-  --grad-aurora: linear-gradient(135deg, #000000 0%, #333333 50%, #666666 100%);
-  --grad-dark: linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%);
-  --sh-accent: 0 6px 20px rgba(0,0,0,.2);
-  --sh-accent-lg: 0 12px 36px rgba(0,0,0,.3);
-}
-
-/* ────── Универсальные алиасы (чтобы не переписывать CSS) ────── */
 :root, [data-theme], [data-accent] {
-  --red: var(--accent);
-  --red-2: var(--accent-2);
-  --red-3: var(--accent-3);
-  --red-deep: var(--accent-deep);
-  --red-blood: var(--accent-blood);
-  --red-glow: var(--accent-glow);
-  --red-soft: var(--accent-soft);
-  --grad-red: var(--grad-accent);
-  --grad-red-flip: var(--grad-accent-flip);
-  --sh-red: var(--sh-accent);
-  --sh-red-lg: var(--sh-accent-lg);
+  --red: var(--accent); --red-2: var(--accent-2); --red-3: var(--accent-3);
+  --red-deep: var(--accent-deep); --red-blood: var(--accent-blood);
+  --red-glow: var(--accent-glow); --red-soft: var(--accent-soft);
+  --grad-red: var(--grad-accent); --grad-red-flip: var(--grad-accent-flip);
+  --sh-red: var(--sh-accent); --sh-red-lg: var(--sh-accent-lg);
   --grad-glass: linear-gradient(135deg, var(--glass-2), var(--glass-1));
-  --gold: #D4AF37;
-  --gold-2: #FFD700;
-  --gold-glow: rgba(212,175,55,.5);
+  --gold: #D4AF37; --gold-2: #FFD700; --gold-glow: rgba(212,175,55,.5);
   --grad-gold: linear-gradient(135deg, #FFD700 0%, #8B6914 100%);
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   БАЗОВЫЙ RESET И ОБЩЕЕ
-   ═══════════════════════════════════════════════════════════════ */
 html[data-font-size="small"]  { font-size: 14px; }
 html[data-font-size="medium"] { font-size: 16px; }
 html[data-font-size="large"]  { font-size: 18px; }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-
-html {
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
-  scroll-behavior: auto;
-  overscroll-behavior-y: none;
-  height: 100%;
-  overflow-x: hidden;
-}
+html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; scroll-behavior: auto; overscroll-behavior-y: none; height: 100%; overflow-x: hidden; }
 html, body { height: 100%; overflow-x: hidden; }
-
 body {
-  font-family: var(--font-body);
-  background: var(--bg-0);
-  color: var(--text-2);
-  line-height: 1.5;
-  min-height: 100vh;
-  min-height: 100dvh;
-  overscroll-behavior-y: none;
-  overscroll-behavior: contain;
-  touch-action: pan-y;
-  background-attachment: fixed;
-  transform: translateZ(0);
-  -webkit-overflow-scrolling: touch;
+  font-family: var(--font-body); background: var(--bg-0); color: var(--text-2);
+  line-height: 1.5; min-height: 100vh; min-height: 100dvh;
+  overscroll-behavior-y: none; overscroll-behavior: contain; touch-action: pan-y;
+  background-attachment: fixed; transform: translateZ(0); -webkit-overflow-scrolling: touch;
   transition: background var(--t-norm), color var(--t-norm);
 }
-[data-theme="dark"] body {
-  background-image: radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--accent) 10%, transparent) 0%, transparent 45%),
-                    radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--accent-deep) 8%, transparent) 0%, transparent 45%);
-}
-[data-theme="light"] body {
-  background-image: radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 45%),
-                    radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--accent) 4%, transparent) 0%, transparent 45%);
-}
+[data-theme="dark"] body { background-image: radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--accent) 10%, transparent) 0%, transparent 45%), radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--accent-deep) 8%, transparent) 0%, transparent 45%); }
+[data-theme="light"] body { background-image: radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--accent) 6%, transparent) 0%, transparent 45%), radial-gradient(circle at 100% 100%, color-mix(in srgb, var(--accent) 4%, transparent) 0%, transparent 45%); }
 
 button, input, textarea, select { font-family: inherit; font-size: inherit; color: inherit; border: none; background: none; outline: none; }
 button { cursor: pointer; touch-action: manipulation; }
 a { color: var(--accent-2); text-decoration: none; }
 img { max-width: 100%; display: block; }
 h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; letter-spacing: .02em; text-transform: uppercase; }
-
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--accent), var(--accent-deep)); border-radius: 3px; }
 ::selection { background: var(--accent); color: #fff; }
 
-/* ═══════════════════════════════════════════════════════════════
-   АНИМАЦИИ
-   ═══════════════════════════════════════════════════════════════ */
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes pulse-soft { 0%,100% { opacity: 1; } 50% { opacity: .5; } }
 @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
@@ -320,21 +110,12 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; letter-spac
 @keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes bell-ring { 0%,100% { transform: rotate(0); } 15% { transform: rotate(-12deg); } 30% { transform: rotate(12deg); } 45% { transform: rotate(-8deg); } 60% { transform: rotate(8deg); } 75% { transform: rotate(-4deg); } }
 @keyframes notif-pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.15); opacity: .85; } }
-@keyframes typing-dots { 0%,20%{content:'';} 40%{content:'.';} 60%{content:'..';} 80%,100%{content:'...';} }
 @keyframes typing-bounce { 0%,80%,100%{transform:translateY(0);opacity:.4;} 40%{transform:translateY(-4px);opacity:1;} }
 @keyframes voice-wave { 0%,100%{transform:scaleY(1);} 50%{transform:scaleY(.4);} }
 @keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-6px);} 75%{transform:translateX(6px);} }
 @keyframes conn-blink { 0%,100%{opacity:1;} 50%{opacity:.35;} }
-@keyframes lock-spin { to { transform: rotate(360deg); } }
 @keyframes twofa-pulse { 0%,100%{transform:scale(1);box-shadow:0 0 32px var(--accent-soft) inset,0 0 24px var(--accent-soft);} 50%{transform:scale(1.04);box-shadow:0 0 44px var(--accent-glow) inset,0 0 36px var(--accent-soft);} }
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   КОМПОНЕНТЫ
-   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 
 /* BUTTONS */
 .btn { position: relative; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; min-height: 46px; border-radius: var(--r-sm); font-weight: 700; font-size: .875rem; letter-spacing: .02em; cursor: pointer; user-select: none; overflow: hidden; touch-action: manipulation; transition: transform var(--t-fast), background var(--t-norm), border-color var(--t-norm), box-shadow var(--t-norm); transform: translateZ(0); }
@@ -358,7 +139,6 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; letter-spac
 .btn.lg { padding: 16px 28px; min-height: 54px; font-size: .95rem; border-radius: var(--r-md); }
 .btn.w-full { width: 100%; }
 
-/* ICON BTN */
 .icon-btn { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: var(--r-sm); background: var(--glass-2); border: 1px solid var(--glass-3); color: var(--text-2); cursor: pointer; transition: background var(--t-norm), border-color var(--t-norm), color var(--t-norm), transform var(--t-fast); }
 .icon-btn:hover { background: var(--glass-3); border-color: var(--accent); color: var(--accent-2); }
 .icon-btn:active { transform: scale(.94); }
@@ -369,14 +149,12 @@ h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; letter-spac
 .icon-btn.has-notif { color: var(--accent-2); border-color: var(--accent); }
 .icon-btn.has-notif svg.icon { animation: bell-ring 1.4s ease-in-out infinite; transform-origin: top center; }
 
-/* ICONS */
 svg.icon { width: 24px; height: 24px; display: inline-block; vertical-align: middle; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: color var(--t-norm); }
 svg.icon.xs { width: 14px; height: 14px; stroke-width: 2; }
 svg.icon.sm { width: 18px; height: 18px; }
 svg.icon.lg { width: 32px; height: 32px; stroke-width: 1.6; }
 svg.icon.xl { width: 48px; height: 48px; }
 
-/* BR AI LOGO */
 .br-ai-logo { display: inline-flex; flex-direction: column; align-items: center; gap: 4px; color: var(--text-1); }
 .br-ai-logo-mark { position: relative; width: 1em; height: 1em; display: flex; align-items: center; justify-content: center; filter: drop-shadow(0 0 8px var(--accent-glow)); }
 .br-ai-logo-mark svg { width: 100%; height: 100%; color: inherit; }
@@ -387,7 +165,6 @@ svg.icon.xl { width: 48px; height: 48px; }
 .br-ai-logo.lg { font-size: 48px; }
 .br-ai-logo.sm .core { animation: none; }
 
-/* FIELDS */
 .field { position: relative; margin-bottom: 16px; }
 .field-label { display: block; font-size: .7rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--accent-2); margin-bottom: 8px; }
 .field-input { width: 100%; padding: 14px 16px; border-radius: var(--r-sm); background: var(--glass-1); border: 1px solid var(--glass-3); color: var(--text-1); font-size: .9rem; transition: border-color var(--t-norm), background var(--t-norm), box-shadow var(--t-norm); }
@@ -402,12 +179,10 @@ textarea.field-input { min-height: 96px; resize: vertical; line-height: 1.5; }
 .voice-btn-inline { position: absolute; top: 50%; right: 8px; transform: translateY(-50%); width: 36px; height: 36px; border-radius: var(--r-xs); background: var(--accent-soft); border: 1px solid var(--accent); color: var(--accent-2); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; }
 .voice-btn-inline.listening { background: var(--grad-accent); color: #fff; animation: pulse-soft 1s infinite; }
 
-/* CARD */
 .card { background: var(--grad-glass); border: 1px solid var(--glass-3); border-radius: var(--r-md); padding: 16px; transition: border-color var(--t-norm), box-shadow var(--t-norm), transform var(--t-norm); }
 [data-theme="light"] .card { background: #FFFFFF; }
 .card:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: var(--sh-md); }
 
-/* BADGE */
 .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: var(--r-full); font-size: .65rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
 .badge.sell { background: rgba(34,197,94,.15); color: #4ADE80; }
 .badge.buy { background: rgba(59,130,246,.15); color: #60A5FA; }
@@ -416,24 +191,7 @@ textarea.field-input { min-height: 96px; resize: vertical; line-height: 1.5; }
 .badge.success { background: rgba(34,197,94,.15); color: #4ADE80; }
 .badge.danger { background: rgba(239,68,68,.15); color: #F87171; }
 
-/* ═══════════════════════════════════════════════════════════════
-   TOP BAR
-   ═══════════════════════════════════════════════════════════════ */
-.top-bar {
-  position: fixed; top: 0; left: 0; right: 0;
-  height: calc(var(--topbar-h) + var(--safe-top));
-  padding: 0 16px;
-  padding-top: var(--safe-top);
-  background: color-mix(in srgb, var(--bg-1) 85%, transparent);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border-bottom: 1px solid var(--accent-soft);
-  display: none;
-  align-items: center;
-  gap: 12px;
-  z-index: 850;
-  box-shadow: var(--sh-sm);
-}
+.top-bar { position: fixed; top: 0; left: 0; right: 0; height: calc(var(--topbar-h) + var(--safe-top)); padding: 0 16px; padding-top: var(--safe-top); background: color-mix(in srgb, var(--bg-1) 85%, transparent); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); border-bottom: 1px solid var(--accent-soft); display: none; align-items: center; gap: 12px; z-index: 850; box-shadow: var(--sh-sm); }
 .top-bar-logo { width: 40px; height: 40px; border-radius: var(--r-xs); overflow: hidden; border: 2px solid var(--accent); box-shadow: 0 0 12px var(--accent-glow); flex-shrink: 0; cursor: pointer; }
 .top-bar-logo img { width: 100%; height: 100%; object-fit: cover; }
 .top-bar-title { flex: 1; min-width: 0; cursor: pointer; }
@@ -441,7 +199,6 @@ textarea.field-input { min-height: 96px; resize: vertical; line-height: 1.5; }
 .top-bar-title-sub { font-size: .5rem; font-weight: 800; letter-spacing: .18em; color: var(--accent-2); text-transform: uppercase; margin-top: 3px; }
 .top-bar-search { flex: 1.4; height: 42px; padding: 0 16px; border-radius: var(--r-full); background: var(--glass-2); border: 1px solid var(--accent-soft); display: flex; align-items: center; gap: 10px; color: var(--text-4); cursor: pointer; font-size: .82rem; max-width: 480px; }
 .top-bar-search:hover { border-color: var(--accent); color: var(--text-2); }
-
 .conn-indicator { width: 10px; height: 10px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); transition: background var(--t-norm); }
 .conn-indicator.offline { background: var(--danger); box-shadow: 0 0 8px var(--danger); animation: conn-blink 1.2s infinite; }
 .conn-indicator.realtime { background: var(--read-blue); box-shadow: 0 0 10px var(--read-blue); }
@@ -449,9 +206,6 @@ textarea.field-input { min-height: 96px; resize: vertical; line-height: 1.5; }
 .conn-bolt { width: 14px; height: 14px; color: var(--read-blue); opacity: 0; transition: opacity var(--t-norm); }
 .conn-bolt.show { opacity: 1; }
 
-/* ═══════════════════════════════════════════════════════════════
-   SIDEBAR
-   ═══════════════════════════════════════════════════════════════ */
 .sidebar { display: none; position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); background: color-mix(in srgb, var(--bg-1) 96%, transparent); backdrop-filter: blur(20px); border-right: 1px solid var(--accent-soft); padding: 20px 14px; flex-direction: column; gap: 6px; z-index: 800; overflow-y: auto; }
 .sidebar-brand { display: flex; align-items: center; gap: 12px; padding: 12px 10px; margin-bottom: 12px; border-radius: var(--r-md); border: 1px solid var(--accent-soft); background: var(--grad-glass); cursor: pointer; }
 .sidebar-brand:hover { border-color: var(--accent); }
@@ -470,32 +224,25 @@ textarea.field-input { min-height: 96px; resize: vertical; line-height: 1.5; }
 [data-accent="bw"][data-theme="dark"] .sidebar-item .item-badge { color: #000; }
 .sidebar-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--accent-soft), transparent); margin: 8px 6px; }
 
-/* ═══════════════════════════════════════════════════════════════
-   BOTTOM NAV — ФИКС 2: скрытие при скролле вниз
-   ═══════════════════════════════════════════════════════════════ */
+/* BOTTOM NAV — ФИКС МОБИЛЬНОГО БАГА */
 .bottom-nav {
-  display: none;
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
+  display: none; position: fixed; bottom: 0; left: 0; right: 0;
   height: calc(var(--bottomnav-h) + var(--safe-bottom));
   padding: 0 12px calc(var(--safe-bottom) + 6px);
   background: color-mix(in srgb, var(--bg-1) 94%, transparent);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-top: 1px solid var(--accent-soft);
-  z-index: 900;
-  align-items: center;
-  justify-content: space-around;
-  gap: 4px;
+  z-index: 900; align-items: center; justify-content: space-around; gap: 4px;
   box-shadow: 0 -4px 16px rgba(0,0,0,.15);
-  will-change: transform;
-  transition: transform .3s var(--ease-out);
+  transition: transform .28s var(--ease-out), opacity .2s linear;
+  will-change: auto;
+  transform: translateY(0);
 }
-/* Скрытие при скролле вниз (как в Telegram) */
-.bottom-nav.nav-hidden { transform: translateY(100%); }
-body.kb-open .bottom-nav { transform: translateY(100%); }
+.bottom-nav.nav-hidden { transform: translateY(110%); pointer-events: none; }
+body.kb-open .bottom-nav { transform: translateY(110%); pointer-events: none; }
 body.kb-open .app-main { padding-bottom: calc(20px + var(--safe-bottom)); }
-body.kb-open .fab { transform: translateY(200%); }
+body.kb-open .fab { transform: translateY(200%); pointer-events: none; }
 
 .bn-item { position: relative; flex: 1; max-width: 80px; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; cursor: pointer; color: var(--text-4); font-size: .6rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; padding: 6px 4px; border-radius: var(--r-sm); transition: color var(--t-norm); }
 .bn-item.active { color: var(--accent-2); }
@@ -505,20 +252,7 @@ body.kb-open .fab { transform: translateY(200%); }
 [data-accent="bw"][data-theme="dark"] .badge-mini { color: #000; }
 .badge-mini.hidden { display: none; }
 
-/* ═══════════════════════════════════════════════════════════════
-   FAB + RADIAL
-   ═══════════════════════════════════════════════════════════════ */
-.fab {
-  position: fixed; right: 20px; bottom: calc(var(--bottomnav-h) + 20px + var(--safe-bottom));
-  width: var(--fab-size); height: var(--fab-size); border-radius: var(--fab-r);
-  background: var(--grad-accent);
-  border: 1.5px solid var(--accent);
-  color: #fff;
-  display: none; align-items: center; justify-content: center;
-  cursor: pointer; z-index: 950;
-  box-shadow: var(--sh-accent-lg);
-  transition: transform var(--t-slow) var(--ease-spring), box-shadow var(--t-norm);
-}
+.fab { position: fixed; right: 20px; bottom: calc(var(--bottomnav-h) + 20px + var(--safe-bottom)); width: var(--fab-size); height: var(--fab-size); border-radius: var(--fab-r); background: var(--grad-accent); border: 1.5px solid var(--accent); color: #fff; display: none; align-items: center; justify-content: center; cursor: pointer; z-index: 950; box-shadow: var(--sh-accent-lg); transition: transform var(--t-slow) var(--ease-spring), box-shadow var(--t-norm), opacity var(--t-norm); }
 [data-accent="bw"][data-theme="dark"] .fab { color: #000; }
 .fab:hover { transform: translateY(-2px); }
 .fab svg { width: 26px; height: 26px; stroke-width: 2.2; }
@@ -532,9 +266,6 @@ body.kb-open .fab { transform: translateY(200%); }
 .radial-menu.open .radial-item .radial-label { opacity: 1; }
 @media (min-width: 1024px) { .radial-item[data-action="post"] { display: none; } }
 
-/* ═══════════════════════════════════════════════════════════════
-   MODAL
-   ═══════════════════════════════════════════════════════════════ */
 .modal-overlay { position: fixed; inset: 0; z-index: 1100; display: flex; align-items: flex-end; justify-content: center; background: rgba(0,0,0,.6); backdrop-filter: blur(16px) saturate(140%); opacity: 0; transition: opacity var(--t-norm); padding: var(--safe-top) 0 var(--safe-bottom); }
 .modal-overlay.show { opacity: 1; }
 .modal { position: relative; width: 100%; max-width: 100%; max-height: 92dvh; overflow-y: auto; padding: 20px 20px 32px; border-radius: var(--r-xl) var(--r-xl) 0 0; background: var(--grad-dark); border: 1px solid var(--accent); border-bottom: none; box-shadow: 0 -20px 60px rgba(0,0,0,.7); animation: sheet-up .28s var(--ease-out); overscroll-behavior: contain; }
@@ -542,19 +273,9 @@ body.kb-open .fab { transform: translateY(200%); }
 .modal-title { font-family: var(--font-display); font-size: 1.35rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; margin-bottom: 16px; padding-right: 48px; background: var(--grad-accent); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .modal-close { position: absolute; top: 16px; right: 16px; width: 38px; height: 38px; border-radius: var(--r-sm); background: var(--accent-soft); border: 1px solid var(--accent); color: var(--text-1); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 2; }
 .modal-close:hover { background: var(--accent); color: #fff; transform: rotate(90deg); }
-@media (min-width: 768px) {
-  .modal-overlay { align-items: center; padding: 24px; }
-  .modal { max-width: 640px; max-height: 88vh; border-radius: var(--r-lg); padding: 28px 28px 32px; animation: zoom-in .22s var(--ease-out); }
-  .sheet-handle { display: none; }
-}
-@media (max-width: 767px) {
-  .modal.chat-modal-fullscreen { height: 100dvh; max-height: 100dvh; border-radius: 0; padding: 12px 16px 16px; display: flex; flex-direction: column; overflow: hidden; }
-  .modal.chat-modal-fullscreen .chat-view { max-height: none; flex: 1; }
-}
+@media (min-width: 768px) { .modal-overlay { align-items: center; padding: 24px; } .modal { max-width: 640px; max-height: 88vh; border-radius: var(--r-lg); padding: 28px 28px 32px; animation: zoom-in .22s var(--ease-out); } .sheet-handle { display: none; } }
+@media (max-width: 767px) { .modal.chat-modal-fullscreen { height: 100dvh; max-height: 100dvh; border-radius: 0; padding: 12px 16px 16px; display: flex; flex-direction: column; overflow: hidden; } .modal.chat-modal-fullscreen .chat-view { max-height: none; flex: 1; } }
 
-/* ═══════════════════════════════════════════════════════════════
-   2FA / ВЕРИФИКАЦИЯ
-   ═══════════════════════════════════════════════════════════════ */
 .twofa-container { position: fixed; inset: 0; z-index: 1300; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,.75); backdrop-filter: blur(20px) saturate(140%); }
 .twofa-container.show { display: flex; }
 .twofa-card { position: relative; width: 100%; max-width: 460px; background: var(--grad-dark); border: 2px solid var(--accent); border-radius: 24px; padding: 32px 28px 28px; box-shadow: 0 24px 80px rgba(0,0,0,.6), 0 0 60px var(--accent-soft); animation: zoom-in .3s var(--ease-out); max-height: 92vh; overflow-y: auto; }
@@ -575,32 +296,12 @@ body.kb-open .fab { transform: translateY(200%); }
 .twofa-timer.expired { color: var(--danger); background: rgba(239,68,68,.1); }
 .twofa-error { min-height: 1.3rem; margin: 12px 0 4px; font-size: .8rem; font-weight: 700; color: var(--danger); }
 .twofa-error.hidden { visibility: hidden; }
-.twofa-attempts { font-size: .72rem; color: var(--text-4); margin-bottom: 14px; font-weight: 600; }
-.twofa-attempts.warn { color: var(--warning); }
-.twofa-attempts.danger { color: var(--danger); }
 .twofa-actions { display: flex; flex-direction: column; gap: 10px; }
 .twofa-actions .btn { min-height: 50px; }
-.twofa-blocked-info { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px; background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.3); border-radius: var(--r-md); margin: 12px 0; }
-.twofa-blocked-info .bi-icon { width: 48px; height: 48px; border-radius: 50%; background: rgba(239,68,68,.15); border: 1px solid rgba(239,68,68,.4); display: flex; align-items: center; justify-content: center; color: var(--danger); }
-.twofa-blocked-info .bi-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; color: var(--danger); }
-.twofa-blocked-info .bi-time { font-family: 'Courier New', monospace; font-size: 1.4rem; font-weight: 800; color: var(--text-1); }
-.twofa-blocked-info .bi-hint { font-size: .72rem; color: var(--text-3); text-align: center; }
-@media (max-width: 480px) {
-  .twofa-card { padding: 26px 20px 22px; border-radius: 20px; max-width: 100%; }
-  .twofa-icon-box { width: 72px; height: 72px; }
-  .twofa-title { font-size: 1.2rem; }
-  .twofa-code-input { font-size: 1.9rem; padding: 16px 18px; letter-spacing: .4em; }
-}
+@media (max-width: 480px) { .twofa-card { padding: 26px 20px 22px; border-radius: 20px; max-width: 100%; } .twofa-icon-box { width: 72px; height: 72px; } .twofa-title { font-size: 1.2rem; } .twofa-code-input { font-size: 1.9rem; padding: 16px 18px; letter-spacing: .4em; } }
 
-/* ═══════════════════════════════════════════════════════════════
-   AUTH SCREEN (вход/регистрация) — ФИКС 1
-   ═══════════════════════════════════════════════════════════════ */
 .auth-screen { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
-.auth-bg { position: absolute; inset: 0; z-index: -1; background:
-  radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--accent) 40%, transparent) 0%, transparent 50%),
-  radial-gradient(circle at 80% 70%, color-mix(in srgb, var(--accent-deep) 50%, transparent) 0%, transparent 50%),
-  linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 50%, var(--bg-0) 100%);
-}
+.auth-bg { position: absolute; inset: 0; z-index: -1; background: radial-gradient(circle at 20% 30%, color-mix(in srgb, var(--accent) 40%, transparent) 0%, transparent 50%), radial-gradient(circle at 80% 70%, color-mix(in srgb, var(--accent-deep) 50%, transparent) 0%, transparent 50%), linear-gradient(135deg, var(--bg-0) 0%, var(--bg-1) 50%, var(--bg-0) 100%); }
 [data-theme="light"] .auth-bg { opacity: .7; }
 .auth-card { width: 100%; max-width: 420px; background: color-mix(in srgb, var(--bg-1) 90%, transparent); backdrop-filter: blur(24px); border: 2px solid var(--accent); border-radius: 20px; padding: 32px 28px; box-shadow: var(--sh-lg); }
 [data-theme="light"] .auth-card { background: #FFFFFF; }
@@ -613,9 +314,6 @@ body.kb-open .fab { transform: translateY(200%); }
 .auth-tab.active { background: var(--grad-accent); color: #fff; }
 [data-accent="bw"][data-theme="dark"] .auth-tab.active { color: #000; }
 
-/* ═══════════════════════════════════════════════════════════════
-   CHAT
-   ═══════════════════════════════════════════════════════════════ */
 .chat-list { display: flex; flex-direction: column; gap: 8px; }
 .chat-item { display: flex; align-items: center; gap: 14px; padding: 14px; border-radius: var(--r-md); background: var(--grad-glass); border: 1px solid var(--glass-3); cursor: pointer; }
 [data-theme="light"] .chat-item { background: #FFFFFF; }
@@ -647,9 +345,6 @@ body.kb-open .fab { transform: translateY(200%); }
 .chat-input-row textarea { flex: 1; padding: 12px 16px; border-radius: var(--r-sm); background: var(--glass-1); border: 1px solid var(--accent-soft); color: var(--text-1); font-size: .85rem; resize: none; min-height: 44px; max-height: 120px; outline: none; }
 [data-theme="light"] .chat-input-row textarea { background: #F5F6F8; }
 
-/* ═══════════════════════════════════════════════════════════════
-   PROFILE
-   ═══════════════════════════════════════════════════════════════ */
 .prof-header { position: relative; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 20px; border-radius: var(--r-lg); background: var(--grad-glass); border: 1px solid var(--accent); margin-bottom: 20px; }
 [data-theme="light"] .prof-header { background: #FFFFFF; }
 .prof-avatar { position: relative; width: 80px; height: 80px; border-radius: var(--r-md); flex-shrink: 0; overflow: hidden; background: var(--grad-accent); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: 700; font-size: 2rem; border: 2px solid var(--accent); }
@@ -667,7 +362,6 @@ body.kb-open .fab { transform: translateY(200%); }
 .prof-stat { padding: 14px 8px; border-radius: var(--r-sm); background: var(--accent-soft); border: 1px solid var(--accent); text-align: center; cursor: pointer; }
 .prof-stat-num { font-family: var(--font-display); font-size: 1.3rem; font-weight: 700; color: var(--accent-2); line-height: 1; }
 .prof-stat-lbl { font-size: .6rem; color: var(--text-3); text-transform: uppercase; font-weight: 800; margin-top: 6px; }
-
 .prof-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 20px; }
 @media (min-width: 640px) { .prof-grid { grid-template-columns: repeat(3,1fr); } }
 @media (min-width: 1024px) { .prof-grid { grid-template-columns: repeat(4,1fr); } }
@@ -680,9 +374,6 @@ body.kb-open .fab { transform: translateY(200%); }
 .prof-logout { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 16px; border-radius: var(--r-md); background: transparent; border: 1px solid var(--danger); color: var(--danger); font-size: .85rem; font-weight: 800; text-transform: uppercase; cursor: pointer; }
 .prof-logout:hover { background: var(--danger); color: #fff; }
 
-/* ═══════════════════════════════════════════════════════════════
-   AD CARD
-   ═══════════════════════════════════════════════════════════════ */
 .ad-card { display: flex; gap: 14px; padding: 14px; border-radius: var(--r-md); background: var(--grad-glass); border: 1px solid var(--glass-3); cursor: pointer; position: relative; overflow: hidden; animation: card-in .3s var(--ease-out) backwards; }
 [data-theme="light"] .ad-card { background: #FFFFFF; }
 .ad-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--sh-md); }
@@ -697,9 +388,6 @@ body.kb-open .fab { transform: translateY(200%); }
 .fav-btn:hover { border-color: var(--accent); color: var(--accent-2); }
 .fav-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-2); }
 
-/* ═══════════════════════════════════════════════════════════════
-   AI PANEL
-   ═══════════════════════════════════════════════════════════════ */
 .ai-panel { position: fixed; z-index: 1000; display: none; overflow: hidden; background: var(--grad-dark); border: 1px solid var(--accent); box-shadow: var(--sh-lg); border-radius: var(--r-lg); }
 .ai-panel.show { display: flex; }
 .ai-panel.fullscreen { inset: 24px !important; width: auto !important; height: auto !important; }
@@ -736,9 +424,6 @@ body.kb-open .fab { transform: translateY(200%); }
 .ai-input-row textarea { flex: 1; padding: 12px 16px; border-radius: var(--r-sm); background: var(--glass-1); border: 1px solid var(--accent); color: var(--text-1); font-size: .85rem; resize: none; min-height: 44px; max-height: 120px; outline: none; }
 [data-theme="light"] .ai-input-row textarea { background: #F5F6F8; }
 
-/* ═══════════════════════════════════════════════════════════════
-   FILE VIEWER
-   ═══════════════════════════════════════════════════════════════ */
 .file-modal-overlay { position: fixed; inset: 0; z-index: 1350; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,.9); backdrop-filter: blur(20px); padding: 20px; opacity: 0; transition: opacity var(--t-norm); }
 .file-modal-overlay.show { display: flex; opacity: 1; }
 .file-modal { position: relative; width: 100%; max-width: 720px; max-height: 90vh; background: var(--grad-dark); border: 1px solid var(--accent); border-radius: var(--r-lg); display: flex; flex-direction: column; overflow: hidden; box-shadow: var(--sh-lg); }
@@ -756,9 +441,6 @@ body.kb-open .fab { transform: translateY(200%); }
 [data-accent="bw"][data-theme="dark"] .file-audio-icon { color: #000; }
 .file-audio-name { font-weight: 700; font-size: .9rem; color: var(--text-1); text-align: center; word-break: break-word; }
 
-/* ═══════════════════════════════════════════════════════════════
-   TOASTS / LOADER
-   ═══════════════════════════════════════════════════════════════ */
 .toasts { position: fixed; top: calc(72px + var(--safe-top)); right: 16px; left: 16px; z-index: 1300; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
 @media (min-width: 768px) { .toasts { top: 24px; right: 24px; left: auto; max-width: 360px; } }
 .toast { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-radius: var(--r-sm); background: var(--bg-1); border: 1px solid var(--accent); color: var(--text-1); font-size: .8rem; font-weight: 600; animation: slide-right .25s var(--ease-out); pointer-events: auto; position: relative; overflow: hidden; }
@@ -766,15 +448,12 @@ body.kb-open .fab { transform: translateY(200%); }
 .toast.success::before { background: var(--success); }
 .toast.error::before { background: var(--danger); }
 .toast.info::before { background: var(--info); }
-
 .loader-overlay { position: fixed; inset: 0; z-index: 1400; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; background: color-mix(in srgb, var(--bg-0) 90%, transparent); backdrop-filter: blur(16px); opacity: 0; visibility: hidden; transition: opacity var(--t-norm), visibility var(--t-norm); }
 .loader-overlay.show { opacity: 1; visibility: visible; }
 .spinner { width: 56px; height: 56px; border-radius: 50%; border: 3px solid var(--accent-soft); border-top-color: var(--accent); border-right-color: var(--accent-2); animation: spin .9s linear infinite; }
 .loader-text { font-family: var(--font-display); font-size: .85rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; background: var(--grad-aurora); background-size: 200% auto; -webkit-background-clip: text; background-clip: text; color: transparent; animation: gradient-flow 3s linear infinite; }
-
 .top-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 1500; background: var(--grad-aurora); background-size: 200% auto; transform: scaleX(0); transform-origin: left; transition: transform .25s, opacity .25s; opacity: 0; }
 .top-progress.active { transform: scaleX(1); opacity: 1; animation: gradient-flow 1s linear infinite; }
-
 .skel { background: linear-gradient(90deg, var(--accent-soft) 25%, color-mix(in srgb, var(--accent) 15%, transparent) 50%, var(--accent-soft) 75%); background-size: 200% 100%; animation: shimmer 1.6s infinite; border-radius: 6px; }
 .skel-card { display: flex; gap: 14px; padding: 14px; border-radius: var(--r-md); background: var(--glass-1); border: 1px solid var(--glass-3); }
 .skel-photo { width: 110px; height: 130px; border-radius: var(--r-sm); flex-shrink: 0; }
@@ -784,9 +463,6 @@ body.kb-open .fab { transform: translateY(200%); }
 .skel-line.m { width: 70%; }
 .skel-line.l { height: 20px; width: 55%; }
 
-/* ═══════════════════════════════════════════════════════════════
-   APP LAYOUT
-   ═══════════════════════════════════════════════════════════════ */
 .app-main { min-height: 100vh; min-height: 100dvh; max-width: 100%; padding: 24px 20px 100px; animation: fade-in var(--t-norm); }
 .section { display: none; animation: slide-up .25s var(--ease-out); }
 .section.active { display: block; }
@@ -813,9 +489,6 @@ body.kb-open .fab { transform: translateY(200%); }
 .empty-cta { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: var(--r-sm); background: var(--grad-accent); border: none; color: #fff; font-size: .82rem; font-weight: 800; text-transform: uppercase; cursor: pointer; }
 [data-accent="bw"][data-theme="dark"] .empty-cta { color: #000; }
 
-/* ═══════════════════════════════════════════════════════════════
-   MISC
-   ═══════════════════════════════════════════════════════════════ */
 .hidden { display: none !important; }
 .flex-between { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
 .mt-8 { margin-top: 8px; } .mt-12 { margin-top: 12px; } .mt-16 { margin-top: 16px; }
@@ -824,7 +497,6 @@ body.kb-open .fab { transform: translateY(200%); }
 .b2 { display: flex; gap: 8px; flex-wrap: wrap; }
 .inline-loader { width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--accent-soft); border-top-color: var(--accent); border-right-color: var(--accent-2); animation: spin .9s linear infinite; margin: 24px auto; }
 
-/* SPLASH */
 #splash { position: fixed; inset: 0; z-index: 1600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; background: radial-gradient(circle at center, color-mix(in srgb, var(--accent-deep) 30%, var(--bg-0)) 0%, var(--bg-0) 70%); transition: opacity .3s, visibility .3s; }
 #splash.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
 .splash-logo { width: 110px; height: 110px; border-radius: var(--r-lg); overflow: hidden; border: 3px solid transparent; background: linear-gradient(var(--bg-1), var(--bg-1)) padding-box, var(--grad-aurora) border-box; }
@@ -835,13 +507,11 @@ body.kb-open .fab { transform: translateY(200%); }
 #bootError { position: fixed; inset: 0; background: var(--bg-0); color: var(--accent-2); z-index: 9999; padding: 24px; font-family: monospace; overflow: auto; display: none; }
 #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 9996; }
 
-/* PTR */
 .ptr-indicator { position: fixed; top: var(--safe-top); left: 50%; transform: translateX(-50%) translateY(-120%); padding: 10px 20px; background: var(--grad-accent); color: #fff; border-radius: 0 0 16px 16px; font-size: .72rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; z-index: 800; transition: transform .2s var(--ease-out); box-shadow: var(--sh-accent); display: flex; align-items: center; gap: 8px; }
 [data-accent="bw"][data-theme="dark"] .ptr-indicator { color: #000; }
 .ptr-indicator.visible { transform: translateX(-50%) translateY(0); }
 .ptr-indicator.refreshing svg { animation: spin .9s linear infinite; }
 
-/* OFFLINE / GUEST */
 .offline-banner, .guest-banner { position: fixed; left: 0; right: 0; z-index: 1400; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; font-size: .72rem; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
 .offline-banner { top: 0; padding-top: calc(10px + var(--safe-top)); background: var(--grad-accent); color: #fff; transform: translateY(-100%); transition: transform var(--t-norm); }
 [data-accent="bw"][data-theme="dark"] .offline-banner { color: #000; }
@@ -850,15 +520,11 @@ body.kb-open .fab { transform: translateY(200%); }
 .guest-banner.visible { display: flex; }
 .guest-banner button { padding: 4px 12px; border-radius: var(--r-xs); background: rgba(0,0,0,.4); border: 1px solid rgba(255,255,255,.3); color: #fff; font-size: .68rem; font-weight: 800; cursor: pointer; }
 
-/* BACK TOP */
 .back-top { position: fixed; right: 20px; bottom: calc(var(--bottomnav-h) + 90px + var(--safe-bottom)); width: 44px; height: 44px; border-radius: var(--r-sm); background: var(--grad-accent); color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 60; opacity: 0; visibility: hidden; transform: translateY(20px); transition: opacity var(--t-norm), visibility var(--t-norm), transform var(--t-norm); }
 [data-accent="bw"][data-theme="dark"] .back-top { color: #000; }
 .back-top.visible { opacity: 1; visibility: visible; transform: translateY(0); }
 .back-top svg { transform: rotate(180deg); }
 
-/* ═══════════════════════════════════════════════════════════════
-   ADAPTIVE
-   ═══════════════════════════════════════════════════════════════ */
 @media (max-width: 767px) {
   :root { --topbar-h: 60px; --bottomnav-h: 68px; }
   .bottom-nav, .top-bar { display: flex; }
@@ -894,11 +560,8 @@ body.kb-open .fab { transform: translateY(200%); }
   .fab { right: 40px; bottom: 40px; }
 }
 @media (min-width: 1920px) { .feed { grid-template-columns: repeat(4,1fr); } }
-@media (hover: none) and (pointer: coarse) {
-  .card:hover, .ad-card:hover, .prof-tile:hover, .chat-item:hover { transform: none; }
-}
+@media (hover: none) and (pointer: coarse) { .card:hover, .ad-card:hover, .prof-tile:hover, .chat-item:hover { transform: none; } }
 
-/* ===== ДОПОЛНИТЕЛЬНЫЕ КЛАССЫ, ИСПОЛЬЗУЕМЫЕ JS ===== */
 .ad-price-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .ad-badges { display: flex; gap: 5px; flex-wrap: wrap; }
 .ad-rating { color: var(--gold-2); font-size: .68rem; font-weight: 700; }
@@ -1191,7 +854,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div class="br-ai-logo-text">BR AI</div>
 </template>
 
-<!-- ═══════════ TOP BAR ═══════════ -->
 <header class="top-bar" id="topBar" style="display:none">
   <div class="top-bar-logo" id="topBarLogo" title="Меню">
     <img id="topBarLogoImg" src="https://i.postimg.cc/D0f5HnYF/9c6060466fdeccff6618c75c18398d66.jpg" alt="Black Store">
@@ -1219,7 +881,6 @@ body.kb-open .fab { transform: translateY(200%); }
   </div>
 </header>
 
-<!-- ═══════════ SIDEBAR ═══════════ -->
 <aside class="sidebar" id="sidebar" style="display:none">
   <div class="sidebar-brand" id="sidebarBrand">
     <div class="sidebar-brand-logo">
@@ -1264,7 +925,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <button class="sidebar-item" id="sidebarThemeBtn" style="margin-top:8px"><svg class="icon"><use href="#i-palette"/></svg><span>Тема</span></button>
 </aside>
 
-<!-- ═══════════ BOTTOM NAV ═══════════ -->
 <nav class="bottom-nav" id="bottomNav" style="display:none">
   <button class="bn-item active" data-section="home"><svg class="icon"><use href="#i-home"/></svg><span>База</span></button>
   <button class="bn-item" data-section="search"><svg class="icon"><use href="#i-search"/></svg><span>Поиск</span></button>
@@ -1273,7 +933,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <button class="bn-item" data-section="profile"><svg class="icon"><use href="#i-profile"/></svg><span>Профиль</span></button>
 </nav>
 
-<!-- ═══════════ FAB + RADIAL ═══════════ -->
 <button class="fab" id="fabMain" aria-label="Действия"><svg class="icon"><use href="#i-hex-plus"/></svg></button>
 <div class="radial-menu" id="radialMenu">
   <button class="radial-item" data-action="post" style="transform:translateY(-72px)">
@@ -1290,7 +949,6 @@ body.kb-open .fab { transform: translateY(200%); }
   </button>
 </div>
 
-<!-- ═══════════ AI PANEL ═══════════ -->
 <div class="ai-panel" id="aiPanel">
   <div class="ai-panel-inner">
     <div class="ai-sessions" id="aiSessions">
@@ -1325,16 +983,12 @@ body.kb-open .fab { transform: translateY(200%); }
   </div>
 </div>
 
-<!-- ═══════════ PTR ═══════════ -->
 <div class="ptr-indicator" id="ptrIndicator">
   <svg class="icon sm"><use href="#i-refresh"/></svg>
   <span id="ptrText">Обновить</span>
 </div>
 
-<!-- ═══════════ APP MAIN ═══════════ -->
 <main class="app-main" id="appMain" style="display:none">
-
-<!-- HOME -->
 <section class="section active" id="section-home">
   <h1 class="section-title"><svg class="icon lg"><use href="#i-home"/></svg><span>База</span></h1>
   <p class="section-sub">Торговая площадка Black Store</p>
@@ -1351,7 +1005,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div class="footer">Black Store ❖ Bounty Team</div>
 </section>
 
-<!-- SEARCH -->
 <section class="section" id="section-search">
   <h1 class="section-title"><svg class="icon lg"><use href="#i-search"/></svg><span>Поиск</span></h1>
   <p class="section-sub">Игроки и объявления</p>
@@ -1367,14 +1020,12 @@ body.kb-open .fab { transform: translateY(200%); }
   <div id="searchResults"></div>
 </section>
 
-<!-- FAVORITES -->
 <section class="section" id="section-favorites">
   <h1 class="section-title"><svg class="icon lg"><use href="#i-fav"/></svg><span>Избранное</span></h1>
   <p class="section-sub">Сохранённые объявления</p>
   <div id="favList"></div>
 </section>
 
-<!-- SEND -->
 <section class="section" id="section-send">
   <h1 class="section-title"><svg class="icon lg"><use href="#i-post"/></svg><span>Разместить</span></h1>
   <p class="section-sub">Объявление появится после модерации</p>
@@ -1426,21 +1077,18 @@ body.kb-open .fab { transform: translateY(200%); }
   <div class="footer">Black Store ❖ Bounty Team</div>
 </section>
 
-<!-- CHATS -->
 <section class="section" id="section-chats">
   <h1 class="section-title"><svg class="icon lg"><use href="#i-chats"/></svg><span>Рации</span></h1>
   <p class="section-sub">Личные переписки</p>
   <div id="chatsList"></div>
 </section>
 
-<!-- NOTIFICATIONS -->
 <section class="section" id="section-notifications">
   <h1 class="section-title"><svg class="icon lg"><use href="#i-bell"/></svg><span>Уведомления</span></h1>
   <p class="section-sub">События по вашим объявлениям</p>
   <div id="notifList"></div>
 </section>
 
-<!-- PROFILE -->
 <section class="section" id="section-profile">
   <div class="prof-header" id="profHeader"></div>
   <div class="prof-grid" id="profGrid"></div>
@@ -1451,7 +1099,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div class="footer">Black Store ❖ Bounty Team</div>
 </section>
 
-<!-- MY ADS -->
 <section class="section" id="section-my-ads">
   <div class="flex-between mb-16">
     <h1 class="section-title" style="margin:0"><svg class="icon lg"><use href="#i-post"/></svg><span>Мои объявления</span></h1>
@@ -1460,7 +1107,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div id="myAdsList"></div>
 </section>
 
-<!-- APPEALS -->
 <section class="section" id="section-my-appeals">
   <div class="flex-between mb-16">
     <h1 class="section-title" style="margin:0"><svg class="icon lg"><use href="#i-appeal"/></svg><span>Апелляции</span></h1>
@@ -1469,7 +1115,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div id="myAppealsList"></div>
 </section>
 
-<!-- MY REVIEWS -->
 <section class="section" id="section-my-reviews">
   <div class="flex-between mb-16">
     <h1 class="section-title" style="margin:0"><svg class="icon lg"><use href="#i-review"/></svg><span>Мои отзывы</span></h1>
@@ -1478,7 +1123,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div id="myReviewsList"></div>
 </section>
 
-<!-- HISTORY -->
 <section class="section" id="section-history">
   <div class="flex-between mb-16">
     <h1 class="section-title" style="margin:0"><svg class="icon lg"><use href="#i-history"/></svg><span>История</span></h1>
@@ -1487,7 +1131,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div id="historyList"></div>
 </section>
 
-<!-- SUBS -->
 <section class="section" id="section-subs">
   <div class="flex-between mb-16">
     <h1 class="section-title" style="margin:0"><svg class="icon lg"><use href="#i-subs"/></svg><span>Подписки</span></h1>
@@ -1496,7 +1139,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div id="subsContent"></div>
 </section>
 
-<!-- MUSIC -->
 <section class="section" id="section-music">
   <div class="flex-between mb-16">
     <h1 class="section-title" style="margin:0"><svg class="icon lg"><use href="#i-music"/></svg><span>Музыка</span></h1>
@@ -1505,7 +1147,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div id="musicContent"></div>
 </section>
 
-<!-- SETTINGS -->
 <section class="section" id="section-settings">
   <h1 class="section-title"><svg class="icon lg"><use href="#i-settings"/></svg><span>Настройки</span></h1>
   <p class="section-sub">Внешний вид и поведение</p>
@@ -1523,7 +1164,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div class="footer">Black Store v2.0</div>
 </section>
 
-<!-- ADMIN -->
 <section class="section" id="section-admin">
   <div class="flex-between mb-16">
     <h1 class="section-title" style="margin:0"><svg class="icon lg"><use href="#i-crown"/></svg><span>Админ</span></h1>
@@ -1538,7 +1178,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div id="adminContent"></div>
 </section>
 
-<!-- MOD LOGS -->
 <section class="section" id="section-mod-logs">
   <div class="flex-between mb-16">
     <h1 class="section-title" style="margin:0"><svg class="icon lg"><use href="#i-history"/></svg><span>Журнал</span></h1>
@@ -1546,13 +1185,9 @@ body.kb-open .fab { transform: translateY(200%); }
   </div>
   <div id="modLogsContent"></div>
 </section>
-
 </main>
 
-<!-- ═══════════ BACK TOP ═══════════ -->
 <button class="back-top" id="backTop"><svg class="icon"><use href="#i-chevron-down"/></svg></button>
-
-<!-- ═══════════ TOASTS / LOADER / PROGRESS ═══════════ -->
 <div class="toasts" id="toasts"></div>
 <div class="top-progress" id="topProgress"></div>
 
@@ -1561,7 +1196,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div class="loader-text">Загрузка...</div>
 </div>
 
-<!-- ═══════════ SPLASH ═══════════ -->
 <div id="splash">
   <div class="splash-logo">
     <img src="https://i.postimg.cc/D0f5HnYF/9c6060466fdeccff6618c75c18398d66.jpg" alt="Black Store">
@@ -1570,7 +1204,6 @@ body.kb-open .fab { transform: translateY(200%); }
   <div class="splash-sub">❖ Bounty Team</div>
 </div>
 
-<!-- ═══════════ BANNERS ═══════════ -->
 <div class="offline-banner" id="offlineBanner">
   <svg class="icon sm"><use href="#i-warn"/></svg>
   <span>Нет соединения</span>
@@ -1582,12 +1215,10 @@ body.kb-open .fab { transform: translateY(200%); }
   <button type="button" onclick="window.__guestLogin()">Войти</button>
 </div>
 
-<!-- ═══════════ CONTAINERS ═══════════ -->
 <canvas id="confetti"></canvas>
 <div id="imgViewContainer"></div>
 <div id="msgContextContainer"></div>
 
-<!-- Float Media -->
 <div class="float-media" id="floatMedia">
   <div class="float-media-header" id="floatMediaHeader">
     <span class="float-media-title" id="floatMediaTitle">Медиа</span>
@@ -1598,10 +1229,8 @@ body.kb-open .fab { transform: translateY(200%); }
   <div class="float-media-resize" id="floatMediaResize"></div>
 </div>
 
-<!-- 2FA / Верификация -->
 <div class="twofa-container" id="twofaContainer"></div>
 
-<!-- File viewer -->
 <div class="file-modal-overlay" id="fileModalOverlay">
   <div class="file-modal">
     <div class="file-modal-header">
@@ -1616,7 +1245,6 @@ body.kb-open .fab { transform: translateY(200%); }
   </div>
 </div>
 
-<!-- Modal / Auth / Boot -->
 <div id="modalContainer"></div>
 <div id="authContainer"></div>
 <div id="bootError"></div>
@@ -1625,10 +1253,9 @@ body.kb-open .fab { transform: translateY(200%); }
 'use strict';
 
 /* ═══════════════════════════════════════════════════════════════
-   ЧАСТЬ 2 — ЯДРО / КОНФИГ / I18N / ТЕМА / TG-БОТ / AUTH / 2FA
+   ЯДРО / КОНФИГ / I18N / ТЕМА / TG / AUTH / 2FA
    ═══════════════════════════════════════════════════════════════ */
 
-/* ═══════════════ CORE HELPERS ═══════════════ */
 const $ = id => document.getElementById(id);
 const $$ = sel => document.querySelectorAll(sel);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1639,7 +1266,6 @@ const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
 
-/* ═══════════════ CONFIG ═══════════════ */
 const SB_URL = 'https://pvfgzpvoabnxctunntbf.supabase.co';
 const SB_KEY = 'sb_publishable_tNJzUPj9GD3y6iT87okm5A_VoF138A8';
 const AI_FUNCTION_URL = SB_URL + '/functions/v1/chat-with-ai';
@@ -1656,10 +1282,10 @@ const LOGO_DARK = DEFAULT_IMG;
 const LOGO_LIGHT = 'https://i.postimg.cc/yxTt3L2g/1790612854765.jpg';
 
 const MENU_LINKS = [
-  { id:'forum',   icon:'i-forum',   title:'Форум Black Russia', desc:'forum.blackrussia.online', url:'https://forum.blackrussia.online/' },
-  { id:'manager', icon:'i-manager', title:'Менеджер',            desc:'@bounqy31',                 url:'https://t.me/bounqy31' },
-  { id:'tg',      icon:'i-chats',   title:'Telegram канал',      desc:'@Bounty_Squad31',           url:'https://t.me/Bounty_Squad31' },
-  { id:'vk',      icon:'i-users',   title:'ВКонтакте',           desc:'vk.com/bountyarz',          url:'https://vk.com/bountyarz' }
+  { id:'forum', icon:'i-forum', title:'Форум Black Russia', desc:'forum.blackrussia.online', url:'https://forum.blackrussia.online/' },
+  { id:'manager', icon:'i-manager', title:'Менеджер', desc:'@bounqy31', url:'https://t.me/bounqy31' },
+  { id:'tg', icon:'i-chats', title:'Telegram канал', desc:'@Bounty_Squad31', url:'https://t.me/Bounty_Squad31' },
+  { id:'vk', icon:'i-users', title:'ВКонтакте', desc:'vk.com/bountyarz', url:'https://vk.com/bountyarz' }
 ];
 
 const SERVERS = ['ASTANA','MAKHACHKALA','GROZNY','NORILSK','MAGADAN','MOSCOW','RED','CHEREPOVETS','EKB','KRASNODAR','PODOLSK','CHITA','BLACK','PURPLE','KAZAN','CRIMSON','YAKUTSK','VOLGOGRAD','ASTRAKHAN','VLADIKAVKAZ','GOLD','BLUE','SPB','UFA','CHELYABINSK','ROSTOV','OMSK','GREEN','YELLOW','SARATOV','VORONEZH','SOCHI','SAMARA','PINK','NOVOSIB','KRASNOYARSK','STAVROPOL','WHITE','ARZAMAS','VLADIVOSTOK','CHILLI','ORANGE','TOMSK','MAGENTA','PERM','KEMEROVO','INDIGO','ICE','KURSK','LIME','KALININGRAD','TULA','CHERRY','TYUMEN','PLATINUM','ORENBURG','OREL','IRKUTSK','AQUA','SURGUT','CHOCO','ANAPA','PSKOV','GRAY','KIROV','VLADIMIR','YAROSLAVL','BRYANSK','AZURE','BARNAUL','PENZA','RYAZAN','SMOLENSK','KHABAROVSK','IVANOVO','LIPETSK','MURMANSK','TOLYATTI','TAGANROG','ULYANOVSK','NOVGOROD','CHEBOKSARY','VOLOGDA','ARKHANGELSK','BELGOROD','TVER','TAMBOV','BRATSK','KOSTROMA','KALUGA','IZHEVSK'];
@@ -1713,15 +1339,11 @@ const FORBIDDEN = ['продам аккаунт','куплю аккаунт','п
 const TYPING_TTL = 3000;
 const TYPING_REFRESH = 1500;
 const TWOFA_TTL_MS = 5 * 60 * 1000;
-const TWOFA_BATCH_ATTEMPTS = 3;
-const TWOFA_BLOCK_2H_MS = 2 * 60 * 60 * 1000;
-const TWOFA_BLOCK_7D_MS = 7 * 24 * 60 * 60 * 1000;
 const MSK_OFFSET_MIN = 180;
 const VOICE_MAX_DURATION = 120;
 const VOICE_MIN_DURATION = 1;
 const VOICE_CANCEL_SWIPE = 80;
 const REACTIONS_SET = ['❤️','👍','😂','🔥','😢','👎'];
-
 const ACCENTS = ['red','gold','blue','bw'];
 
 const PREFIX = 'bs_v20';
@@ -1735,11 +1357,9 @@ const LS = {
   floatMedia: PREFIX+'_float_media', hotkeys: PREFIX+'_hotkeys',
   notifSettings: PREFIX+'_notif_settings',
   twofaState: PREFIX+'_2fa_state',
-  signup: PREFIX+'_signup_pending',
-  verify: PREFIX+'_verify_pending'
+  signup: PREFIX+'_signup_pending', verify: PREFIX+'_verify_pending'
 };
 
-/* ═══════════════ STATE ═══════════════ */
 let tg = null, sb = null, currentUser = null, tgUserId = null;
 let currentSection = 'home', currentTheme = 'dark', currentAccent = 'red', sfx = true, filterServer = null;
 let isAdmin = false, isOwner = false, audioCtx = null;
@@ -1758,7 +1378,7 @@ let accounts = [], shortcuts = {}, recognizer = null, voiceOn = false, voiceTarg
 let confettiActive = false, realtimeCh = null, rateLimits = {};
 let urlChecked = false, heartbeatInt = null, chatPollInt = null;
 let aiSessions = [], aiActiveId = null, aiMemory = [], aiCache = {}, aiBusy = false;
-let aiPanelOpen = false, aiFullscreen = false, aiSearchOpen = false;
+let aiPanelOpen = false, aiFullscreen = false;
 let aiStreamAbort = null, aiStreamText = '';
 let aiContext = {section:'home', ad:null, user:null};
 let floatingMediaState = {open:false, url:'', title:'', x:null, y:null, w:360, h:260};
@@ -1772,7 +1392,7 @@ let connState = 'online';
 let twofaRuntime = { attempts: 0, phase: 'initial', blockUntil: 0, userId: null };
 let isSignupMode = false;
 
-/* ═══════════════ I18N ═══════════════ */
+/* I18N (сокращено до ключевых строк — русский/английский/украинский) */
 const I18N = {
 ru: {
   home:'База', home_sub:'Торговая площадка Black Store', search:'Поиск', search_sub:'Игроки и объявления',
@@ -1784,8 +1404,7 @@ ru: {
   server:'Сервер', description:'Описание', media_label:'Медиа (ссылки через запятую)',
   choose_category:'Выберите категорию', choose_server:'Выберите сервер',
   all_servers:'Все сервера', sell:'Продажа', buy:'Покупка', send_submit_btn:'Отправить на модерацию',
-  chats:'Рации', chats_sub:'Личные переписки',
-  notifications:'Уведомления', notifications_sub:'События по вашим объявлениям',
+  chats:'Рации', chats_sub:'Личные переписки', notifications:'Уведомления', notifications_sub:'События по вашим объявлениям',
   profile:'Профиль', logout:'Выйти', login:'Войти', register:'Создать',
   guest_mode:'Гостевой режим', offline:'Нет соединения',
   settings:'Настройки', settings_sub:'Внешний вид и поведение',
@@ -1795,21 +1414,18 @@ ru: {
   my_ads:'Мои объявления', appeals:'Апелляции', my_reviews:'Мои отзывы',
   history:'История', subs:'Подписки', music:'Музыка',
   admin:'Админ', admin_tab_mod:'Модерация', admin_tab_reports:'Жалобы',
-  admin_tab_user:'На юзеров', admin_tab_users:'Юзеры',
-  admin_tab_owner:'Владелец', admin_tab_logs:'Логи',
+  admin_tab_user:'На юзеров', admin_tab_users:'Юзеры', admin_tab_logs:'Логи',
   mod_logs:'Журнал действий', media_window_title:'Медиа',
-  ai_online:'Онлайн', ai_thinking:'Думает...', ai_dialogs:'Диалоги',
-  ai_new_chat:'Новый чат', ai_welcome:'Привет! Я Bounty AI — помогу с Black Russia, приложением и общими вопросами.',
+  ai_online:'Онлайн', ai_thinking:'Думает...', ai_new_chat:'Новый чат',
+  ai_welcome:'Привет! Я Bounty AI — помогу с Black Russia, приложением и общими вопросами.',
   ai_placeholder:'Спроси что угодно...', ai_copied:'Скопировано', ai_stopped:'Остановлено',
   ai_error:'Не удалось получить ответ', ai_retry:'Повторить',
   ai_suggest_1:'Правила Black Russia', ai_suggest_2:'Как заработать в игре?',
   ai_suggest_3:'Как разместить объявление?', ai_suggest_4:'Что такое DM и RK?',
-  ai_typing:'печатает',
-  reviews:'Отзывы', review_write:'Оставить отзыв', review_send:'Отправить отзыв',
+  ai_typing:'печатает', reviews:'Отзывы', review_write:'Оставить отзыв', review_send:'Отправить отзыв',
   review_thanks:'Спасибо за отзыв!', review_text_ph:'Ваш отзыв...',
   report:'Пожаловаться', report_reason:'Причина жалобы', report_send:'Отправить жалобу',
-  report_thanks:'Жалоба отправлена', report_choose:'Выберите причину',
-  report_comment_ph:'Комментарий (необязательно)',
+  report_thanks:'Жалоба отправлена', report_choose:'Выберите причину', report_comment_ph:'Комментарий (необязательно)',
   change_price:'Изменить цену', change_price_new:'Новая цена', change_price_save:'Сохранить цену',
   change_price_cooldown:'Следующая смена через', change_price_history:'История изменений',
   change_price_no_history:'Пока нет изменений',
@@ -1828,7 +1444,6 @@ ru: {
   chat_placeholder:'Сообщение...', chat_empty:'Начните переписку', chat_with:'Написать',
   theme_dark:'Тёмная', theme_light:'Светлая', accent:'Акцент', language:'Язык', fontSize:'Размер шрифта',
   small:'Малый', medium:'Средний', large:'Большой', sfx:'Звуки',
-  accent_red:'Красный', accent_gold:'Золотой', accent_blue:'Синий', accent_bw:'Чёрно-белый',
   confirm_logout:'Выход', confirm_logout_text:'Выйти из аккаунта?',
   banned:'Доступ закрыт', banned_text:'Аккаунт заблокирован',
   login_label:'Логин', password_label:'Пароль', password_ph:'Минимум 6 символов',
@@ -1843,61 +1458,45 @@ ru: {
   make_admin:'Дать админку', remove_admin:'Снять админку',
   verify:'Верификация', unverify:'Снять верификацию',
   hide_all:'Скрыть всё', delete_all:'Удалить всё',
-  notify:'Уведомить', broadcast:'Broadcast', info:'Инфо',
-  audit:'Аудит', owner_panel:'Панель владельца',
-  find:'Найти', user_id:'ID или логин юзера', user_not_found:'Пользователь не найден',
-  user_banned:'Пользователь забанен', user_unbanned:'Пользователь разбанен',
+  notify:'Уведомить', broadcast:'Broadcast',
+  owner_panel:'Панель владельца', find:'Найти', user_id:'ID или логин юзера',
+  user_not_found:'Пользователь не найден', user_banned:'Пользователь забанен', user_unbanned:'Пользователь разбанен',
   admin_granted:'Админка выдана', admin_removed:'Админка снята',
   verified:'Верифицирован', unverified:'Верификация снята',
   message_text:'Текст сообщения', sent:'Отправлено',
   no_logs:'Логов пока нет', no_access:'Нет доступа', rate_limit:'Слишком часто',
-  twofa_title:'Подтверждение входа',
-  twofa_desc:'Мы отправили 6-значный код в Telegram.',
+  twofa_title:'Подтверждение входа', twofa_desc:'Мы отправили 6-значный код в Telegram.',
   twofa_bot_hint:'Открой @BLackRU_STore_bot — код уже в ЛС',
   twofa_confirm:'Подтвердить', twofa_resend:'Отправить заново', twofa_cancel:'Отмена',
   twofa_wrong:'Неверный код', twofa_expired:'Код истёк', twofa_sent:'Код отправлен',
-  twofa_blocked:'Слишком много попыток', twofa_attempts:'Попыток осталось',
-  twofa_tg_not_linked:'Telegram не привязан к аккаунту',
-  twofa_need_telegram:'Подключите Telegram в настройках',
-  twofa_sending:'Отправляем код...', twofa_sent_ok:'Код отправлен в Telegram',
-  twofa_block_2h:'Слишком много неверных попыток. Вход заблокирован на 2 часа (МСК).',
-  twofa_block_7d:'Превышен лимит попыток. Вход заблокирован на 7 дней (МСК).',
-  twofa_blocked_until:'Заблокировано до', twofa_blocked_hint:'Подожди время блокировки и попробуй снова',
   signup_title:'Создание аккаунта', signup_sub:'Введи данные и подтверди через Telegram',
   signup_tg_label:'Telegram (@username)', signup_tg_ph:'@username',
   signup_pass_label:'Пароль', signup_pass_ph:'Минимум 6 символов',
   signup_pass_confirm:'Повтори пароль', signup_next:'Далее',
-  signup_have:'Уже есть аккаунт? Войти', signup_no:'Нет аккаунта? Создать',
-  signup_tg_required:'Введи Telegram для верификации',
-  signup_pass_mismatch:'Пароли не совпадают', signup_pass_short:'Пароль минимум 6 символов',
+  signup_tg_required:'Введи Telegram для верификации', signup_pass_mismatch:'Пароли не совпадают',
+  signup_pass_short:'Пароль минимум 6 символов',
   verify_title:'Подтверждение аккаунта', verify_sending:'Отправляем код в Telegram...',
   verify_desc:'Мы отправили 6-значный код в Telegram.',
   verify_bot_hint:'Открой @BLackRU_STore_bot и скопируй код',
   verify_input_label:'Введи 6-значный код', verify_confirm:'Подтвердить',
-  verify_resend:'Отправить новый код', verify_change:'Изменить данные',
-  verify_code_sent:'Код отправлен', verify_wrong_code:'Неверный код',
-  verify_no_code:'Код не пришёл? Проверь бот',
-  msg_reply:'Ответить', msg_copy:'Копировать', msg_delete:'Удалить', msg_react:'Реакция',
-  msg_reply_to:'Ответ на', msg_typing:'печатает',
-  msg_voice_recording:'Запись...', msg_voice_slide_cancel:'← свайп влево = отмена',
-  msg_voice_too_short:'Слишком коротко', msg_voice_play:'Воспроизвести',
-  msg_online:'Онлайн', msg_recent:'Недавно', msg_min_ago:'мин назад',
-  msg_hours_ago:'ч назад', msg_days_ago:'дн назад',
+  verify_resend:'Отправить новый код', verify_code_sent:'Код отправлен', verify_wrong_code:'Неверный код',
+  msg_reply:'Ответить', msg_copy:'Копировать', msg_delete:'Удалить',
+  msg_reply_to:'Ответ на', msg_typing:'печатает', msg_voice_recording:'Запись...',
+  msg_voice_slide_cancel:'← свайп влево = отмена', msg_voice_too_short:'Слишком коротко',
+  msg_online:'Онлайн', msg_recent:'Недавно', msg_min_ago:'мин назад', msg_hours_ago:'ч назад', msg_days_ago:'дн назад',
   review_reply:'Ответ продавца', review_reply_btn:'Ответить',
   review_reply_ph:'Ваш ответ на отзыв...', review_reply_send:'Отправить ответ',
-  notif_settings_title:'Уведомления в Telegram',
-  notif_messages:'Новые сообщения', notif_moderation:'Одобрение объявлений',
-  notif_views:'Просмотры моих объявлений', notif_reviews:'Новые отзывы', notif_news:'Акции и новости',
+  notif_settings_title:'Уведомления в Telegram', notif_messages:'Новые сообщения',
+  notif_moderation:'Одобрение объявлений', notif_views:'Просмотры моих объявлений',
+  notif_reviews:'Новые отзывы', notif_news:'Акции и новости',
   notif_freq_instant:'Мгновенно', notif_freq_daily:'Раз в день', notif_freq_weekly:'Раз в неделю',
   notif_save:'Сохранить', notif_saved:'Настройки сохранены',
   tg_connected:'Telegram подключён', tg_connect:'Подключить Telegram',
-  conn_online:'Онлайн', conn_offline:'Оффлайн', conn_realtime:'Realtime',
   ptr_pull:'Потяни для обновления', ptr_release:'Отпусти для обновления', ptr_refreshing:'Обновление...',
   status_online:'Онлайн', status_recent:'Недавно', status_offline:'Давно',
-  pc_select_chat:'Выбери чат', pc_select_chat_desc:'Выбери собеседника слева',
   share_title:'Поделиться приложением', share_desc:'t.me/BLackRU_STore_bot/app',
   share_btn:'Поделиться', link_copied:'Ссылка скопирована',
-  file_play:'Воспроизвести', file_download:'Скачать', file_open:'Открыть'
+  file_download:'Скачать', file_open:'Открыть'
 },
 en: {
   home:'Home', home_sub:'Black Store marketplace', search:'Search', search_sub:'Users and ads',
@@ -1918,17 +1517,16 @@ en: {
   my_ads:'My ads', appeals:'Appeals', my_reviews:'My reviews',
   history:'History', subs:'Subscriptions', music:'Music',
   admin:'Admin', admin_tab_mod:'Moderation', admin_tab_reports:'Reports',
-  admin_tab_user:'User reports', admin_tab_users:'Users',
-  admin_tab_owner:'Owner', admin_tab_logs:'Logs',
+  admin_tab_user:'User reports', admin_tab_users:'Users', admin_tab_logs:'Logs',
   mod_logs:'Action log', media_window_title:'Media',
-  ai_online:'Online', ai_thinking:'Thinking...', ai_dialogs:'Chats',
-  ai_new_chat:'New chat', ai_welcome:'Hi! I am Bounty AI — I can help with Black Russia, the app and general questions.',
+  ai_online:'Online', ai_thinking:'Thinking...', ai_new_chat:'New chat',
+  ai_welcome:'Hi! I am Bounty AI — I can help with Black Russia, the app and general questions.',
   ai_placeholder:'Ask anything...', ai_copied:'Copied', ai_stopped:'Stopped',
   ai_error:'Failed to get response', ai_retry:'Retry',
   ai_suggest_1:'Black Russia rules', ai_suggest_2:'How to earn in game?',
   ai_suggest_3:'How to post an ad?', ai_suggest_4:'What is DM and RK?',
   ai_typing:'typing', reviews:'Reviews', review_write:'Leave a review', review_send:'Send review',
-  review_thanks:'Thanks for the review!', review_text_ph:'Your review...',
+  review_thanks:'Thanks!', review_text_ph:'Your review...',
   report:'Report', report_reason:'Report reason', report_send:'Send report',
   report_thanks:'Report sent', report_choose:'Choose a reason', report_comment_ph:'Comment (optional)',
   change_price:'Change price', change_price_new:'New price', change_price_save:'Save price',
@@ -1936,8 +1534,8 @@ en: {
   change_price_no_history:'No changes yet',
   qr:'QR code', qr_copy:'Copy', qr_share_tg:'To Telegram', qr_copied:'Copied',
   follow:'Follow', unfollow:'Unfollow', followers:'Followers', following:'Following',
-  voice_not_supported:'Voice input not supported', voice_https_required:'HTTPS required for microphone',
-  voice_permission:'Allow microphone access', voice_error:'Recognition error',
+  voice_not_supported:'Voice input not supported', voice_https_required:'HTTPS required',
+  voice_permission:'Allow microphone', voice_error:'Recognition error',
   upload_file:'Upload file', send_link:'Send as link',
   uploading:'Uploading...', file_too_big:'File too large (max 20MB)',
   hotkey_press:'Press keys...',
@@ -1949,7 +1547,6 @@ en: {
   chat_placeholder:'Message...', chat_empty:'Start the chat', chat_with:'Message',
   theme_dark:'Dark', theme_light:'Light', accent:'Accent', language:'Language', fontSize:'Font size',
   small:'Small', medium:'Medium', large:'Large', sfx:'Sounds',
-  accent_red:'Red', accent_gold:'Gold', accent_blue:'Blue', accent_bw:'Black & White',
   confirm_logout:'Logout', confirm_logout_text:'Log out?',
   banned:'Access denied', banned_text:'Account banned',
   login_label:'Username', password_label:'Password', password_ph:'Min 6 characters',
@@ -1960,9 +1557,9 @@ en: {
   approve:'Approve', reject:'Reject', open:'Open', hide:'Hide', delete:'Delete', edit:'Edit',
   ban:'Ban', unban:'Unban', warn:'Warn', make_admin:'Make admin', remove_admin:'Demote',
   verify:'Verify', unverify:'Unverify', hide_all:'Hide all', delete_all:'Delete all',
-  notify:'Notify', broadcast:'Broadcast', info:'Info', audit:'Audit', owner_panel:'Owner panel',
-  find:'Find', user_id:'User ID or login', user_not_found:'User not found',
-  user_banned:'User banned', user_unbanned:'User unbanned',
+  notify:'Notify', broadcast:'Broadcast',
+  owner_panel:'Owner panel', find:'Find', user_id:'User ID or login',
+  user_not_found:'User not found', user_banned:'User banned', user_unbanned:'User unbanned',
   admin_granted:'Admin granted', admin_removed:'Admin removed',
   verified:'Verified', unverified:'Verification removed',
   message_text:'Message text', sent:'Sent',
@@ -1971,31 +1568,21 @@ en: {
   twofa_bot_hint:'Open @BLackRU_STore_bot — code is in DM',
   twofa_confirm:'Confirm', twofa_resend:'Resend', twofa_cancel:'Cancel',
   twofa_wrong:'Wrong code', twofa_expired:'Code expired', twofa_sent:'Code sent',
-  twofa_blocked:'Too many attempts', twofa_attempts:'Attempts left',
-  twofa_tg_not_linked:'Telegram is not linked', twofa_need_telegram:'Connect Telegram in settings',
-  twofa_sending:'Sending code...', twofa_sent_ok:'Code sent to Telegram',
-  twofa_block_2h:'Too many failed attempts. Login blocked for 2 hours (MSK).',
-  twofa_block_7d:'Too many attempts. Login blocked for 7 days (MSK).',
-  twofa_blocked_until:'Blocked until', twofa_blocked_hint:'Wait for the cooldown and try again',
   signup_title:'Create account', signup_sub:'Enter data and confirm via Telegram',
   signup_tg_label:'Telegram (@username)', signup_tg_ph:'@username',
   signup_pass_label:'Password', signup_pass_ph:'Min 6 characters',
   signup_pass_confirm:'Repeat password', signup_next:'Next',
-  signup_have:'Already have an account? Sign in', signup_no:'No account? Create',
   signup_tg_required:'Enter Telegram for verification', signup_pass_mismatch:'Passwords don\'t match',
   signup_pass_short:'Password min 6 characters',
   verify_title:'Account confirmation', verify_sending:'Sending code to Telegram...',
   verify_desc:'We sent a 6-digit code to Telegram.',
   verify_bot_hint:'Open @BLackRU_STore_bot and copy the code',
   verify_input_label:'Enter 6-digit code', verify_confirm:'Confirm',
-  verify_resend:'Resend new code', verify_change:'Change data',
-  verify_code_sent:'Code sent', verify_wrong_code:'Wrong code',
-  verify_no_code:'No code? Check the bot',
-  msg_reply:'Reply', msg_copy:'Copy', msg_delete:'Delete', msg_react:'React',
+  verify_resend:'Resend new code', verify_code_sent:'Code sent', verify_wrong_code:'Wrong code',
+  msg_reply:'Reply', msg_copy:'Copy', msg_delete:'Delete',
   msg_reply_to:'Reply to', msg_typing:'typing', msg_voice_recording:'Recording...',
   msg_voice_slide_cancel:'← swipe left = cancel', msg_voice_too_short:'Too short',
-  msg_voice_play:'Play', msg_online:'Online', msg_recent:'Recently',
-  msg_min_ago:'min ago', msg_hours_ago:'h ago', msg_days_ago:'d ago',
+  msg_online:'Online', msg_recent:'Recently', msg_min_ago:'min ago', msg_hours_ago:'h ago', msg_days_ago:'d ago',
   review_reply:'Seller\'s reply', review_reply_btn:'Reply',
   review_reply_ph:'Your reply to review...', review_reply_send:'Send reply',
   notif_settings_title:'Telegram notifications', notif_messages:'New messages',
@@ -2004,26 +1591,22 @@ en: {
   notif_freq_instant:'Instant', notif_freq_daily:'Daily', notif_freq_weekly:'Weekly',
   notif_save:'Save', notif_saved:'Settings saved',
   tg_connected:'Telegram connected', tg_connect:'Connect Telegram',
-  conn_online:'Online', conn_offline:'Offline', conn_realtime:'Realtime',
   ptr_pull:'Pull to refresh', ptr_release:'Release to refresh', ptr_refreshing:'Refreshing...',
   status_online:'Online', status_recent:'Recently', status_offline:'Long ago',
-  pc_select_chat:'Select a chat', pc_select_chat_desc:'Pick a contact on the left',
   share_title:'Share the app', share_desc:'t.me/BLackRU_STore_bot/app',
   share_btn:'Share', link_copied:'Link copied',
-  file_play:'Play', file_download:'Download', file_open:'Open'
+  file_download:'Download', file_open:'Open'
 },
 ukr: {
   home:'Головна', home_sub:'Торговий майданчик Black Store', search:'Пошук', search_sub:'Гравці та оголошення',
   search_ph:'Що шукаємо?', search_all:'Все', search_users:'Гравці', search_items:'Оголошення',
-  favorites:'Обране', favorites_sub:'Збережені оголошення',
-  send:'Розмістити', send_sub:'Оголошення зʼявиться після модерації',
+  favorites:'Обране', favorites_sub:'Збережені оголошення', send:'Розмістити', send_sub:'Оголошення зʼявиться після модерації',
   type_deal:'Тип угоди', category:'Категорія', name:'Назва', price:'Ціна',
   price_hint:'5к = 5 000 · 1кк = 1 000 000 · 1ккк = 1 000 000 000',
   server:'Сервер', description:'Опис', media_label:'Медіа (посилання через кому)',
   choose_category:'Виберіть категорію', choose_server:'Виберіть сервер',
   all_servers:'Усі сервери', sell:'Продаж', buy:'Купівля', send_submit_btn:'Надіслати на модерацію',
-  chats:'Чати', chats_sub:'Особисті переписки',
-  notifications:'Сповіщення', notifications_sub:'Події за оголошеннями',
+  chats:'Чати', chats_sub:'Особисті переписки', notifications:'Сповіщення', notifications_sub:'Події за оголошеннями',
   profile:'Профіль', logout:'Вийти', login:'Увійти', register:'Створити',
   guest_mode:'Гостьовий режим', offline:'Немає зʼєднання',
   settings:'Налаштування', settings_sub:'Вигляд та поведінка',
@@ -2033,25 +1616,24 @@ ukr: {
   my_ads:'Мої оголошення', appeals:'Апеляції', my_reviews:'Мої відгуки',
   history:'Історія', subs:'Підписки', music:'Музика',
   admin:'Адмін', admin_tab_mod:'Модерація', admin_tab_reports:'Скарги',
-  admin_tab_user:'На юзерів', admin_tab_users:'Юзери',
-  admin_tab_owner:'Власник', admin_tab_logs:'Логи',
+  admin_tab_user:'На юзерів', admin_tab_users:'Юзери', admin_tab_logs:'Логи',
   mod_logs:'Журнал дій', media_window_title:'Медіа',
-  ai_online:'Онлайн', ai_thinking:'Думає...', ai_dialogs:'Діалоги',
-  ai_new_chat:'Новий чат', ai_welcome:'Привіт! Я Bounty AI — допоможу з Black Russia, застосунком та загальними питаннями.',
+  ai_online:'Онлайн', ai_thinking:'Думає...', ai_new_chat:'Новий чат',
+  ai_welcome:'Привіт! Я Bounty AI — допоможу з Black Russia, застосунком та загальними питаннями.',
   ai_placeholder:'Запитайте будь-що...', ai_copied:'Скопійовано', ai_stopped:'Зупинено',
   ai_error:'Не вдалося отримати відповідь', ai_retry:'Повторити',
   ai_suggest_1:'Правила Black Russia', ai_suggest_2:'Як заробити в грі?',
   ai_suggest_3:'Як розмістити оголошення?', ai_suggest_4:'Що таке DM та RK?',
   ai_typing:'друкує', reviews:'Відгуки', review_write:'Залишити відгук', review_send:'Надіслати відгук',
-  review_thanks:'Дякую за відгук!', review_text_ph:'Ваш відгук...',
+  review_thanks:'Дякую!', review_text_ph:'Ваш відгук...',
   report:'Поскаржитися', report_reason:'Причина скарги', report_send:'Надіслати скаргу',
-  report_thanks:'Скаргу надіслано', report_choose:'Виберіть причину', report_comment_ph:'Коментар (необов\'язково)',
+  report_thanks:'Скаргу надіслано', report_choose:'Виберіть причину', report_comment_ph:'Коментар',
   change_price:'Змінити ціну', change_price_new:'Нова ціна', change_price_save:'Зберегти ціну',
   change_price_cooldown:'Наступна зміна через', change_price_history:'Історія змін',
   change_price_no_history:'Змін поки немає',
   qr:'QR-код', qr_copy:'Копіювати', qr_share_tg:'У Telegram', qr_copied:'Скопійовано',
   follow:'Підписатися', unfollow:'Відписатися', followers:'Підписники', following:'Підписки',
-  voice_not_supported:'Голосовий ввід не підтримується', voice_https_required:'Потрібен HTTPS для мікрофона',
+  voice_not_supported:'Голосовий ввід не підтримується', voice_https_required:'Потрібен HTTPS',
   voice_permission:'Дозвольте доступ до мікрофона', voice_error:'Помилка розпізнавання',
   upload_file:'Завантажити файл', send_link:'Надіслати за посиланням',
   uploading:'Завантаження...', file_too_big:'Файл завеликий (макс 20MB)',
@@ -2064,7 +1646,6 @@ ukr: {
   chat_placeholder:'Повідомлення...', chat_empty:'Почніть переписку', chat_with:'Написати',
   theme_dark:'Темна', theme_light:'Світла', accent:'Акцент', language:'Мова', fontSize:'Розмір шрифту',
   small:'Малий', medium:'Середній', large:'Великий', sfx:'Звуки',
-  accent_red:'Червоний', accent_gold:'Золотий', accent_blue:'Синій', accent_bw:'Чорно-білий',
   confirm_logout:'Вихід', confirm_logout_text:'Вийти з акаунта?',
   banned:'Доступ закрито', banned_text:'Акаунт заблоковано',
   login_label:'Логін', password_label:'Пароль', password_ph:'Мінімум 6 символів',
@@ -2077,9 +1658,9 @@ ukr: {
   make_admin:'Дати адмінку', remove_admin:'Зняти адмінку',
   verify:'Верифікація', unverify:'Зняти верифікацію',
   hide_all:'Приховати все', delete_all:'Видалити все',
-  notify:'Повідомити', broadcast:'Broadcast', info:'Інфо', audit:'Аудит', owner_panel:'Панель власника',
-  find:'Знайти', user_id:'ID або логін юзера', user_not_found:'Користувача не знайдено',
-  user_banned:'Користувача забанено', user_unbanned:'Користувача розбанено',
+  notify:'Повідомити', broadcast:'Broadcast',
+  owner_panel:'Панель власника', find:'Знайти', user_id:'ID або логін юзера',
+  user_not_found:'Користувача не знайдено', user_banned:'Користувача забанено', user_unbanned:'Користувача розбанено',
   admin_granted:'Адмінку видано', admin_removed:'Адмінку знято',
   verified:'Верифіковано', unverified:'Верифікацію знято',
   message_text:'Текст повідомлення', sent:'Надіслано',
@@ -2088,31 +1669,21 @@ ukr: {
   twofa_bot_hint:'Відкрий @BLackRU_STore_bot — код в ЛС',
   twofa_confirm:'Підтвердити', twofa_resend:'Надіслати знову', twofa_cancel:'Скасувати',
   twofa_wrong:'Невірний код', twofa_expired:'Код закінчився', twofa_sent:'Код надіслано',
-  twofa_blocked:'Занадто багато спроб', twofa_attempts:'Спроб залишилось',
-  twofa_tg_not_linked:'Telegram не привʼязано', twofa_need_telegram:'Підключіть Telegram у налаштуваннях',
-  twofa_sending:'Надсилаємо код...', twofa_sent_ok:'Код надіслано в Telegram',
-  twofa_block_2h:'Занадто багато невірних спроб. Вхід заблоковано на 2 години (МСК).',
-  twofa_block_7d:'Перевищено ліміт спроб. Вхід заблоковано на 7 днів (МСК).',
-  twofa_blocked_until:'Заблоковано до', twofa_blocked_hint:'Зачекай час блокування та спробуй знову',
   signup_title:'Створення акаунта', signup_sub:'Введи дані та підтверди через Telegram',
   signup_tg_label:'Telegram (@username)', signup_tg_ph:'@username',
   signup_pass_label:'Пароль', signup_pass_ph:'Мінімум 6 символів',
   signup_pass_confirm:'Повтори пароль', signup_next:'Далі',
-  signup_have:'Вже є акаунт? Увійти', signup_no:'Немає акаунта? Створити',
   signup_tg_required:'Введи Telegram для верифікації', signup_pass_mismatch:'Паролі не співпадають',
   signup_pass_short:'Пароль мінімум 6 символів',
   verify_title:'Підтвердження акаунта', verify_sending:'Надсилаємо код у Telegram...',
   verify_desc:'Ми надіслали 6-значний код у Telegram.',
   verify_bot_hint:'Відкрий @BLackRU_STore_bot та скопіюй код',
   verify_input_label:'Введи 6-значний код', verify_confirm:'Підтвердити',
-  verify_resend:'Надіслати новий код', verify_change:'Змінити дані',
-  verify_code_sent:'Код надіслано', verify_wrong_code:'Невірний код',
-  verify_no_code:'Не прийшов код? Перевір бот',
-  msg_reply:'Відповісти', msg_copy:'Копіювати', msg_delete:'Видалити', msg_react:'Реакція',
+  verify_resend:'Надіслати новий код', verify_code_sent:'Код надіслано', verify_wrong_code:'Невірний код',
+  msg_reply:'Відповісти', msg_copy:'Копіювати', msg_delete:'Видалити',
   msg_reply_to:'Відповідь на', msg_typing:'друкує', msg_voice_recording:'Запис...',
   msg_voice_slide_cancel:'← свайп вліво = скасувати', msg_voice_too_short:'Занадто коротко',
-  msg_voice_play:'Відтворити', msg_online:'Онлайн', msg_recent:'Нещодавно',
-  msg_min_ago:'хв тому', msg_hours_ago:'год тому', msg_days_ago:'дн тому',
+  msg_online:'Онлайн', msg_recent:'Нещодавно', msg_min_ago:'хв тому', msg_hours_ago:'год тому', msg_days_ago:'дн тому',
   review_reply:'Відповідь продавця', review_reply_btn:'Відповісти',
   review_reply_ph:'Ваша відповідь на відгук...', review_reply_send:'Надіслати відповідь',
   notif_settings_title:'Сповіщення в Telegram', notif_messages:'Нові повідомлення',
@@ -2121,13 +1692,11 @@ ukr: {
   notif_freq_instant:'Миттєво', notif_freq_daily:'Раз на день', notif_freq_weekly:'Раз на тиждень',
   notif_save:'Зберегти', notif_saved:'Налаштування збережено',
   tg_connected:'Telegram підключено', tg_connect:'Підключити Telegram',
-  conn_online:'Онлайн', conn_offline:'Офлайн', conn_realtime:'Realtime',
   ptr_pull:'Потягни для оновлення', ptr_release:'Відпусти для оновлення', ptr_refreshing:'Оновлення...',
   status_online:'Онлайн', status_recent:'Нещодавно', status_offline:'Давно',
-  pc_select_chat:'Вибери чат', pc_select_chat_desc:'Вибери співрозмовника зліва',
   share_title:'Поділитися застосунком', share_desc:'t.me/BLackRU_STore_bot/app',
   share_btn:'Поділитися', link_copied:'Посилання скопійовано',
-  file_play:'Відтворити', file_download:'Завантажити', file_open:'Відкрити'
+  file_download:'Завантажити', file_open:'Відкрити'
 }
 };
 
@@ -2147,14 +1716,12 @@ function applyTranslations(){
   document.documentElement.lang = currentLang === 'ukr' ? 'uk' : currentLang;
 }
 
-/* ═══════════════ LOCALSTORAGE ═══════════════ */
 const lsGet = k => { try{ return localStorage.getItem(k); }catch(e){ return null; } };
 const lsSet = (k,v) => { try{ localStorage.setItem(k,v); }catch(e){} };
 const lsDel = k => { try{ localStorage.removeItem(k); }catch(e){} };
 const sessionSuffix = () => tgUserId ? '_tg'+tgUserId : '_web';
 const sKey = b => b + sessionSuffix();
 
-/* ═══════════════ SOUND ═══════════════ */
 function sfxPlay(type){
   if(!sfx) return;
   try{
@@ -2185,10 +1752,8 @@ function bindGlobalClickSound(){
   }, {passive: true});
 }
 window.bindGlobalClickSound = bindGlobalClickSound;
-
 function haptic(s='light'){ if(tg && tg.HapticFeedback){ try{ tg.HapticFeedback.impactOccurred(s); }catch(e){} } }
 
-/* ═══════════════ TOAST / LOADER ═══════════════ */
 function toast(msg, type='info', dur=2800){
   const c = $('toasts'); if(!c) return;
   const el = document.createElement('div');
@@ -2209,7 +1774,6 @@ window.loader = loader;
 function topProg(show){ const el = $('topProgress'); if(el) el.classList.toggle('active', !!show); }
 window.topProg = topProg;
 
-/* ═══════════════ DATE / TIME ═══════════════ */
 function isOnlineUser(iso){ if(!iso) return false; try{ return (Date.now() - new Date(iso).getTime()) < ONLINE_WINDOW; }catch(e){ return false; } }
 function isRecentUser(iso){ if(!iso) return false; try{ const d = Date.now() - new Date(iso).getTime(); return d >= ONLINE_WINDOW && d < RECENT_WINDOW; }catch(e){ return false; } }
 function userStatusClass(iso){ if(isOnlineUser(iso)) return 'online'; if(isRecentUser(iso)) return 'recent'; return 'offline'; }
@@ -2223,8 +1787,7 @@ function userStatusText(iso){
     if(mins < 60) return mins + ' ' + t('msg_min_ago');
     const hrs = Math.floor(d/3600000);
     if(hrs < 24) return hrs + ' ' + t('msg_hours_ago');
-    const days = Math.floor(d/86400000);
-    return days + ' ' + t('msg_days_ago');
+    return Math.floor(d/86400000) + ' ' + t('msg_days_ago');
   }catch(e){ return t('status_offline'); }
 }
 function timeAgo(iso){
@@ -2246,27 +1809,10 @@ function fmtShortTimer(ms){
 }
 function fmtMMSS(sec){
   const s = Math.max(0, Math.floor(sec));
-  const m = Math.floor(s/60), ss = s%60;
-  return String(m).padStart(2,'0')+':'+String(ss).padStart(2,'0');
-}
-function fmtLongTimer(ms){
-  const s = Math.max(0, Math.floor(ms/1000));
-  const d = Math.floor(s/86400), hh = Math.floor((s%86400)/3600), mm = Math.floor((s%3600)/60), ss = s%60;
-  if(d > 0) return d + 'д ' + String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0') + ':' + String(ss).padStart(2,'0');
-  return String(hh).padStart(2,'0') + ':' + String(mm).padStart(2,'0') + ':' + String(ss).padStart(2,'0');
+  return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 }
 async function hashPwd(pw){ return pw; }
-function mskDateStr(ts = Date.now()){
-  const msk = new Date(ts + (MSK_OFFSET_MIN * 60000));
-  const d = String(msk.getUTCDate()).padStart(2, '0');
-  const mo = String(msk.getUTCMonth() + 1).padStart(2, '0');
-  const y = msk.getUTCFullYear();
-  const hh = String(msk.getUTCHours()).padStart(2, '0');
-  const mm = String(msk.getUTCMinutes()).padStart(2, '0');
-  return `${d}.${mo}.${y} ${hh}:${mm} МСК`;
-}
 
-/* ═══════════════ PRICE / LINKS ═══════════════ */
 function formatPrice(v){
   if(!v && v !== 0) return '0';
   let n = String(v).toLowerCase();
@@ -2347,7 +1893,6 @@ function getAdThumb(ad){
   return DEFAULT_IMG;
 }
 
-/* ═══════════════ THEME / ACCENT ═══════════════ */
 function applyTheme(){
   document.documentElement.setAttribute('data-theme', currentTheme);
   document.body.setAttribute('data-theme', currentTheme);
@@ -2360,10 +1905,8 @@ function applyTheme(){
   lsSet(LS.accent, currentAccent);
 }
 window.applyTheme = applyTheme;
-
 function applyFont(){ document.documentElement.setAttribute('data-font-size', userSettings.font_size || 'medium'); }
 window.applyFont = applyFont;
-
 function toggleTheme(){
   currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
   applyTheme();
@@ -2372,7 +1915,6 @@ function toggleTheme(){
   sfxPlay('click');
 }
 window.toggleTheme = toggleTheme;
-
 function setAccent(accent){
   if(!ACCENTS.includes(accent)) return;
   currentAccent = accent;
@@ -2382,15 +1924,12 @@ function setAccent(accent){
   sfxPlay('click');
 }
 window.setAccent = setAccent;
-
 function cycleAccent(){
   const idx = ACCENTS.indexOf(currentAccent);
-  const next = ACCENTS[(idx + 1) % ACCENTS.length];
-  setAccent(next);
+  setAccent(ACCENTS[(idx + 1) % ACCENTS.length]);
 }
 window.cycleAccent = cycleAccent;
 
-/* ═══════════════ MODAL ═══════════════ */
 function showModal(html, onClose, opts){
   opts = opts || {};
   if(activeModal){ try{ activeModal.ov.remove(); }catch(e){} activeModal = null; }
@@ -2408,6 +1947,7 @@ function showModal(html, onClose, opts){
     setTimeout(()=>{
       if(ov.parentNode) ov.remove();
       if(activeModal === st) activeModal = null;
+      if(window.__navShow) window.__navShow();
       if(onClose) onClose();
     }, 200);
   }
@@ -2443,7 +1983,6 @@ function confirmModal(title, msg, onYes){
 }
 window.confirmModal = confirmModal;
 
-/* ═══════════════ CONFETTI ═══════════════ */
 function confetti(dur=2500){
   const cv = $('confetti'); if(!cv || confettiActive) return;
   confettiActive = true;
@@ -2470,7 +2009,6 @@ function confetti(dur=2500){
 }
 window.confetti = confetti;
 
-/* ═══════════════ TG / SUPABASE INIT ═══════════════ */
 function initTg(){
   try{
     if(window.Telegram && window.Telegram.WebApp){
@@ -2494,14 +2032,12 @@ function initSb(){
   }catch(e){ return false; }
 }
 
-/* ═══════════════ RATE LIMITS ═══════════════ */
 const RL = {like:{w:500}, review:{w:60000}, report:{w:120000}, appeal:{w:300000}, dm:{w:1500}, ai:{w:800}, follow:{w:800}, price:{w:2000}, voice:{w:2000}, twofa_resend:{w:30000}, signup:{w:60000}};
 function loadRL(){ try{ const r = lsGet(sKey(LS.rl)); rateLimits = r ? JSON.parse(r) : {}; }catch(e){ rateLimits = {}; } }
 function saveRL(){ try{ lsSet(sKey(LS.rl), JSON.stringify(rateLimits)); }catch(e){} }
 function canDo(a){ const c = RL[a]; if(!c) return true; const d = Date.now() - (rateLimits[a]||0); if(d < c.w){ toast('Подождите '+Math.ceil((c.w-d)/1000)+' сек', 'info', 1800); return false; } return true; }
 function markRL(a){ rateLimits[a] = Date.now(); saveRL(); }
 
-/* ═══════════════ CACHE / VIEWED / ACCOUNTS ═══════════════ */
 function saveCache(ads){ try{ lsSet(sKey(LS.cache), JSON.stringify({ts:Date.now(), data:ads.slice(0,30)})); }catch(e){} }
 function loadCache(){ try{ const r = lsGet(sKey(LS.cache)); if(!r) return null; const p = JSON.parse(r); if(Date.now()-p.ts > CACHE_TTL) return null; return p.data || null; }catch(e){ return null; } }
 function loadViewed(){ try{ const r = lsGet(sKey(LS.view)); if(r) viewedIds = new Set(JSON.parse(r)); }catch(e){ viewedIds = new Set(); } }
@@ -2524,7 +2060,6 @@ function loadShortcuts(){
 }
 function saveShortcuts(){ try{ lsSet(LS.hotkeys, JSON.stringify(shortcuts)); }catch(e){} }
 
-/* ═══════════════ CONNECTION INDICATOR ═══════════════ */
 function updateConnIndicator(state){
   connState = state;
   const el = $('connIndicator');
@@ -2537,7 +2072,7 @@ function updateConnIndicator(state){
 }
 window.updateConnIndicator = updateConnIndicator;
 
-/* ═══════════════ TELEGRAM-БОТ ═══════════════ */
+/* TELEGRAM BOT */
 async function sendToBot(action, payload = {}) {
   try {
     const res = await fetch(TG_BOT_EDGE, {
@@ -2546,7 +2081,8 @@ async function sendToBot(action, payload = {}) {
       body: JSON.stringify({ action, secret: TG_BOT_SECRET, ...payload })
     });
     if (!res.ok) return { ok: false, error: 'HTTP ' + res.status };
-    return { ok: true, data: await res.json().catch(() => ({})) };
+    const data = await res.json().catch(() => ({}));
+    return { ok: true, data };
   } catch (e) {
     console.warn('sendToBot error:', e);
     return { ok: false, error: e.message };
@@ -2554,11 +2090,6 @@ async function sendToBot(action, payload = {}) {
 }
 window.sendToBot = sendToBot;
 
-async function sendCodeToBot(telegramId, code, username, kind) {
-  return sendToBot(kind === 'signup' ? 'send_signup_code' : 'send_2fa', {
-    telegram_id: telegramId, code, username
-  });
-}
 async function notifyMessageToBot({ toTelegramId, fromUsername, fromId, text }) {
   return sendToBot('notify_message', { to_telegram_id: toTelegramId, from_username: fromUsername, from_id: fromId, text });
 }
@@ -2570,11 +2101,60 @@ async function notifyAdModeration({ toTelegramId, adName, adId, approved, reason
     to_telegram_id: toTelegramId, ad_name: adName, ad_id: adId, reason: reason || ''
   });
 }
-
-window.sendCodeToBot = sendCodeToBot;
 window.notifyMessageToBot = notifyMessageToBot;
 window.notifyReviewToBot = notifyReviewToBot;
 window.notifyAdModeration = notifyAdModeration;
+
+/* ★★★ ФИКС — ОТПРАВКА КОДА В ТГ БОТ НА CHAT_ID ★★★ */
+async function sendVerifyCodeToTelegram(tgHandle, kind, username) {
+  const code = String(Math.floor(100000 + Math.random() * 900000));
+
+  if (kind === 'signup') {
+    const chatId = tgUserId ? parseInt(tgUserId, 10) : null;
+    if (!chatId) {
+      console.warn('[verify] Нет tgUserId');
+      return false;
+    }
+    try {
+      await sb.from('verify_codes').insert({
+        username, code, kind: 'signup',
+        telegram_username: String(tgHandle || '').replace(/^@/, ''),
+        telegram_id: chatId,
+        created_at: new Date().toISOString(),
+        expires_at: new Date(Date.now() + TWOFA_TTL_MS).toISOString()
+      });
+    } catch (e) { console.warn('[verify] insert:', e); }
+    const sent = await sendToBot('send_signup_code', { telegram_id: chatId, code, username });
+    return !!sent.ok;
+  }
+
+  try {
+    const r = await timeout(sb.rpc('verify_code_request', {
+      p_telegram_username: String(tgHandle || '').replace(/^@/, ''),
+      p_kind: kind, p_username: username
+    }), 10000);
+    if (!r.error && r.data && r.data.ok !== false) return true;
+  } catch (e) { console.warn('[verify] RPC fail:', e); }
+
+  try {
+    await sb.from('verify_codes').insert({
+      username, code, kind: kind || '2fa',
+      telegram_username: String(tgHandle || '').replace(/^@/, ''),
+      telegram_id: tgUserId ? parseInt(tgUserId, 10) : null,
+      created_at: new Date().toISOString(),
+      expires_at: new Date(Date.now() + TWOFA_TTL_MS).toISOString()
+    });
+    const sent = await sendToBot('send_code_by_username', {
+      username: String(tgHandle || '').replace(/^@/, ''),
+      code, target_username: username
+    });
+    return !!sent.ok;
+  } catch (e) {
+    console.warn('[verify] fallback:', e);
+    return false;
+  }
+}
+window.sendVerifyCodeToTelegram = sendVerifyCodeToTelegram;
 
 function openMiniAppViaLink() {
   if (tg && tg.openLink) { try { tg.openLink(MINI_APP_DEEP_LINK); return; } catch(e) {} }
@@ -2594,9 +2174,6 @@ window.openMiniAppViaLink = openMiniAppViaLink;
 window.copyMiniAppLink = copyMiniAppLink;
 window.shareMiniApp = shareMiniApp;
 
-/* ═══════════════════════════════════════════════════════════════
-   ФИКС #1 — ЭКРАН АВТОРИЗАЦИИ
-   ═══════════════════════════════════════════════════════════════ */
 function showAuth(prefill=''){
   const c = $('authContainer');
   if(!c) return;
@@ -2611,10 +2188,7 @@ function showAuth(prefill=''){
       '<div class="auth-card">'+
         '<div class="auth-logo-row">'+
           '<img src="'+logoSrc+'" alt="Black Store">'+
-          '<div>'+
-            '<div class="auth-logo-title">Black Store</div>'+
-            '<div class="auth-logo-sub">❖ Bounty Team</div>'+
-          '</div>'+
+          '<div><div class="auth-logo-title">Black Store</div><div class="auth-logo-sub">❖ Bounty Team</div></div>'+
         '</div>'+
         '<div class="auth-tabs">'+
           '<button class="auth-tab '+(mode==='login'?'active':'')+'" data-mode="login" type="button">'+t('login')+'</button>'+
@@ -2625,8 +2199,7 @@ function showAuth(prefill=''){
           '<button class="btn ghost sm" id="authGuest" type="button"><svg class="icon xs"><use href="#i-eye"/></svg> '+t('guest_mode')+'</button>'+
         '</div>'+
         '<p style="text-align:center;font-size:.6rem;color:var(--text-4);margin-top:14px">'+APP_VERSION+'</p>'+
-      '</div>'+
-      '</div>';
+      '</div></div>';
 
     const body = c_.querySelector('#authBody');
     if(mode === 'login') renderLogin(body);
@@ -2638,7 +2211,6 @@ function showAuth(prefill=''){
       isSignupMode = mode === 'signup';
       render();
     }));
-
     c_.querySelector('#authGuest').addEventListener('click', enterGuest);
   }
 
@@ -2688,8 +2260,7 @@ function showAuth(prefill=''){
     btn.addEventListener('click', () => {
       const u = userEl.value.trim().toLowerCase();
       const tgU = tgEl.value.trim().toLowerCase();
-      const pass = p1.value;
-      const pass2 = p2.value;
+      const pass = p1.value, pass2 = p2.value;
       errEl.textContent = '';
       if(!/^[a-zA-Z0-9_]{3,20}$/.test(u)){ errEl.textContent = 'Логин 3–20 символов (a-z, 0-9, _)'; return; }
       if(!tgU || (!tgU.startsWith('@') && tgU.length < 3)){ errEl.textContent = t('signup_tg_required'); return; }
@@ -2728,7 +2299,6 @@ async function doLogin(u, p, btn, errEl){
       if(Array.isArray(r.data) && r.data.length) user = r.data[0];
       else if(r.data.id) user = r.data;
     }
-
     if(!user){
       const rr = await timeout(sb.from('app_users').select('*').eq('username', u).maybeSingle(), 10000);
       if(rr.error){ if(errEl) errEl.textContent = t('error'); return; }
@@ -2736,22 +2306,15 @@ async function doLogin(u, p, btn, errEl){
       if(rr.data.password_hash !== h){ if(errEl) errEl.textContent = t('wrong_password'); return; }
       user = rr.data;
     }
-
     if(user.banned){ showBanScreen(); return; }
 
-    if(!user.telegram_id){
-      const tgHandle = await askTelegramHandle();
-      if(!tgHandle){ return; }
-      const ok = await showVerifyCode(user, tgHandle, 'login');
-      if(!ok) return;
-    } else {
+    if(user.telegram_id){
       const needVerify = user.twofa_enabled || isNewDevice(user);
       if(needVerify){
         const ok = await showVerifyCode(user, null, 'login');
         if(!ok) return;
       }
     }
-
     currentUser = user;
     lsSet(sKey(LS.user), JSON.stringify(user));
     addAccount(user);
@@ -2783,21 +2346,20 @@ async function startSignupFlow(u, tgHandle, pass, btn, errEl){
     if(ck.data){ if(errEl) errEl.textContent = t('user_exists'); return; }
 
     const h = await hashPwd(pass);
-
     const ok = await sendVerifyCodeToTelegram(tgHandle, 'signup', u);
-    if(!ok){ if(errEl) errEl.textContent = 'Не удалось отправить код. Проверь, что бот не заблокирован.'; return; }
-
+    if(!ok){
+      if(errEl) errEl.textContent = 'Не удалось отправить код. Открой бот и попробуй снова.';
+      return;
+    }
     const codeOk = await showVerifyCode({ username: u }, tgHandle, 'signup');
     if(!codeOk) return;
 
     loader(true, t('loading'));
     const nu = {
-      username: u,
-      password_hash: h,
+      username: u, password_hash: h,
       telegram_id: tgUserId ? parseInt(tgUserId) : null,
       telegram_username: tgHandle.replace(/^@/, ''),
-      telegram_verified: true,
-      banned: false,
+      telegram_verified: true, banned: false,
       is_admin: u === OWNER,
       created_at: new Date().toISOString(),
       last_seen_at: new Date().toISOString()
@@ -2813,8 +2375,7 @@ async function startSignupFlow(u, tgHandle, pass, btn, errEl){
     addAccount(currentUser);
     try{ await sb.from('user_settings').insert({user_id: currentUser.id, telegram_verified: true}); }catch(e){}
     saveDeviceFingerprint(currentUser);
-    sfxPlay('success');
-    confetti();
+    sfxPlay('success'); confetti();
     c_clearAuth();
     showApp();
     try{ await initApp(); }catch(e){ console.error(e); }
@@ -2823,57 +2384,6 @@ async function startSignupFlow(u, tgHandle, pass, btn, errEl){
     if(errEl) errEl.textContent = e.message || t('error');
   }finally{
     if(btn){ btn.disabled = false; btn.textContent = origText || t('signup_next'); }
-  }
-}
-
-function askTelegramHandle(){
-  return new Promise(resolve => {
-    const r = showModal(
-      '<h3 class="modal-title">'+t('signup_tg_label')+'</h3>'+
-      '<p style="color:var(--text-3);font-size:.8rem;margin-bottom:14px">Укажи свой Telegram — отправим туда код подтверждения</p>'+
-      '<div class="field"><input type="text" id="atgInput" class="field-input" placeholder="'+t('signup_tg_ph')+'"></div>'+
-      '<button class="btn primary w-full" id="atgOk" type="button">OK</button>',
-      () => resolve(null)
-    );
-    const inp = r.q('#atgInput');
-    setTimeout(() => inp && inp.focus(), 150);
-    r.q('#atgOk').addEventListener('click', () => {
-      const v = (inp.value || '').trim().toLowerCase();
-      if(!v){ toast(t('signup_tg_required'), 'error'); return; }
-      r.close();
-      resolve(v.startsWith('@') ? v : ('@' + v));
-    });
-    inp.addEventListener('keydown', e => { if(e.key === 'Enter') r.q('#atgOk').click(); });
-  });
-}
-
-async function sendVerifyCodeToTelegram(tgHandle, kind, username){
-  try{
-    const r = await timeout(sb.rpc('verify_code_request', {
-      p_telegram_username: tgHandle.replace(/^@/, ''),
-      p_kind: kind,
-      p_username: username
-    }), 10000);
-
-    if(r.error){
-      console.warn('verify_code_request error:', r.error);
-      const code = String(Math.floor(100000 + Math.random() * 900000));
-      const sent = await sendToBot(kind === 'signup' ? 'send_signup_code_by_username' : 'send_code_by_username', {
-        username: tgHandle.replace(/^@/, ''),
-        code,
-        target_username: username
-      });
-      return !!sent.ok;
-    }
-    const data = r.data;
-    if(!data || data.ok === false){
-      console.warn('verify_code_request bad response:', data);
-      return false;
-    }
-    return true;
-  }catch(e){
-    console.warn('sendVerifyCodeToTelegram fail:', e);
-    return false;
   }
 }
 
@@ -2906,21 +2416,13 @@ function showVerifyCode(user, tgHandle, kind){
         '<div class="twofa-icon-box"><svg class="icon xl"><use href="#i-lock"/></svg></div>'+
         '<div class="twofa-title">'+(kind === 'signup' ? t('verify_title') : t('twofa_title'))+'</div>'+
         '<div class="twofa-desc">'+t('verify_desc')+'</div>'+
-        '<a class="twofa-bot-hint" href="'+TG_BOT_LINK+'" target="_blank" rel="noopener">'+
-        '<svg class="icon xs"><use href="#i-telegram"/></svg>'+t('verify_bot_hint')+'</a>'+
-        '<div class="twofa-code-wrap">'+
-        '<input type="text" class="twofa-code-input" id="twofaInput" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="______">'+
-        '</div>'+
-        '<div class="twofa-timer" id="twofaTimer">'+
-        '<svg class="icon xs"><use href="#i-history"/></svg>'+
-        '<span id="twofaTimerText">'+fmtMMSS(Math.ceil(remain/1000))+'</span>'+
-        '</div>'+
+        '<a class="twofa-bot-hint" href="'+TG_BOT_LINK+'" target="_blank" rel="noopener"><svg class="icon xs"><use href="#i-telegram"/></svg>'+t('verify_bot_hint')+'</a>'+
+        '<div class="twofa-code-wrap"><input type="text" class="twofa-code-input" id="twofaInput" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="one-time-code" placeholder="______"></div>'+
+        '<div class="twofa-timer" id="twofaTimer"><svg class="icon xs"><use href="#i-history"/></svg><span id="twofaTimerText">'+fmtMMSS(Math.ceil(remain/1000))+'</span></div>'+
         '<div class="twofa-error '+(errorHtml?'':'hidden')+'" id="twofaError">'+(errorHtml||'')+'</div>'+
         '<div class="twofa-actions">'+
-        '<button class="btn primary w-full" id="twofaConfirm" type="button">'+
-        '<svg class="icon sm"><use href="#i-check"/></svg> '+t('verify_confirm')+'</button>'+
-        '<button class="btn secondary w-full" id="twofaResend" type="button">'+
-        '<svg class="icon sm"><use href="#i-refresh"/></svg> '+t('verify_resend')+'</button>'+
+        '<button class="btn primary w-full" id="twofaConfirm" type="button"><svg class="icon sm"><use href="#i-check"/></svg> '+t('verify_confirm')+'</button>'+
+        '<button class="btn secondary w-full" id="twofaResend" type="button"><svg class="icon sm"><use href="#i-refresh"/></svg> '+t('verify_resend')+'</button>'+
         '<button class="btn ghost w-full" id="twofaCancel" type="button">'+t('twofa_cancel')+'</button>'+
         '</div></div></div>';
 
@@ -2945,21 +2447,18 @@ function showVerifyCode(user, tgHandle, kind){
         if(resending) return;
         resending = true; resendBtn.disabled = true;
         try{
-          if(user.id){
-            await sendVerifyCodeToTelegram(tgHandle || ('user_' + user.id), kind || '2fa', user.username);
-          } else {
-            await sendVerifyCodeToTelegram(tgHandle, kind, user.username);
-          }
-          codeSentAt = Date.now();
-          if(timerInt) clearInterval(timerInt);
-          render('');
-          toast(t('verify_code_sent'), 'success', 2000);
+          const okSend = await sendVerifyCodeToTelegram(tgHandle, kind || '2fa', user.username);
+          if(okSend){
+            codeSentAt = Date.now();
+            if(timerInt) clearInterval(timerInt);
+            render('');
+            toast(t('verify_code_sent'), 'success', 2000);
+          } else toast(t('error'), 'error');
         }catch(e){ toast(t('error'), 'error'); }
         finally{ resending = false; resendBtn.disabled = false; }
       });
       cancelBtn.addEventListener('click', () => finish(false));
       c.addEventListener('click', e => { if(e.target === c) finish(false); });
-
       startTimer();
     }
 
@@ -3000,24 +2499,24 @@ function showVerifyCode(user, tgHandle, kind){
             const data = r.data;
             ok = !!(data && (data.ok === true || data.success === true || data === true));
           }
+          if(!ok){
+            const chk = await sb.from('verify_codes').select('id').eq('username', user.username).eq('code', code).in('kind', ['2fa','login']).gt('expires_at', new Date().toISOString()).limit(1);
+            if(!chk.error && chk.data && chk.data.length){ ok = true; }
+          }
         } else if(kind === 'signup'){
-          const r = await timeout(sb.rpc('verify_code_check', {
-            p_username: user.username,
-            p_code: code,
-            p_kind: 'signup'
-          }), 10000);
-          if(!r.error){
-            const data = r.data;
-            ok = !!(data && data.ok === true);
+          const r = await timeout(sb.rpc('verify_code_check', { p_username: user.username, p_code: code, p_kind: 'signup' }), 10000);
+          if(!r.error){ ok = !!(r.data && r.data.ok === true); }
+          if(!ok){
+            const chk = await sb.from('verify_codes').select('id').eq('username', user.username).eq('code', code).eq('kind', 'signup').gt('expires_at', new Date().toISOString()).limit(1);
+            if(!chk.error && chk.data && chk.data.length){
+              ok = true;
+              try{ await sb.from('verify_codes').delete().eq('id', chk.data[0].id); }catch(e){}
+            }
           }
         }
-      }catch(e){ console.warn(e); }
+      }catch(e){ console.warn('[verify]', e); }
 
-      if(ok){
-        sfxPlay('success');
-        finish(true);
-        return;
-      }
+      if(ok){ sfxPlay('success'); finish(true); return; }
       sfxPlay('error');
       if(errEl){ errEl.textContent = t('verify_wrong_code'); errEl.classList.remove('hidden'); }
       inp.classList.add('shake'); setTimeout(() => inp.classList.remove('shake'), 400);
@@ -3031,12 +2530,8 @@ function showVerifyCode(user, tgHandle, kind){
 }
 window.showVerifyCode = showVerifyCode;
 
-function c_clearAuth(){
-  const c = $('authContainer');
-  if(c) c.innerHTML = '';
-}
+function c_clearAuth(){ const c = $('authContainer'); if(c) c.innerHTML = ''; }
 
-/* ═══════════════ DEVICE FINGERPRINT ═══════════════ */
 function deviceHash(){
   const nav = navigator;
   const s = [nav.userAgent, nav.language, nav.platform, screen.width + 'x' + screen.height].join('|');
@@ -3047,17 +2542,13 @@ function deviceHash(){
 function getDeviceKey(userId){ return sKey(LS.user) + '_dev_' + userId; }
 function isNewDevice(user){
   if(!user || !user.id) return false;
-  try{
-    const saved = lsGet(getDeviceKey(user.id));
-    return saved !== deviceHash();
-  }catch(e){ return false; }
+  try{ const saved = lsGet(getDeviceKey(user.id)); return saved !== deviceHash(); }catch(e){ return false; }
 }
 function saveDeviceFingerprint(user){
   if(!user || !user.id) return;
   try{ lsSet(getDeviceKey(user.id), deviceHash()); }catch(e){}
 }
 
-/* ═══════════════ GUEST / BAN / SPLASH ═══════════════ */
 function enterGuest(){
   isGuest = true;
   c_clearAuth();
@@ -3078,29 +2569,25 @@ function showBanScreen(){
 function hideSplash(){ const s = $('splash'); if(s && !s.classList.contains('hidden')){ s.classList.add('hidden'); sfxPlay('splash'); } }
 function showApp(){ const main = $('appMain'); if(main) main.style.display = 'block'; if(window.BS_DEVICE) window.BS_DEVICE.applyDeviceConfig(window.BS_DEVICE.getDeviceType()); }
 
-/* ═══════════════ KEYBOARD DETECT ═══════════════ */
 function setupKeyboardDetection(){
   if(window.__kbBound) return;
   window.__kbBound = true;
   if(window.visualViewport){
     let initialHeight = window.visualViewport.height;
     const check = () => {
-      const h = window.visualViewport.height;
-      const diff = initialHeight - h;
-      const isOpen = diff > 150;
-      document.body.classList.toggle('kb-open', isOpen);
+      const diff = initialHeight - window.visualViewport.height;
+      document.body.classList.toggle('kb-open', diff > 150);
     };
     window.visualViewport.addEventListener('resize', check);
     window.visualViewport.addEventListener('scroll', check);
     window.addEventListener('orientationchange', () => { setTimeout(() => { initialHeight = window.visualViewport.height; check(); }, 400); });
   } else {
     document.addEventListener('focusin', e => { if(e.target && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) document.body.classList.add('kb-open'); });
-    document.addEventListener('focusout', () => { document.body.classList.remove('kb-open'); });
+    document.addEventListener('focusout', () => document.body.classList.remove('kb-open'));
   }
 }
 window.setupKeyboardDetection = setupKeyboardDetection;
 
-/* ═══════════════ NET / BACK-TOP / INFINITE / HEARTBEAT ═══════════════ */
 function setupNet(){
   const b = $('offlineBanner'); if(!b) return;
   const u = () => { const online = navigator.onLine; b.classList.toggle('visible', !online); updateConnIndicator(online ? (realtimeCh ? 'realtime' : 'online') : 'offline'); };
@@ -3155,7 +2642,6 @@ function checkURL(){
   }catch(e){}
 }
 
-/* ═══════════════ IMAGE VIEWER ═══════════════ */
 function openImageViewer(images, startIdx){
   if(!images || !images.length) return;
   if(typeof images === 'string') images = [images];
@@ -3181,20 +2667,17 @@ function openImageViewer(images, startIdx){
 window.__openImg = url => openImageViewer([url], 0);
 window.openImageViewer = openImageViewer;
 
-/* ═══════════════ LOGO INJECTOR ═══════════════ */
 function injectLogo(el){
   if(!el || el.dataset.filled) return;
   const tpl = document.getElementById('tpl-br-ai-logo');
   if(!tpl) return;
-  const clone = tpl.content.cloneNode(true);
   el.innerHTML = '';
-  el.appendChild(clone);
+  el.appendChild(tpl.content.cloneNode(true));
   el.dataset.filled = '1';
 }
 function injectAllLogos(root){ (root || document).querySelectorAll('[data-br-ai]').forEach(injectLogo); }
 window.BS_injectBrAiLogos = injectAllLogos;
 
-/* ═══════════════ EMPTY STATE ═══════════════ */
 function emptyRich(icon, title, desc, cta, ctaAction){
   const ic = icon && icon.startsWith('i-') ? '<svg class="icon lg"><use href="#'+icon+'"/></svg>' : icon;
   const html = cta ? '<button class="empty-cta" data-cta="'+ctaAction+'" type="button">'+cta+'</button>' : '';
@@ -3212,9 +2695,7 @@ function bindEmpty(container){
 window.emptyRich = emptyRich;
 window.bindEmpty = bindEmpty;
 
-/* ═══════════════ FILE VIEWER ═══════════════ */
-let currentFileUrl = null;
-let currentFileAudio = null;
+let currentFileUrl = null, currentFileAudio = null;
 function detectFileType(url){
   if(!url) return 'other';
   const clean = String(url).split('?')[0].toLowerCase();
@@ -3252,14 +2733,11 @@ function openFileViewer(url, name){
   if(titleEl) titleEl.textContent = fileName;
   if(dlBtn) dlBtn.onclick = () => downloadFile(url, fileName);
   if(currentFileAudio){ try{ currentFileAudio.pause(); }catch(e){} currentFileAudio = null; }
-  if(type === 'image'){
-    body.innerHTML = '<img src="'+esc(url)+'" alt="'+esc(fileName)+'">';
-  } else if(type === 'video'){
-    body.innerHTML = '<video src="'+esc(url)+'" controls playsinline preload="metadata"></video>';
-  } else if(type === 'audio'){
+  if(type === 'image') body.innerHTML = '<img src="'+esc(url)+'" alt="'+esc(fileName)+'">';
+  else if(type === 'video') body.innerHTML = '<video src="'+esc(url)+'" controls playsinline preload="metadata"></video>';
+  else if(type === 'audio'){
     body.innerHTML = '<div class="file-audio-wrap"><div class="file-audio-icon"><svg class="icon xl"><use href="#i-headphones"/></svg></div><div class="file-audio-name">'+esc(fileName)+'</div><audio id="fileAudioEl" src="'+esc(url)+'" controls preload="metadata"></audio></div>';
-    const audioEl = $('fileAudioEl');
-    currentFileAudio = audioEl;
+    currentFileAudio = $('fileAudioEl');
   } else {
     body.innerHTML = '<div class="file-audio-wrap"><div class="file-audio-icon"><svg class="icon xl"><use href="#i-file"/></svg></div><div class="file-audio-name">'+esc(fileName)+'</div><button class="btn primary" id="fileOtherDl" type="button"><svg class="icon sm"><use href="#i-download"/></svg> '+t('file_download')+'</button></div>';
     const dl3 = $('fileOtherDl');
@@ -3279,41 +2757,18 @@ function bindFileViewer(){
 }
 window.bindFileViewer = bindFileViewer;
 
-/* ═══════════════ 2FA — LEGACY ═══════════════ */
-function twofaKeyFor(userId){ return LS.twofaState + '_u' + userId; }
-function loadTwofaState(userId){
-  twofaRuntime.userId = userId;
-  try{
-    const raw = lsGet(twofaKeyFor(userId));
-    if(!raw){ twofaRuntime = { attempts: 0, phase: 'initial', blockUntil: 0, userId }; return; }
-    const p = JSON.parse(raw);
-    twofaRuntime = { attempts: parseInt(p.attempts) || 0, phase: p.phase || 'initial', blockUntil: parseInt(p.blockUntil) || 0, userId };
-    if((twofaRuntime.phase === 'cooldown_2h' || twofaRuntime.phase === 'cooldown_7d') && Date.now() >= twofaRuntime.blockUntil){
-      if(twofaRuntime.phase === 'cooldown_2h'){ twofaRuntime.phase = 'second_batch'; twofaRuntime.attempts = 0; twofaRuntime.blockUntil = 0; }
-      else { twofaRuntime.phase = 'initial'; twofaRuntime.attempts = 0; twofaRuntime.blockUntil = 0; }
-      saveTwofaState();
-    }
-  }catch(e){ twofaRuntime = { attempts: 0, phase: 'initial', blockUntil: 0, userId }; }
-}
-function saveTwofaState(){
-  if(!twofaRuntime.userId) return;
-  try{ lsSet(twofaKeyFor(twofaRuntime.userId), JSON.stringify({ attempts: twofaRuntime.attempts, phase: twofaRuntime.phase, blockUntil: twofaRuntime.blockUntil })); }catch(e){}
-}
 function resetTwofaState(userId){
   twofaRuntime = { attempts: 0, phase: 'initial', blockUntil: 0, userId };
-  try{ lsDel(twofaKeyFor(userId)); }catch(e){}
+  try{ lsDel(LS.twofaState + '_u' + userId); }catch(e){}
 }
 window.resetTwofaState = resetTwofaState;
 
-/* INIT MODULES */
 bindGlobalClickSound();
 bindFileViewer();
 setupKeyboardDetection();
+addEventListener('online', () => updateConnIndicator(realtimeCh ? 'realtime' : 'online'));
+addEventListener('offline', () => updateConnIndicator('offline'));
 
-addEventListener('online', () => { updateConnIndicator(realtimeCh ? 'realtime' : 'online'); });
-addEventListener('offline', () => { updateConnIndicator('offline'); });
-
-/* ═══════════════ LOGOUT ═══════════════ */
 function doLogout(){
   if(isGuest){
     isGuest = false;
@@ -3344,17 +2799,15 @@ function bindLogoutButtons(){
 window.bindLogoutButtons = bindLogoutButtons;
 
 /* ═══════════════════════════════════════════════════════════════
-   ЧАСТЬ 3 — FEED / ADS / REVIEWS / SEARCH / PROFILE / SETTINGS / SEND
+   FEED / ADS / REVIEWS / SEARCH / PROFILE / SETTINGS / SEND
    ═══════════════════════════════════════════════════════════════ */
 
-/* ═══════════════ SKELETON ═══════════════ */
 function renderSkeleton(n=5){
   let h = '';
   for(let i=0; i<n; i++) h += '<div class="skel-card"><div class="skel skel-photo"></div><div class="skel-lines"><div class="skel skel-line m"></div><div class="skel skel-line l"></div><div class="skel skel-line s"></div></div></div>';
   const el = $('feed'); if(el) el.innerHTML = h;
 }
 
-/* ═══════════════ FEED ═══════════════ */
 async function loadFeed(reset=true){
   if(loadingFeed || !sb) return;
   loadingFeed = true;
@@ -3507,7 +2960,6 @@ function startLiveTimers(){
 }
 window.startLiveTimers = startLiveTimers;
 
-/* ═══════════════ FAV / ADMIN DEL ═══════════════ */
 window.__toggleFav = async function(id, btn){
   try{
     if(!canDo('like')) return;
@@ -3540,12 +2992,10 @@ window.__adminDelAd = function(id){
   });
 };
 function updateFavCount(){
-  const ids = ['bnFavCount','sidebarFavCount'];
-  ids.forEach(id => { const b = $(id); if(!b) return; b.textContent = favIds.size; b.classList.toggle('hidden', favIds.size === 0); });
+  ['bnFavCount','sidebarFavCount'].forEach(id => { const b = $(id); if(!b) return; b.textContent = favIds.size; b.classList.toggle('hidden', favIds.size === 0); });
 }
 window.updateFavCount = updateFavCount;
 
-/* ═══════════════ OPEN AD ═══════════════ */
 window.__openAdById = function(id){
   try{
     if(!id) return;
@@ -3665,7 +3115,6 @@ async function openAd(ad){
 }
 window.openAd = openAd;
 
-/* ═══════════════ AD CONTEXT MENU ═══════════════ */
 function openAdContextMenu(adId, x, y){
   closeMsgContextMenu();
   const ad = homeAds.find(a => String(a.id) === String(adId)) || myAds.find(a => String(a.id) === String(adId)) || favAds.find(a => String(a.id) === String(adId));
@@ -3700,7 +3149,6 @@ function openAdContextMenu(adId, x, y){
 }
 window.openAdContextMenu = openAdContextMenu;
 
-/* ═══════════════ REVIEWS ═══════════════ */
 async function loadAdReviews(ad, container){
   if(!container) return;
   try{
@@ -3811,7 +3259,6 @@ function openReplyToReview(review, ad, container){
 }
 window.openReplyToReview = openReplyToReview;
 
-/* ═══════════════ REPORT ═══════════════ */
 function reportAd(ad){
   if(!currentUser || isGuest){ toast(t('login_required'), 'info'); return; }
   if(!canDo('report')) return;
@@ -3867,7 +3314,6 @@ function reportUser(user){
 }
 window.reportUser = reportUser;
 
-/* ═══════════════ PRICE CHANGE ═══════════════ */
 async function openPriceChange(ad){
   const r = showModal(
     '<h3 class="modal-title">'+t('change_price')+'</h3>'+
@@ -3907,8 +3353,7 @@ async function openPriceChange(ad){
         if(diff <= 0){ if(cdInt) clearInterval(cdInt); r.q('#pcTimer').innerHTML = ''; return; }
         r.q('#pcTimer').innerHTML = '<svg class="icon xs"><use href="#i-history"/></svg> '+t('change_price_cooldown')+' '+fmtShortTimer(diff);
       };
-      upd();
-      cdInt = setInterval(upd, 1000);
+      upd(); cdInt = setInterval(upd, 1000);
       return false;
     }catch(e){ return true; }
   }
@@ -3941,7 +3386,6 @@ async function openPriceChange(ad){
 }
 window.openPriceChange = openPriceChange;
 
-/* ═══════════════ QR ═══════════════ */
 function openQR(ad){
   const link = location.origin + location.pathname + '?ad=' + ad.id;
   const tgLink = 'https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent(ad.item_name);
@@ -3951,13 +3395,12 @@ function openQR(ad){
     '<div class="qr-actions"><button class="btn secondary" id="qrCopy" type="button"><svg class="icon sm"><use href="#i-link"/></svg> '+t('qr_copy')+'</button>'+
     '<button class="btn primary" id="qrTg" type="button"><svg class="icon sm"><use href="#i-forward"/></svg> '+t('qr_share_tg')+'</button></div></div>'
   );
-  try{ const qrBox = r.q('#qrBox'); if(window.QRCode){ new QRCode(qrBox, {text: link, width: 220, height: 220, colorDark:'#0A0A0A', colorLight:'#FFFFFF'}); } }catch(e){}
+  try{ if(window.QRCode){ new QRCode(r.q('#qrBox'), {text: link, width: 220, height: 220, colorDark:'#0A0A0A', colorLight:'#FFFFFF'}); } }catch(e){}
   r.q('#qrCopy').addEventListener('click', () => { try{ navigator.clipboard.writeText(link); toast(t('qr_copied'), 'success'); }catch(e){} });
   r.q('#qrTg').addEventListener('click', () => { window.open(tgLink, '_blank'); });
 }
 window.openQR = openQR;
 
-/* ═══════════════ FOLLOW ═══════════════ */
 async function checkFollow(userId){
   if(!currentUser || isGuest) return false;
   try{ const r = await sb.from('follows').select('*').eq('follower_id', currentUser.id).eq('following_id', userId).maybeSingle(); return !!r.data; }catch(e){ return false; }
@@ -3984,7 +3427,6 @@ async function toggleFollow(userId){
   }catch(e){ toast(t('error'), 'error'); return null; }
 }
 
-/* ═══════════════ PUBLIC PROFILE ═══════════════ */
 window.__openProfile = function(uid){ openPublicProfile(uid); };
 async function openPublicProfile(uid){
   if(!uid) return;
@@ -4039,7 +3481,6 @@ async function openPublicProfile(uid){
 }
 window.openPublicProfile = openPublicProfile;
 
-/* ═══════════════ NOTIFICATIONS ═══════════════ */
 async function loadUnread(){
   if(!currentUser) return;
   try{ const r = await timeout(sb.from('notifications').select('*', {count: 'exact', head: true}).eq('user_id', currentUser.id).eq('read', false), 5000); if(!r.error) unread = r.count || 0; updateNotifCount(); }catch(e){}
@@ -4065,13 +3506,11 @@ async function loadNotifs(){
     if(!n.length){ c.innerHTML = emptyRich('i-bell', t('empty_notif'), '', '', ''); return; }
     c.innerHTML = n.map(x => '<div style="margin-bottom:8px;padding:14px;background:var(--accent-soft);border-radius:12px;border:1px solid var(--accent)"><div style="font-weight:600;font-size:.85rem">'+esc(x.message)+'</div><div style="font-size:.65rem;color:var(--text-3);margin-top:4px">'+new Date(x.created_at).toLocaleString()+'</div></div>').join('');
     await sb.from('notifications').update({read: true}).eq('user_id', currentUser.id).eq('read', false);
-    unread = 0;
-    updateNotifCount();
+    unread = 0; updateNotifCount();
   }catch(e){ c.innerHTML = '<div style="text-align:center;color:var(--text-3)">'+t('error')+'</div>'; }
 }
 window.loadNotifs = loadNotifs;
 
-/* ═══════════════ MY ADS / APPEALS / REVIEWS ═══════════════ */
 async function loadMyAds(){
   const c = $('myAdsList'); if(!c) return;
   if(isGuest || !currentUser){ c.innerHTML = emptyRich('i-post', t('login_required'), '', '', ''); return; }
@@ -4136,7 +3575,6 @@ async function loadMyReviews(){
 }
 window.loadMyReviews = loadMyReviews;
 
-/* ═══════════════ LOG MOD ═══════════════ */
 async function logMod(action, target){
   try{
     await sb.from('moderator_logs').insert({
@@ -4150,7 +3588,6 @@ async function logMod(action, target){
 }
 window.logMod = logMod;
 
-/* ═══════════════ APPEALS ═══════════════ */
 function openAppeal(){
   if(!appealAdId) return;
   if(!canDo('appeal')) return;
@@ -4159,7 +3596,7 @@ function openAppeal(){
     '<h3 class="modal-title">'+t('appeals')+'</h3>'+
     '<div class="report-reasons" id="appealReasons">'+APPEAL_REASONS.map(x => '<button class="report-reason" type="button" data-reason="'+x.id+'"><span>'+(x[currentLang] || x.ru)+'</span></button>').join('')+'</div>'+
     '<div class="field"><label class="field-label">'+t('description')+'</label><textarea id="apEvidence" class="field-input" style="min-height:5rem" placeholder="URL доказательств..."></textarea></div>'+
-    '<button class="btn primary w-full" id="apSubmit" type="button">'+t('send')+'</button>'
+    '<button class="btn primary w-full" id="apSubmit" type="button">'+t('sent')+'</button>'
   );
   r.qa('[data-reason]').forEach(b => b.addEventListener('click', () => {
     chosen = b.dataset.reason;
@@ -4179,7 +3616,6 @@ function openAppeal(){
 }
 window.openAppeal = openAppeal;
 
-/* ═══════════════ FAVORITES ═══════════════ */
 async function loadFav(){
   const c = $('favList'); if(!c) return;
   if(isGuest || !currentUser){ c.innerHTML = emptyRich('i-heart', t('login_required'), '', t('login'), 'go_home'); bindEmpty(c); return; }
@@ -4188,8 +3624,7 @@ async function loadFav(){
     const fr = await timeout(sb.from('favorites').select('ad_id').eq('user_id', currentUser.id), 5000);
     if(fr.error) throw fr.error;
     const ids = (fr.data||[]).map(f => f.ad_id);
-    favIds = new Set(ids);
-    updateFavCount();
+    favIds = new Set(ids); updateFavCount();
     if(!ids.length){ c.innerHTML = emptyRich('i-heart', t('empty_fav'), t('empty_fav_desc'), t('cta_go_home'), 'go_home'); bindEmpty(c); return; }
     const ar = await timeout(sb.from('ads').select('*').in('id', ids).order('created_at', {ascending:false}), 5000);
     if(ar.error) throw ar.error;
@@ -4207,7 +3642,6 @@ async function loadFav(){
 }
 window.loadFav = loadFav;
 
-/* ═══════════════ VIEW HISTORY ═══════════════ */
 async function loadViewHistoryUI(){
   const c = $('historyList'); if(!c) return;
   c.innerHTML = '<div class="inline-loader"></div>';
@@ -4233,7 +3667,6 @@ async function loadViewHistoryUI(){
 }
 window.loadViewHistoryUI = loadViewHistoryUI;
 
-/* ═══════════════ SUBS ═══════════════ */
 async function loadSubsUI(){
   const c = $('subsContent'); if(!c) return;
   if(!currentUser || isGuest){ c.innerHTML = ''; return; }
@@ -4256,8 +3689,7 @@ async function loadSubsUI(){
       const users = {};
       (ur.data||[]).forEach(u => { users[u.id] = u; });
       b.innerHTML = ids.map(id => {
-        const u = users[id];
-        if(!u) return '';
+        const u = users[id]; if(!u) return '';
         const ini = esc((u.username||'?').charAt(0).toUpperCase());
         const av = u.avatar_url ? '<img src="'+esc(u.avatar_url)+'" onerror="this.style.display=\'none\'">' : ini;
         const online = isOnlineUser(u.last_seen_at);
@@ -4268,9 +3700,7 @@ async function loadSubsUI(){
     await renderList(followingIds);
     c.querySelectorAll('[data-tab]').forEach(tab => tab.addEventListener('click', async () => {
       c.querySelectorAll('[data-tab]').forEach(x => { x.style.background = ''; x.style.borderColor = ''; x.style.color = ''; });
-      tab.style.background = 'var(--accent-soft)';
-      tab.style.borderColor = 'var(--accent)';
-      tab.style.color = 'var(--text-1)';
+      tab.style.background = 'var(--accent-soft)'; tab.style.borderColor = 'var(--accent)'; tab.style.color = 'var(--text-1)';
       if(tab.dataset.tab === 'following') await renderList(followingIds);
       else await renderList(followerIds);
     }));
@@ -4278,20 +3708,17 @@ async function loadSubsUI(){
 }
 window.loadSubsUI = loadSubsUI;
 
-/* ═══════════════ SEARCH ═══════════════ */
 async function searchUsers(query){
   const clean = (query||'').replace(/^@/,'').trim();
   if(!clean || clean.length < 1) return [];
   try{
     const r = await timeout(sb.from('app_users')
       .select('id,username,avatar_url,bio,status,city,last_seen_at,is_admin,created_at')
-      .ilike('username', '%'+clean+'%')
-      .limit(20), 5000);
+      .ilike('username', '%'+clean+'%').limit(20), 5000);
     if(r.error) return [];
     return r.data || [];
   }catch(e){ return []; }
 }
-
 async function doSearchAds(q){
   if(!q) return [];
   try{
@@ -4305,11 +3732,9 @@ async function doSearchAds(q){
     );
   }catch(e){ return []; }
 }
-
 async function getAdsCountForUser(uid){
   try{ const r = await sb.from('ads').select('*', {count: 'exact', head: true}).eq('author_id', uid).eq('status', 'approved'); return r.count || 0; }catch(e){ return 0; }
 }
-
 function renderUserCard(u, adsCount){
   const initial = esc((u.username||'?').charAt(0).toUpperCase());
   const av = u.avatar_url ? '<img src="'+esc(u.avatar_url)+'" onerror="this.style.display=\'none\'">' : initial;
@@ -4319,7 +3744,6 @@ function renderUserCard(u, adsCount){
     '<div class="chat-preview">'+(online ? t('ai_online') : t('offline'))+(u.city ? ' · '+esc(u.city) : '')+'</div>'+
     (adsCount ? '<div style="font-size:.7rem;color:var(--accent-2);margin-top:4px;font-weight:700">'+adsCount+' '+t('my_ads')+'</div>' : '')+'</div></div>';
 }
-
 async function runSearch(mode='all'){
   const inp = $('searchInput'); if(!inp) return;
   const q = inp.value.trim();
@@ -4327,7 +3751,6 @@ async function runSearch(mode='all'){
   if(!q){ r.innerHTML = ''; return; }
   r.innerHTML = '<div class="inline-loader"></div>';
   let html = '';
-
   if(mode === 'all' || mode === 'users'){
     const users = await searchUsers(q);
     if(users.length){
@@ -4345,7 +3768,6 @@ async function runSearch(mode='all'){
       }).join('');
     }
   }
-
   if(!html) html = emptyRich('i-search', t('empty_ads'), 'Попробуй другое имя или запрос', '', '');
   r.innerHTML = html;
   r.querySelectorAll('[data-open-ad]').forEach(el => el.addEventListener('click', () => window.__openAdById(el.dataset.openAd)));
@@ -4367,7 +3789,6 @@ function setupSearchSection(){
 }
 window.setupSearchSection = setupSearchSection;
 
-/* ═══════════════ MY PROFILE ═══════════════ */
 async function renderProfile(){
   const h = $('profHeader'), g = $('profGrid');
   if(!h || !g) return;
@@ -4423,10 +3844,8 @@ async function renderProfile(){
   if(isAdmin) tiles.push({id:'admin', icon:'i-admin', label: t('admin')});
   if(isOwner) tiles.push({id:'mod-logs', icon:'i-history', label: t('mod_logs')});
 
-  if(isWide){
-    g.innerHTML = '';
-    g.style.display = 'none';
-  } else {
+  if(isWide){ g.innerHTML = ''; g.style.display = 'none'; }
+  else {
     g.style.display = '';
     g.innerHTML = tiles.map(x => '<button class="prof-tile" data-p="'+x.id+'" type="button"><div class="prof-tile-icon"><svg class="icon"><use href="#'+x.icon+'"/></svg></div><span class="prof-tile-label">'+x.label+'</span>'+(x.badge ? '<span class="prof-tile-badge">'+x.badge+'</span>' : '')+'</button>').join('');
     bindProfileTiles();
@@ -4474,7 +3893,6 @@ function openEditProfile(){
 }
 window.openEditProfile = openEditProfile;
 
-/* ═══════════════ SETTINGS ═══════════════ */
 function renderSettings(){
   const c = $('settingsContent'); if(!c) return;
   const fs = userSettings.font_size || 'medium';
@@ -4483,13 +3901,7 @@ function renderSettings(){
   const ac = currentAccent;
   const tgVerified = !!currentUser?.telegram_id || userSettings.telegram_verified === true;
   const notif = userSettings.__notif || {messages:true, moderation:true, views:false, reviews:true, news:false};
-
-  const accentIcons = {
-    red:  { name:'Красный',      color:'#E50914' },
-    gold: { name:'Золотой',      color:'#D4AF37' },
-    blue: { name:'Синий',        color:'#3B82F6' },
-    bw:   { name:'Чёрно-белый',  color:'#FFFFFF' }
-  };
+  const accentIcons = { red: { name:'Красный', color:'#E50914' }, gold: { name:'Золотой', color:'#D4AF37' }, blue: { name:'Синий', color:'#3B82F6' }, bw: { name:'Чёрно-белый', color:'#FFFFFF' } };
 
   c.innerHTML =
     '<div style="margin-bottom:16px">'+
@@ -4509,10 +3921,8 @@ function renderSettings(){
       const active = ac === k;
       return '<button class="accent-option btn '+(active?'primary':'secondary')+'" data-accent="'+k+'" type="button" style="flex-direction:column;gap:6px;min-height:70px;padding:10px 4px">'+
         '<span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:'+info.color+';border:2px solid '+(active?'#fff':'rgba(255,255,255,.25)')+'"></span>'+
-        '<span style="font-size:.6rem">'+esc(info.name)+'</span>'+
-        '</button>';
-    }).join('')+
-    '</div></div>'+
+        '<span style="font-size:.6rem">'+esc(info.name)+'</span></button>';
+    }).join('')+'</div></div>'+
     '<div class="field"><label class="field-label">'+t('language')+'</label>'+
     '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">'+
     '<button class="btn '+(lg==='ru'?'primary':'secondary')+'" data-lg="ru" type="button">RU</button>'+
@@ -4528,34 +3938,26 @@ function renderSettings(){
     '</div></div>'+
     '<div class="notif-settings-panel">'+
     '<div class="notif-settings-title"><svg class="icon sm"><use href="#i-bell"/></svg> '+t('notif_settings_title')+'</div>'+
-    '<div class="notif-setting-row"><div class="notif-setting-info"><div class="notif-setting-title">'+t('notif_messages')+'</div><div class="notif-setting-freq">'+t('notif_freq_instant')+'</div></div><div class="notif-toggle '+(notif.messages?'on':'')+'" data-notif="messages"></div></div>'+
-    '<div class="notif-setting-row"><div class="notif-setting-info"><div class="notif-setting-title">'+t('notif_moderation')+'</div><div class="notif-setting-freq">'+t('notif_freq_instant')+'</div></div><div class="notif-toggle '+(notif.moderation?'on':'')+'" data-notif="moderation"></div></div>'+
-    '<div class="notif-setting-row"><div class="notif-setting-info"><div class="notif-setting-title">'+t('notif_views')+'</div><div class="notif-setting-freq">'+t('notif_freq_daily')+'</div></div><div class="notif-toggle '+(notif.views?'on':'')+'" data-notif="views"></div></div>'+
-    '<div class="notif-setting-row"><div class="notif-setting-info"><div class="notif-setting-title">'+t('notif_reviews')+'</div><div class="notif-setting-freq">'+t('notif_freq_instant')+'</div></div><div class="notif-toggle '+(notif.reviews?'on':'')+'" data-notif="reviews"></div></div>'+
-    '<div class="notif-setting-row"><div class="notif-setting-info"><div class="notif-setting-title">'+t('notif_news')+'</div><div class="notif-setting-freq">'+t('notif_freq_weekly')+'</div></div><div class="notif-toggle '+(notif.news?'on':'')+'" data-notif="news"></div></div>'+
+    '<div class="notif-setting-row"><div class="notif-setting-info"><div class="notif-setting-title">'+t('notif_messages')+'</div></div><div class="notif-toggle '+(notif.messages?'on':'')+'" data-notif="messages"></div></div>'+
+    '<div class="notif-setting-row"><div class="notif-setting-info"><div class="notif-setting-title">'+t('notif_moderation')+'</div></div><div class="notif-toggle '+(notif.moderation?'on':'')+'" data-notif="moderation"></div></div>'+
+    '<div class="notif-setting-row"><div class="notif-setting-info"><div class="notif-setting-title">'+t('notif_views')+'</div></div><div class="notif-toggle '+(notif.views?'on':'')+'" data-notif="views"></div></div>'+
+    '<div class="notif-setting-row"><div class="notif-setting-info"><div class="notif-setting-title">'+t('notif_reviews')+'</div></div><div class="notif-toggle '+(notif.reviews?'on':'')+'" data-notif="reviews"></div></div>'+
+    '<div class="notif-setting-row"><div class="notif-setting-info"><div class="notif-setting-title">'+t('notif_news')+'</div></div><div class="notif-toggle '+(notif.news?'on':'')+'" data-notif="news"></div></div>'+
     '<button class="btn primary w-full mt-8" id="sNotifSave" type="button"><svg class="icon sm"><use href="#i-check"/></svg> '+t('notif_save')+'</button>'+
     '</div>'+
-    '<div class="field" style="display:flex;justify-content:space-between;align-items:center;padding:14px;background:var(--accent-soft);border-radius:12px;border:1px solid var(--accent);margin-top:12px">' +
-      '<div style="flex:1;min-width:0">' +
-        '<div style="font-weight:700;font-size:.9rem">📱 '+t('share_title')+'</div>' +
-        '<div style="font-size:.7rem;color:var(--text-3);margin-top:4px">'+t('share_desc')+'</div>' +
-      '</div>' +
-      '<div class="b2" style="flex-wrap:nowrap;gap:6px">' +
-      '<button class="btn secondary sm" id="sCopyAppLink" type="button" title="'+t('qr_copy')+'"><svg class="icon sm"><use href="#i-link"/></svg></button>' +
-      '<button class="btn primary sm" id="sShareApp" type="button">'+t('share_btn')+'</button>' +
-      '</div>' +
-    '</div>'+
+    '<div class="field" style="display:flex;justify-content:space-between;align-items:center;padding:14px;background:var(--accent-soft);border-radius:12px;border:1px solid var(--accent);margin-top:12px">'+
+      '<div style="flex:1;min-width:0"><div style="font-weight:700;font-size:.9rem">📱 '+t('share_title')+'</div>'+
+      '<div style="font-size:.7rem;color:var(--text-3);margin-top:4px">'+t('share_desc')+'</div></div>'+
+      '<div class="b2" style="flex-wrap:nowrap;gap:6px">'+
+      '<button class="btn secondary sm" id="sCopyAppLink" type="button" title="'+t('qr_copy')+'"><svg class="icon sm"><use href="#i-link"/></svg></button>'+
+      '<button class="btn primary sm" id="sShareApp" type="button">'+t('share_btn')+'</button>'+
+      '</div></div>'+
     '<p style="text-align:center;font-size:.65rem;color:var(--text-4);margin-top:24px">Black Store '+APP_VERSION+'</p>';
 
   c.querySelectorAll('[data-th]').forEach(b => b.addEventListener('click', () => { currentTheme = b.dataset.th; applyTheme(); renderSettings(); }));
-
-  c.querySelectorAll('[data-accent]').forEach(b => b.addEventListener('click', () => {
-    setAccent(b.dataset.accent);
-  }));
-
+  c.querySelectorAll('[data-accent]').forEach(b => b.addEventListener('click', () => setAccent(b.dataset.accent)));
   c.querySelectorAll('[data-lg]').forEach(b => b.addEventListener('click', () => {
-    const l = b.dataset.lg;
-    if(currentLang === l) return;
+    const l = b.dataset.lg; if(currentLang === l) return;
     currentLang = l; userSettings.language = l; lsSet(LS.lang, l);
     document.documentElement.lang = l === 'ukr' ? 'uk' : l;
     applyTranslations(); renderSettings();
@@ -4566,55 +3968,36 @@ function renderSettings(){
     if(currentUser && !isGuest){ try{ sb.from('user_settings').update({language: l}).eq('user_id', currentUser.id).catch(()=>{}); }catch(e){} }
     toast(l.toUpperCase()+' ✓', 'success', 1200);
   }));
-
   const sc = $('sSfx');
   if(sc) sc.addEventListener('change', e => {
     sfx = e.target.checked;
     if(currentUser && !isGuest){ try{ sb.from('user_settings').update({sfx_enabled: sfx}).eq('user_id', currentUser.id).catch(()=>{}); }catch(e){} }
   });
-
   c.querySelectorAll('[data-fs]').forEach(b => b.addEventListener('click', () => {
-    const f = b.dataset.fs;
-    userSettings.font_size = f;
-    applyFont();
-    renderSettings();
+    const f = b.dataset.fs; userSettings.font_size = f; applyFont(); renderSettings();
     if(currentUser && !isGuest){ try{ sb.from('user_settings').update({font_size: f}).eq('user_id', currentUser.id).catch(()=>{}); }catch(e){} }
   }));
-
   const tgBtn = $('sTgConnect');
   if(tgBtn) tgBtn.addEventListener('click', () => {
     const link = TG_BOT_LINK + '?start=link_' + (currentUser?.id || '');
-    if(tg && tg.openLink){ try{ tg.openLink(link); }catch(e){ window.open(link, '_blank'); } }
-    else window.open(link, '_blank');
+    if(tg && tg.openLink){ try{ tg.openLink(link); }catch(e){ window.open(link, '_blank'); } } else window.open(link, '_blank');
   });
-
-  c.querySelectorAll('[data-notif]').forEach(el => el.addEventListener('click', () => { el.classList.toggle('on'); }));
-
+  c.querySelectorAll('[data-notif]').forEach(el => el.addEventListener('click', () => el.classList.toggle('on')));
   const saveBtn = $('sNotifSave');
   if(saveBtn) saveBtn.addEventListener('click', async () => {
     if(!currentUser || isGuest){ toast(t('login_required'), 'info'); return; }
     const get = k => { const el = c.querySelector('[data-notif="'+k+'"]'); return el ? el.classList.contains('on') : false; };
-    const upd = {
-      notif_messages: get('messages'),
-      notif_moderation: get('moderation'),
-      notif_views: get('views'),
-      notif_reviews: get('reviews'),
-      notif_news: get('news')
-    };
+    const upd = {notif_messages: get('messages'), notif_moderation: get('moderation'), notif_views: get('views'), notif_reviews: get('reviews'), notif_news: get('news')};
     userSettings.__notif = {...upd, telegram_verified: userSettings.__notif?.telegram_verified};
     try{
       const r = await sb.from('user_settings').update(upd).eq('user_id', currentUser.id);
       if(r.error){ try{ await sb.from('user_settings').insert({user_id: currentUser.id, ...upd}); }catch(e2){} }
       lsSet(sKey(LS.notifSettings), JSON.stringify(userSettings.__notif));
-      sfxPlay('success');
-      toast(t('notif_saved'), 'success');
+      sfxPlay('success'); toast(t('notif_saved'), 'success');
     }catch(e){ toast(t('error'), 'error'); }
   });
-
-  const shareBtn = $('sShareApp');
-  if(shareBtn) shareBtn.addEventListener('click', shareMiniApp);
-  const copyBtn = $('sCopyAppLink');
-  if(copyBtn) copyBtn.addEventListener('click', copyMiniAppLink);
+  const shareBtn = $('sShareApp'); if(shareBtn) shareBtn.addEventListener('click', shareMiniApp);
+  const copyBtn = $('sCopyAppLink'); if(copyBtn) copyBtn.addEventListener('click', copyMiniAppLink);
 }
 window.renderSettings = renderSettings;
 
@@ -4629,12 +4012,9 @@ async function loadSettings(){
       if(r.data.language && I18N[r.data.language]) currentLang = r.data.language;
       sfx = r.data.sfx_enabled !== false;
       userSettings.__notif = {
-        messages: r.data.notif_messages !== false,
-        moderation: r.data.notif_moderation !== false,
-        views: r.data.notif_views === true,
-        reviews: r.data.notif_reviews !== false,
-        news: r.data.notif_news === true,
-        telegram_verified: r.data.telegram_verified === true
+        messages: r.data.notif_messages !== false, moderation: r.data.notif_moderation !== false,
+        views: r.data.notif_views === true, reviews: r.data.notif_reviews !== false,
+        news: r.data.notif_news === true, telegram_verified: r.data.telegram_verified === true
       };
     } else {
       try{ await sb.from('user_settings').insert({user_id: currentUser.id, theme: currentTheme, accent: currentAccent, font_size: 'medium', language: currentLang, sfx_enabled: true}); }catch(e){}
@@ -4650,15 +4030,13 @@ async function loadSettings(){
 }
 window.loadSettings = loadSettings;
 
-/* ═══════════════ RATINGS ═══════════════ */
 async function loadRatings(){
   try{
     const r = await timeout(sb.from('reviews').select('stars, ads(author_id)').limit(1000), 5000);
     if(r.error || !r.data) return;
     const m = {};
     r.data.forEach(x => {
-      const a = x.ads && x.ads.author_id;
-      if(!a) return;
+      const a = x.ads && x.ads.author_id; if(!a) return;
       if(!m[a]) m[a] = {sum: 0, c: 0};
       m[a].sum += x.stars; m[a].c++;
     });
@@ -4667,7 +4045,6 @@ async function loadRatings(){
 }
 window.loadRatings = loadRatings;
 
-/* ═══════════════ SEND FORM ═══════════════ */
 function initSendForm(){
   const pi = $('sendPrice');
   if(pi && !pi.dataset.bound){ pi.dataset.bound = '1'; pi.addEventListener('input', onPriceInput); }
@@ -4783,7 +4160,6 @@ async function submitAdForm(){
 }
 window.submitAdForm = submitAdForm;
 
-/* ═══════════════ MUSIC ═══════════════ */
 function openMusicContent(){
   const c = $('musicContent'); if(!c) return;
   c.innerHTML =
@@ -4829,11 +4205,49 @@ function openMusicContent(){
 }
 window.openMusicContent = openMusicContent;
 
-/* =================================================================
-   ЧАСТЬ 4 — ADMIN / CHAT (REALTIME) / VOICE / AI / BOTTOM-NAV / BOOT
-   ================================================================= */
+/* ★ BOTTOM-NAV SCROLL — БЕЗ ЗАЛИПАНИЯ ★ */
+let lastScrollY = 0;
+let navScrollTicking = false;
+function setupBottomNavScroll(){
+  if(window.__navScrollBound) return;
+  window.__navScrollBound = true;
+  const nav = $('bottomNav');
+  if(!nav) return;
 
-/* ═══════════════ ADMIN PANEL ═══════════════ */
+  const showNav = () => { nav.classList.remove('nav-hidden'); };
+  const hideNav = () => {
+    if(document.body.classList.contains('kb-open')) return;
+    if(activeModal) return;
+    if(aiPanelOpen) return;
+    const isShortPage = document.documentElement.scrollHeight <= window.innerHeight + 60;
+    if(isShortPage) return;
+    nav.classList.add('nav-hidden');
+  };
+  const onScroll = () => {
+    if(navScrollTicking) return;
+    navScrollTicking = true;
+    requestAnimationFrame(() => {
+      const y = Math.max(0, window.scrollY || window.pageYOffset || 0);
+      const diff = y - lastScrollY;
+      const isShortPage = document.documentElement.scrollHeight <= window.innerHeight + 60;
+      if(isShortPage){ showNav(); lastScrollY = y; navScrollTicking = false; return; }
+      if(y < 60){ showNav(); }
+      else if(diff > 8){ hideNav(); }
+      else if(diff < -6){ showNav(); }
+      lastScrollY = y;
+      navScrollTicking = false;
+    });
+  };
+  addEventListener('scroll', onScroll, {passive: true});
+  addEventListener('touchmove', onScroll, {passive: true});
+  addEventListener('resize', () => { lastScrollY = window.scrollY || 0; if(window.innerHeight > window.scrollY + 60) showNav(); });
+  window.__navShow = showNav;
+  window.__navHide = hideNav;
+  showNav();
+}
+window.setupBottomNavScroll = setupBottomNavScroll;
+
+/* ADMIN */
 async function loadAdmin(){
   const c = $('adminContent'); if(!c) return;
   if(!isAdmin){ c.innerHTML = '<div style="text-align:center;color:var(--text-3);padding:40px">'+t('no_access')+'</div>'; return; }
@@ -4856,8 +4270,7 @@ async function renderAdminMod(c){
   ]);
   pendingAds = rs[0].data || [];
   pendingAppeals = rs[1].data || [];
-  let h = '';
-  h += '<h3 style="font-weight:800;margin:16px 0 8px;color:var(--accent-2);text-transform:uppercase">'+t('admin_tab_mod')+' ('+pendingAds.length+')</h3>';
+  let h = '<h3 style="font-weight:800;margin:16px 0 8px;color:var(--accent-2);text-transform:uppercase">'+t('admin_tab_mod')+' ('+pendingAds.length+')</h3>';
   if(!pendingAds.length) h += '<div style="text-align:center;color:var(--text-4);padding:16px">'+t('empty_ads')+'</div>';
   else pendingAds.forEach(ad => {
     h += '<div class="admin-pending-item"><div class="admin-pending-title">'+esc(ad.item_name)+'</div>'+
@@ -4877,7 +4290,6 @@ async function renderAdminMod(c){
       '<button class="btn danger sm" data-arjap="'+ap.id+'" type="button">'+t('reject')+'</button></div></div>';
   });
   c.innerHTML = h;
-
   c.querySelectorAll('[data-aap]').forEach(b => b.addEventListener('click', async () => {
     const ex = new Date(Date.now() + AD_EXPIRY_H*3600*1000).toISOString();
     await sb.from('ads').update({status: 'approved', expires_at: ex}).eq('id', b.dataset.aap);
@@ -4895,8 +4307,8 @@ async function renderAdminMod(c){
     if (ad) autoNotifyOnRejection(ad, '');
     loadAdmin();
   }));
-  c.querySelectorAll('[data-aview]').forEach(b => b.addEventListener('click', () => { window.__openAdById(b.dataset.aview); }));
-  c.querySelectorAll('[data-aedit]').forEach(b => b.addEventListener('click', () => { adminEditAd(b.dataset.aedit); }));
+  c.querySelectorAll('[data-aview]').forEach(b => b.addEventListener('click', () => window.__openAdById(b.dataset.aview)));
+  c.querySelectorAll('[data-aedit]').forEach(b => b.addEventListener('click', () => adminEditAd(b.dataset.aedit)));
   c.querySelectorAll('[data-aapap]').forEach(b => b.addEventListener('click', async () => {
     const ap = pendingAppeals.find(x => x.id === b.dataset.aapap);
     if(!ap) return;
@@ -4997,16 +4409,14 @@ async function renderAdminUsers(c){
     out.innerHTML = '<div class="inline-loader"></div>';
     try{
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(q);
-      const r = isUuid
-        ? await sb.from('app_users').select('*').eq('id', q).maybeSingle()
-        : await sb.from('app_users').select('*').ilike('username', q).maybeSingle();
+      const r = isUuid ? await sb.from('app_users').select('*').eq('id', q).maybeSingle()
+                       : await sb.from('app_users').select('*').ilike('username', q).maybeSingle();
       if(!r.data){ out.innerHTML = '<div style="text-align:center;color:var(--text-3);padding:16px">'+t('user_not_found')+'</div>'; return; }
       const u = r.data;
       out.innerHTML = '<div class="admin-pending-item">'+
         '<div class="admin-pending-title">'+esc(u.username)+' '+(u.is_admin ? '<span style="color:var(--gold-2)">👑</span>' : '')+' '+(u.is_verified ? '<span style="color:var(--success)">✓</span>' : '')+'</div>'+
         '<div class="admin-pending-meta">ID: <code>'+esc(u.id)+'</code></div>'+
         '<div class="admin-pending-meta">TG: '+(u.telegram_id||'—')+' • Reg: '+fmtDate(u.created_at)+' • Last: '+timeAgo(u.last_seen_at)+'</div>'+
-        '<div class="admin-pending-meta">'+t('ban')+': '+(u.banned ? '✅' : '❌')+' • '+t('admin')+': '+(u.is_admin ? '✅' : '❌')+' • '+t('verify')+': '+(u.is_verified ? '✅' : '❌')+' • 2FA: '+(u.twofa_enabled ? '✅' : '❌')+'</div>'+
         '<div class="admin-actions">'+
         '<button class="btn '+(u.banned ? 'success' : 'danger')+' sm" data-usr="'+(u.banned ? 'unban' : 'ban')+'" data-id="'+u.id+'">'+(u.banned ? t('unban') : t('ban'))+'</button>'+
         '<button class="btn '+(u.is_admin ? 'secondary' : 'primary')+' sm" data-usr="'+(u.is_admin ? 'remove_admin' : 'make_admin')+'" data-id="'+u.id+'">'+(u.is_admin ? t('remove_admin') : t('make_admin'))+'</button>'+
@@ -5037,7 +4447,7 @@ async function handleAdminUserAction(action, userId){
     else if(action === 'verify'){ await sb.from('app_users').update({is_verified: true}).eq('id', userId); logMod('verify_user', userId); toast(t('verified'), 'success'); }
     else if(action === 'unverify'){ await sb.from('app_users').update({is_verified: false}).eq('id', userId); logMod('unverify_user', userId); toast(t('unverified'), 'success'); }
     else if(action === 'notify'){
-      const r = showModal('<h3 class="modal-title">'+t('notify')+'</h3><div class="field"><textarea class="field-input" id="adminNotifyText" placeholder="'+t('message_text')+'" style="min-height:6rem"></textarea></div><button class="btn primary w-full" id="adminNotifySend" type="button">'+t('send')+'</button>');
+      const r = showModal('<h3 class="modal-title">'+t('notify')+'</h3><div class="field"><textarea class="field-input" id="adminNotifyText" placeholder="'+t('message_text')+'" style="min-height:6rem"></textarea></div><button class="btn primary w-full" id="adminNotifySend" type="button">'+t('sent')+'</button>');
       r.q('#adminNotifySend').addEventListener('click', async () => {
         const txt = r.q('#adminNotifyText').value.trim();
         if(!txt){ toast(t('fill_fields'), 'error'); return; }
@@ -5135,13 +4545,7 @@ async function autoNotifyOnReview(review) {
     if (!ad) return;
     const { data: author } = await sb.from('app_users').select('telegram_id').eq('id', ad.author_id).maybeSingle();
     if (!author || !author.telegram_id) return;
-    notifyReviewToBot({
-      toTelegramId: author.telegram_id,
-      stars: review.stars,
-      fromUsername: review.author_username,
-      text: review.text || '',
-      adName: ad.item_name
-    });
+    notifyReviewToBot({ toTelegramId: author.telegram_id, stars: review.stars, fromUsername: review.author_username, text: review.text || '', adName: ad.item_name });
   } catch(e) {}
 }
 async function autoNotifyOnMessage(msg, toUser) {
@@ -5162,7 +4566,7 @@ window.autoNotifyOnRejection = autoNotifyOnRejection;
 window.autoNotifyOnReview = autoNotifyOnReview;
 window.autoNotifyOnMessage = autoNotifyOnMessage;
 
-/* ═══════════════ CHAT — LIST ═══════════════ */
+/* CHAT */
 async function loadChats(){
   const c = $('chatsList'); if(!c) return;
   if(isGuest || !currentUser){ c.innerHTML = emptyRich('i-chats', t('login_required'), '', '', ''); return; }
@@ -5196,7 +4600,7 @@ async function loadChats(){
     });
     h += '</div>';
     c.innerHTML = h;
-    c.querySelectorAll('[data-chat-uid]').forEach(el => el.addEventListener('click', () => { window.__openChatWith(el.dataset.chatUid); }));
+    c.querySelectorAll('[data-chat-uid]').forEach(el => el.addEventListener('click', () => window.__openChatWith(el.dataset.chatUid)));
   }catch(e){ c.innerHTML = '<div style="text-align:center;color:var(--text-3);padding:20px">'+t('error')+'</div>'; }
 }
 window.loadChats = loadChats;
@@ -5220,7 +4624,6 @@ function updateChatBadge(){
 }
 window.updateChatBadge = updateChatBadge;
 
-/* ═══════════════ CHAT — OPEN ═══════════════ */
 async function openChat(user){
   if(!user || !user.id) return;
   if(isGuest || !currentUser){ toast(t('login_required'), 'info'); return; }
@@ -5276,9 +4679,7 @@ function bindChatInteractions(r, user){
     }
   });
   input.addEventListener('input', () => { autoResizeTextarea(input, 120); notifyTyping(); });
-
   sendBtn.addEventListener('click', () => sendMsg(r, user));
-
   attachBtn.addEventListener('click', () => {
     const sm = showModal(
       '<h3 class="modal-title">'+t('upload_file')+'</h3>'+
@@ -5294,15 +4695,11 @@ function bindChatInteractions(r, user){
       sendMsg(r, user, {file_url: link, file_name: link.split('/').pop() || 'file'});
     });
   });
-
   bindVoiceRecorder(voiceBtn, r, user);
 }
 window.bindChatInteractions = bindChatInteractions;
 
-function autoResizeTextarea(el, max){
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, max) + 'px';
-}
+function autoResizeTextarea(el, max){ el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, max) + 'px'; }
 
 async function loadChatMessages(otherId){
   const view = $('chatView'); if(!view || !currentUser) return;
@@ -5333,8 +4730,7 @@ function bindChatViewEvents(view){
     openFileViewer(img.dataset.imgView, img.dataset.fileName || null);
   }));
   view.querySelectorAll('.msg-file').forEach(f => f.addEventListener('click', e => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     openFileViewer(f.dataset.fileUrl, f.dataset.fileName);
   }));
   view.querySelectorAll('.voice-player').forEach(bindVoicePlayer);
@@ -5343,7 +4739,6 @@ function bindChatViewEvents(view){
 function renderMessageHTML(m, allMessages){
   const isMe = String(m.from_id) === String(currentUser.id);
   let body = '';
-
   if(m.reply_to && allMessages){
     const orig = allMessages.find(x => String(x.id) === String(m.reply_to));
     if(orig){
@@ -5352,41 +4747,28 @@ function renderMessageHTML(m, allMessages){
       body += '<div class="msg-reply-quote"><span class="rq-name">'+esc(origName)+'</span><span class="rq-text">'+esc(previewText)+'</span></div>';
     }
   }
-
   if(m.file_url){
     if(m.is_voice){
       body += '<div class="voice-player paused" data-voice-url="'+esc(m.file_url)+'" data-voice-dur="'+(m.voice_duration||0)+'">'+
         '<button class="voice-play-btn" type="button"><svg class="icon sm"><use href="#i-play"/></svg></button>'+
-        '<div class="voice-body">'+
-        '<div class="voice-wave">'+'<span></span>'.repeat(10)+'</div>'+
-        '<div style="display:flex;align-items:center;gap:8px"><div class="voice-progress-track"><div class="voice-progress-fill"></div></div><span class="voice-time">'+fmtMMSS(m.voice_duration||0)+'</span></div>'+
-        '</div></div>';
+        '<div class="voice-body"><div class="voice-wave">'+'<span></span>'.repeat(10)+'</div>'+
+        '<div style="display:flex;align-items:center;gap:8px"><div class="voice-progress-track"><div class="voice-progress-fill"></div></div><span class="voice-time">'+fmtMMSS(m.voice_duration||0)+'</span></div></div></div>';
     } else {
       const isImg = /\.(jpg|jpeg|png|gif|webp|bmp|svg)(\?|$)/i.test(m.file_url);
       const fileName = m.file_name || (m.file_url.split('?')[0].split('/').pop() || 'file');
-      if(isImg){
-        body += '<img class="msg-img" src="'+esc(m.file_url)+'" data-img-view="'+esc(m.file_url)+'" data-file-name="'+esc(fileName)+'" style="cursor:pointer">';
-      } else {
-        body += '<div class="msg-file" data-file-url="'+esc(m.file_url)+'" data-file-name="'+esc(fileName)+'">' +
-          '<svg class="icon sm"><use href="#i-file"/></svg>' +
-          '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(fileName)+'</span>' +
-          '<svg class="icon xs"><use href="#i-eye"/></svg>' +
-          '</div>';
-      }
+      if(isImg) body += '<img class="msg-img" src="'+esc(m.file_url)+'" data-img-view="'+esc(m.file_url)+'" data-file-name="'+esc(fileName)+'" style="cursor:pointer">';
+      else body += '<div class="msg-file" data-file-url="'+esc(m.file_url)+'" data-file-name="'+esc(fileName)+'"><svg class="icon sm"><use href="#i-file"/></svg><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+esc(fileName)+'</span><svg class="icon xs"><use href="#i-eye"/></svg></div>';
     }
   }
-
   if(m.text) body += '<div>'+esc(m.text)+'</div>';
-
   let checks = '';
   if(isMe){
     const isRead = m.read === true;
     const isDelivered = !!m.delivered_at || isRead;
-    if(isRead) checks = '<span class="msg-check read" title="Прочитано"><svg class="icon xs"><use href="#i-check-double"/></svg></span>';
-    else if(isDelivered) checks = '<span class="msg-check" title="Доставлено"><svg class="icon xs"><use href="#i-check-double"/></svg></span>';
-    else checks = '<span class="msg-check" title="Отправлено"><svg class="icon xs"><use href="#i-check-single"/></svg></span>';
+    if(isRead) checks = '<span class="msg-check read"><svg class="icon xs"><use href="#i-check-double"/></svg></span>';
+    else if(isDelivered) checks = '<span class="msg-check"><svg class="icon xs"><use href="#i-check-double"/></svg></span>';
+    else checks = '<span class="msg-check"><svg class="icon xs"><use href="#i-check-single"/></svg></span>';
   }
-
   let reactionsHtml = '';
   try{
     const reactions = typeof m.reactions === 'string' ? JSON.parse(m.reactions) : (m.reactions || {});
@@ -5398,15 +4780,11 @@ function renderMessageHTML(m, allMessages){
       }).join('') + '</div>';
     }
   }catch(e){}
-
-  return '<div class="msg '+(isMe?'me':'them')+'" data-mid="'+m.id+'">'+
-    body + reactionsHtml +
-    '<div class="msg-meta">'+timeAgo(m.created_at)+checks+'</div></div>';
+  return '<div class="msg '+(isMe?'me':'them')+'" data-mid="'+m.id+'">'+body + reactionsHtml + '<div class="msg-meta">'+timeAgo(m.created_at)+checks+'</div></div>';
 }
 
 async function sendMsg(r, user, extra){
-  const input = r.q('#chatInput');
-  if(!input) return;
+  const input = r.q('#chatInput'); if(!input) return;
   const text = input.value.trim();
   if(!text && !(extra && extra.file_url)) return;
   if(!canDo('dm')) return;
@@ -5424,8 +4802,7 @@ async function sendMsg(r, user, extra){
     if(replyToMessage){ row.reply_to = replyToMessage.id; }
     await sb.from('messages').insert(row);
     autoNotifyOnMessage(row, user);
-    input.value = '';
-    autoResizeTextarea(input, 120);
+    input.value = ''; autoResizeTextarea(input, 120);
     replyToMessage = null;
     const replyBar = r.q('#replyBar');
     if(replyBar) replyBar.classList.add('hidden');
@@ -5435,23 +4812,20 @@ async function sendMsg(r, user, extra){
   if(sendBtn) sendBtn.disabled = false;
 }
 
-/* ═══════════════ CHAT — REALTIME ═══════════════ */
 function startChatRealtime(userId){
   stopChatRealtime();
   if(!sb) return;
   try{
     chatChannel = sb.channel('chat_' + currentUser.id + '_' + userId)
       .on('postgres_changes', {event: 'INSERT', schema: 'public', table: 'messages'}, payload => {
-        const m = payload.new;
-        if(!m) return;
+        const m = payload.new; if(!m) return;
         const rel = (String(m.from_id) === String(currentUser.id) && String(m.to_id) === String(userId))
                  || (String(m.from_id) === String(userId) && String(m.to_id) === String(currentUser.id));
         if(!rel) return;
         appendMessageToView(m);
       })
       .on('postgres_changes', {event: 'UPDATE', schema: 'public', table: 'messages'}, payload => {
-        const m = payload.new;
-        if(!m) return;
+        const m = payload.new; if(!m) return;
         const rel = (String(m.from_id) === String(currentUser.id) && String(m.to_id) === String(userId))
                  || (String(m.from_id) === String(userId) && String(m.to_id) === String(currentUser.id));
         if(!rel) return;
@@ -5463,9 +4837,7 @@ function startChatRealtime(userId){
 window.startChatRealtime = startChatRealtime;
 
 function closeChatRealtime(){ stopChatRealtime(); stopTypingRealtime(); }
-function stopChatRealtime(){
-  try{ if(chatChannel){ chatChannel.unsubscribe(); chatChannel = null; } }catch(e){ chatChannel = null; }
-}
+function stopChatRealtime(){ try{ if(chatChannel){ chatChannel.unsubscribe(); chatChannel = null; } }catch(e){ chatChannel = null; } }
 function appendMessageToView(m){
   const view = $('chatView'); if(!view) return;
   if(currentChatMessages.some(x => String(x.id) === String(m.id))) return;
@@ -5502,17 +4874,12 @@ function updateMessageInView(m){
 }
 window.updateMessageInView = updateMessageInView;
 
-/* ═══════════════ CHAT — TYPING ═══════════════ */
 function notifyTyping(){
   if(!currentUser || !currentChatUser) return;
   const now = Date.now();
   if(now - lastTypingSent < TYPING_REFRESH) return;
   lastTypingSent = now;
-  try{
-    sb.from('typing_status').upsert({
-      user_id: currentUser.id, chat_with: currentChatUser.id, updated_at: new Date().toISOString()
-    }, {onConflict: 'user_id,chat_with'}).catch(()=>{});
-  }catch(e){}
+  try{ sb.from('typing_status').upsert({user_id: currentUser.id, chat_with: currentChatUser.id, updated_at: new Date().toISOString()}, {onConflict: 'user_id,chat_with'}).catch(()=>{}); }catch(e){}
 }
 function startTypingRealtime(otherId){
   stopTypingRealtime();
@@ -5520,8 +4887,7 @@ function startTypingRealtime(otherId){
   try{
     typingChannel = sb.channel('typing_' + currentUser.id + '_' + otherId)
       .on('postgres_changes', {event: '*', schema: 'public', table: 'typing_status'}, payload => {
-        const row = payload.new || payload.old;
-        if(!row) return;
+        const row = payload.new || payload.old; if(!row) return;
         if(String(row.user_id) !== String(otherId)) return;
         if(String(row.chat_with) !== String(currentUser.id)) return;
         const updAt = new Date(row.updated_at || Date.now()).getTime();
@@ -5529,9 +4895,7 @@ function startTypingRealtime(otherId){
       }).subscribe();
   }catch(e){ console.warn('typing realtime', e); }
 }
-function stopTypingRealtime(){
-  try{ if(typingChannel){ typingChannel.unsubscribe(); typingChannel = null; } }catch(e){ typingChannel = null; }
-}
+function stopTypingRealtime(){ try{ if(typingChannel){ typingChannel.unsubscribe(); typingChannel = null; } }catch(e){ typingChannel = null; } }
 function showTypingIndicator(){
   const el = $('chatTyping'); if(!el) return;
   el.classList.remove('hidden');
@@ -5539,7 +4903,6 @@ function showTypingIndicator(){
   typingTimeout = setTimeout(() => { const el2 = $('chatTyping'); if(el2) el2.classList.add('hidden'); }, TYPING_TTL + 500);
 }
 
-/* ═══════════════ CHAT — VOICE RECORDER ═══════════════ */
 function bindVoiceRecorder(voiceBtn, r, user){
   if(!voiceBtn) return;
   let recording = false;
@@ -5551,9 +4914,7 @@ function bindVoiceRecorder(voiceBtn, r, user){
       if(location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1'){ toast(t('voice_https_required'), 'error'); return; }
       recordStream = await navigator.mediaDevices.getUserMedia({audio: true});
       mediaRecorder = new MediaRecorder(recordStream);
-      audioChunks = [];
-      recordStartTime = Date.now();
-      recordTouchCancelled = false;
+      audioChunks = []; recordStartTime = Date.now(); recordTouchCancelled = false;
       mediaRecorder.ondataavailable = e => { if(e.data.size > 0) audioChunks.push(e.data); };
       mediaRecorder.onstop = onRecordStop;
       mediaRecorder.start();
@@ -5575,8 +4936,7 @@ function bindVoiceRecorder(voiceBtn, r, user){
         if(timerEl) timerEl.textContent = fmtMMSS(elapsed);
         if(elapsed >= VOICE_MAX_DURATION){ stopRecording(false); }
       }, 200);
-      sfxPlay('voice');
-      haptic('medium');
+      sfxPlay('voice'); haptic('medium');
     }catch(e){ console.warn('record error', e); toast(t('voice_permission'), 'error'); recording = false; }
   }
 
@@ -5627,7 +4987,6 @@ function bindVoiceRecorder(voiceBtn, r, user){
 }
 window.bindVoiceRecorder = bindVoiceRecorder;
 
-/* ═══════════════ CHAT — VOICE PLAYER ═══════════════ */
 function bindVoicePlayer(player){
   if(!player || player.dataset.bound) return;
   player.dataset.bound = '1';
@@ -5655,19 +5014,13 @@ function bindVoicePlayer(player){
     if(audio.paused){
       document.querySelectorAll('audio').forEach(a => { if(a !== audio) try{ a.pause(); }catch(e){} });
       audio.play().catch(()=>{});
-      player.classList.remove('paused');
-      setIcon('pause');
-    } else {
-      audio.pause();
-      player.classList.add('paused');
-      setIcon('play');
-    }
+      player.classList.remove('paused'); setIcon('pause');
+    } else { audio.pause(); player.classList.add('paused'); setIcon('play'); }
   });
   if(track){ track.addEventListener('click', e => { if(!audio) return; const rect = track.getBoundingClientRect(); const pct = (e.clientX - rect.left) / rect.width; const dur = audio.duration || totalDur || 0; if(dur) audio.currentTime = pct * dur; }); }
 }
 window.bindVoicePlayer = bindVoicePlayer;
 
-/* ═══════════════ VOICE INPUT (Web Speech) ═══════════════ */
 function voiceErrorMsg(code){
   const map = { 'not-allowed': t('voice_permission'), 'service-not-allowed': t('voice_permission'), 'audio-capture': t('voice_permission'), 'no-speech': t('voice_error'), 'aborted': t('voice_error'), 'network': t('voice_error'), 'language-not-supported': t('voice_not_supported') };
   return map[code] || t('voice_error');
@@ -5695,7 +5048,7 @@ function stopVoice(){
 async function voiceField(targetId, btnEl){
   if(voiceOn){ stopVoice(); if(btnEl) btnEl.classList.remove('listening'); return; }
   const el = document.getElementById(targetId);
-  if(!el){ console.warn('voice target not found', targetId); return; }
+  if(!el) return;
   const ok = await micPerm();
   if(!ok) return;
   const rec = newRec();
@@ -5724,7 +5077,6 @@ function bindVoiceButtons(root){
 }
 window.voiceField = voiceField; window.stopVoice = stopVoice; window.bindVoiceButtons = bindVoiceButtons;
 
-/* ═══════════════ FILE UPLOAD ═══════════════ */
 function compressImage(file, maxW, quality){
   maxW = maxW || 1280; quality = quality || 0.82;
   return new Promise((resolve, reject) => {
@@ -5774,7 +5126,7 @@ window.compressImage = compressImage;
 window.uploadChatFile = uploadChatFile;
 window.pickChatFile = pickChatFile;
 
-/* ═══════════════ AI — BOUNTY AI ═══════════════ */
+/* AI */
 function aiSessionsSave(){ try{ lsSet(sKey(LS.aiSessions), JSON.stringify(aiSessions.slice(0, AI_MAX_SESSIONS))); }catch(e){} }
 function aiSessionsLoad(){
   try{ const r = lsGet(sKey(LS.aiSessions)); aiSessions = r ? JSON.parse(r) : []; if(!Array.isArray(aiSessions)) aiSessions = []; }catch(e){ aiSessions = []; }
@@ -5799,11 +5151,7 @@ function aiNewSession(){
   lsSet(sKey(LS.aiActive), aiActiveId);
   aiRenderSessions(); aiRenderMessages();
 }
-function aiSelectSession(id){
-  if(!aiSessions.some(s => s.id === id)) return;
-  aiActiveId = id; lsSet(sKey(LS.aiActive), id);
-  aiRenderSessions(); aiRenderMessages();
-}
+function aiSelectSession(id){ if(!aiSessions.some(s => s.id === id)) return; aiActiveId = id; lsSet(sKey(LS.aiActive), id); aiRenderSessions(); aiRenderMessages(); }
 function aiDeleteSession(id){
   aiSessions = aiSessions.filter(s => s.id !== id);
   if(aiActiveId === id) aiActiveId = aiSessions[0]?.id || null;
@@ -5845,17 +5193,10 @@ function aiRenderMarkdown(text){
 function aiRenderMessages(){
   const c = $('aiMessages'); if(!c) return;
   const session = aiGetActive();
-  if(!session || !session.messages.length){
-    c.innerHTML = aiWelcomeHtml();
-    aiBindWelcome(c);
-    injectAllLogos(c);
-    return;
-  }
+  if(!session || !session.messages.length){ c.innerHTML = aiWelcomeHtml(); aiBindWelcome(c); injectAllLogos(c); return; }
   let h = '';
   session.messages.forEach((msg, idx) => { h += aiMsgHtml(msg, idx); });
-  if(aiBusy && !aiStreamText){
-    h += '<div class="ai-typing"><span class="ai-typing-dot"></span><span class="ai-typing-dot"></span><span class="ai-typing-dot"></span><span class="ai-typing-text">'+t('ai_typing')+'</span></div>';
-  }
+  if(aiBusy && !aiStreamText){ h += '<div class="ai-typing"><span class="ai-typing-dot"></span><span class="ai-typing-dot"></span><span class="ai-typing-dot"></span><span class="ai-typing-text">'+t('ai_typing')+'</span></div>'; }
   c.innerHTML = h;
   injectAllLogos(c);
   c.scrollTop = c.scrollHeight;
@@ -5950,12 +5291,7 @@ async function aiFetchAnswer(messages, signal){
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     signal,
-    body: JSON.stringify({
-      messages,
-      sessionKey: (currentUser && !isGuest) ? sKey('ai_'+currentUser.id) : null,
-      userId: (currentUser && !isGuest) ? currentUser.id : null,
-      telegramId: tgUserId ? parseInt(tgUserId) : null
-    })
+    body: JSON.stringify({messages, sessionKey: (currentUser && !isGuest) ? sKey('ai_'+currentUser.id) : null, userId: (currentUser && !isGuest) ? currentUser.id : null, telegramId: tgUserId ? parseInt(tgUserId) : null})
   });
   if(!res.ok){ let msg = 'HTTP '+res.status; try{ const j = await res.json(); if(j && j.error) msg = j.error; }catch(e){} throw new Error(msg); }
   const data = await res.json();
@@ -5976,13 +5312,9 @@ function aiStreamIntoMessage(msg, fullText){
     function tick(){
       if(aiStreamAbort && aiStreamAbort.signal && aiStreamAbort.signal.aborted){
         msg.content = fullText.slice(0, i) || msg.content;
-        msg.streaming = false;
-        aiSessionsSave(); aiRenderMessages(); resolve(); return;
+        msg.streaming = false; aiSessionsSave(); aiRenderMessages(); resolve(); return;
       }
-      if(i >= fullText.length){
-        msg.content = fullText; msg.streaming = false;
-        aiSessionsSave(); aiRenderMessages(); resolve(); return;
-      }
+      if(i >= fullText.length){ msg.content = fullText; msg.streaming = false; aiSessionsSave(); aiRenderMessages(); resolve(); return; }
       i = Math.min(i + step, fullText.length);
       msg.content = fullText.slice(0, i); msg.streaming = true;
       const s = aiGetActive();
@@ -6052,6 +5384,7 @@ function closeAiPanel(){
   const p = $('aiPanel'); if(!p) return;
   p.classList.remove('show'); aiPanelOpen = false;
   sfxPlay('click');
+  if(window.__navShow) window.__navShow();
 }
 window.openAi = openAiPanel;
 window.closeAi = closeAiPanel;
@@ -6116,7 +5449,7 @@ window.ARIZONA_CONTEXT = `Ты — Bounty AI, дружелюбный помощ�
 3. Без markdown-кода и таблиц
 4. Если запрещено — вежливо откажись`;
 
-/* ═══════════════ FLOAT MEDIA ═══════════════ */
+/* FLOAT MEDIA */
 function floatMediaShow(url, title){
   const fm = $('floatMedia'); if(!fm) return;
   floatingMediaState.open = true;
@@ -6183,34 +5516,7 @@ function bindFloatMedia(){
 }
 window.floatMediaShow = floatMediaShow; window.bindFloatMedia = bindFloatMedia;
 
-/* ═══════════════ BOTTOM NAV — СКРОЛЛ-СКРЫТИЕ ═══════════════ */
-let lastScrollY = 0;
-let navScrollTicking = false;
-function setupBottomNavScroll(){
-  if(window.__navScrollBound) return;
-  window.__navScrollBound = true;
-  const nav = $('bottomNav');
-  if(!nav) return;
-  const onScroll = () => {
-    if(navScrollTicking) return;
-    navScrollTicking = true;
-    requestAnimationFrame(() => {
-      const y = window.scrollY || 0;
-      const diff = y - lastScrollY;
-      if(diff > 6 && y > 100){
-        nav.classList.add('nav-hidden');
-      } else if(diff < -6 || y < 60){
-        nav.classList.remove('nav-hidden');
-      }
-      lastScrollY = y;
-      navScrollTicking = false;
-    });
-  };
-  addEventListener('scroll', onScroll, {passive: true});
-}
-window.setupBottomNavScroll = setupBottomNavScroll;
-
-/* ═══════════════ DEVICE / ADAPTIVE ═══════════════ */
+/* DEVICE */
 const DEVICE = {PHONE:'phone', TABLET:'tablet', LAPTOP:'laptop', DESKTOP:'desktop'};
 let currentDevice = null, resizeTimer = null, lastW = window.innerWidth;
 function getDeviceType(){
@@ -6284,7 +5590,7 @@ window.addEventListener('resize', onResize);
 window.addEventListener('orientationchange', () => setTimeout(onResize, 300));
 window.BS_DEVICE = {DEVICE, getDeviceType, applyDeviceConfig, get current(){ return currentDevice; }};
 
-/* ═══════════════ RADIAL ═══════════════ */
+/* RADIAL */
 let radialOpen = false;
 function openRadial(){
   const menu = $('radialMenu'), fab = $('fabMain');
@@ -6309,7 +5615,7 @@ function handleRadialAction(action){
 }
 window.closeRadial = closeRadial;
 
-/* ═══════════════ SWIPES ═══════════════ */
+/* SWIPES */
 let swipeSx = 0, swipeSy = 0, swipeSt = 0;
 const SWIPE_ORDER = ['home', 'search', 'favorites', 'chats', 'profile'];
 function isMobileDevice(){ const d = window.BS_DEVICE?.current; return d === 'phone' || d === 'tablet'; }
@@ -6334,7 +5640,7 @@ function onTouchEnd(e){
 document.addEventListener('touchstart', onTouchStart, {passive: true});
 document.addEventListener('touchend', onTouchEnd, {passive: true});
 
-/* ═══════════════ PULL TO REFRESH ═══════════════ */
+/* PTR */
 function initPullToRefresh(){
   if(window.__ptrBound) return;
   window.__ptrBound = true;
@@ -6375,7 +5681,7 @@ function initPullToRefresh(){
 }
 window.initPullToRefresh = initPullToRefresh;
 
-/* ═══════════════ HOTKEYS ═══════════════ */
+/* HOTKEYS */
 function bindHotkeys(){
   if(window.__hotkeysBound) return;
   window.__hotkeysBound = true;
@@ -6469,7 +5775,6 @@ function openLinksMenu(){
 }
 window.openLinksMenu = openLinksMenu;
 
-/* ═══════════════ MSG CONTEXT MENU ═══════════════ */
 function bindMessageInteractions(){
   const view = $('chatView');
   if(!view || view.dataset.bound) return;
@@ -6562,7 +5867,6 @@ async function toggleReaction(msgId, emoji){
 }
 window.toggleReaction = toggleReaction;
 
-/* ═══════════════ LAZY INIT / SWITCH ═══════════════ */
 function lazyInitSection(section){
   const map = {
     'home': () => { loadFeed(true); startLiveTimers(); },
@@ -6596,10 +5900,10 @@ function switchSection(name){
   lazyInitSection(name);
   try{ window.scrollTo({top: 0, behavior: 'auto'}); }catch(e){}
   if(window.closeRadial) window.closeRadial();
+  if(window.__navShow) window.__navShow();
 }
 window.switchSection = switchSection;
 
-/* ═══════════════ CHROME BUTTONS ═══════════════ */
 function bindChromeButtons(){
   const bind = (id, fn) => { const el = $(id); if(el && !el.dataset.cbound){ el.dataset.cbound = '1'; el.addEventListener('click', fn); } };
   bind('topBarTheme', cycleAccent);
@@ -6613,27 +5917,19 @@ function bindChromeButtons(){
   bind('settingsAccountsBtn', openAccountsModal);
   const adminBack = $('adminBackBtn');
   if(adminBack && !adminBack.dataset.cbound){ adminBack.dataset.cbound = '1'; adminBack.addEventListener('click', () => window.switchSection('profile')); }
-
   document.querySelectorAll('[data-atab]').forEach(tab => {
     if(tab.dataset.tabBound) return;
     tab.dataset.tabBound = '1';
     tab.addEventListener('click', async () => {
       adminTab = tab.dataset.atab;
-      document.querySelectorAll('[data-atab]').forEach(x => {
-        x.classList.toggle('primary', x === tab);
-        x.classList.toggle('secondary', x !== tab);
-      });
+      document.querySelectorAll('[data-atab]').forEach(x => { x.classList.toggle('primary', x === tab); x.classList.toggle('secondary', x !== tab); });
       await loadAdmin();
     });
   });
-
   document.addEventListener('click', e => {
     const nav = e.target.closest('[data-section]');
     if(!nav) return;
-    if(nav.classList.contains('sidebar-item') || nav.classList.contains('bn-item')){
-      e.preventDefault();
-      window.switchSection(nav.dataset.section);
-    }
+    if(nav.classList.contains('sidebar-item') || nav.classList.contains('bn-item')){ e.preventDefault(); window.switchSection(nav.dataset.section); }
   });
   document.addEventListener('click', e => {
     const back = e.target.closest('[data-back]');
@@ -6666,7 +5962,6 @@ function bindChromeButtons(){
 }
 window.bindChromeButtons = bindChromeButtons;
 
-/* ═══════════════ INIT APP ═══════════════ */
 async function initApp(){
   if(window.bindAiHandlers) bindAiHandlers();
   if(window.bindFloatMedia) bindFloatMedia();
@@ -6681,9 +5976,7 @@ async function initApp(){
   initPullToRefresh();
   setupBottomNavScroll();
   setupNet(); setupBackTop(); setupInfinite();
-  applyTheme();
-  applyTranslations();
-
+  applyTheme(); applyTranslations();
   if(isGuest){
     loadViewed(); loadAccounts(); loadShortcuts(); loadRL();
     switchSection('home');
@@ -6700,15 +5993,11 @@ async function initApp(){
   switchSection('home');
   startRealtime(); startHeartbeat(); checkURL();
   if(isAdmin){ const g = $('sidebarAdminGroup'); if(g) g.classList.remove('hidden'); }
-  if(isOwner){
-    const lb = $('sidebarLogsBtn'); if(lb) lb.classList.remove('hidden');
-  } else {
-    const lb = $('sidebarLogsBtn'); if(lb) lb.classList.add('hidden');
-  }
+  if(isOwner){ const lb = $('sidebarLogsBtn'); if(lb) lb.classList.remove('hidden'); }
+  else { const lb = $('sidebarLogsBtn'); if(lb) lb.classList.add('hidden'); }
 }
 window.initApp = initApp;
 
-/* ═══════════════ REALTIME ═══════════════ */
 function startRealtime(){
   if(!sb || realtimeCh) return;
   try{
@@ -6730,7 +6019,6 @@ function startRealtime(){
 }
 window.startRealtime = startRealtime;
 
-/* ═══════════════ BOOT ═══════════════ */
 function boot(){
   console.log('%c[Black Store '+APP_VERSION+']', 'color:#E50914;font-weight:bold');
   try{
@@ -6795,10 +6083,8 @@ function boot(){
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
 else boot();
 
-/* Резервное скрытие splash */
 setTimeout(() => { const s = document.getElementById('splash'); if(s && !s.classList.contains('hidden')) s.classList.add('hidden'); }, 6000);
 
-/* Бейджи */
 setInterval(() => {
   if(window.updateFavCount) window.updateFavCount();
   if(window.updateChatBadge) window.updateChatBadge();
@@ -6820,7 +6106,6 @@ setTimeout(() => {
   if(fab) fab.style.display = 'flex';
 }, 800);
 
-/* Экспорт для отладки */
 window.BS = {
   get user(){ return currentUser; }, get sb(){ return sb; }, get tg(){ return tg; },
   switchSection, loadFeed, openChat, loadChats,
