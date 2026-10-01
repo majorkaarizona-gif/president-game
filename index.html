@@ -2317,20 +2317,52 @@ async function show2FAModal(user){
       submitting = false;
       if(confirm){ confirm.disabled = false; confirm.innerHTML = '<svg class="icon sm"><use href="#i-check"/></svg> '+t('twofa_confirm'); }
     }
-    (async () => {
-      renderSending();
-      try{ await requestCode(user); codeSentAt = Date.now(); render(''); }
-      catch(e){ codeSentAt = Date.now(); render(e.message || t('error')); }
-    })();
-  });
-}
+     (async () => {
+    renderSending();
+    try{
+      await requestCode(user);
+      codeSentAt = Date.now();
+      render('');
+    }catch(e){
+      const msg = String(e && e.message || '');
+      if(msg === 'blocked'){
+        c.classList.remove('show'); c.innerHTML = '';
+        showTwofaBlocked(user).then(finish);
+        return;
+      }
+      codeSentAt = Date.now();
+      render(msg || t('error'));
+    }
+  })();
 window.show2FAModal = show2FAModal;
 async function requestCode(user){
   if(!user || !user.id) throw new Error('no user');
   if(!user.telegram_id) throw new Error(t('twofa_tg_not_linked'));
-  const code = String(Math.floor(100000 + Math.random() * 900000));
-  const res = await send2FACodeToBot(user.telegram_id, code, user.username || '');
-  if(!res.ok){ console.warn('send2FACodeToBot failed:', res.error); }
+
+  const r = await timeout(
+    sb.rpc('twofa_request', {
+      p_user_id: user.id,
+      p_password_hash: user.password_hash
+    }),
+    10000
+  );
+
+  if(r.error) throw new Error(r.error.message || 'twofa_request failed');
+
+  const data = r.data;
+  if(!data || data.ok === false){
+    const err = (data && data.error) || 'unknown';
+    throw new Error(err);
+  }
+
+  const code = data.code;
+
+  try {
+    await send2FACodeToBot(user.telegram_id, code, user.username || '');
+  } catch(e) {
+    console.warn('send2FACodeToBot failed:', e);
+  }
+
   return code;
 }
 function showTwofaBlocked(user, message){
