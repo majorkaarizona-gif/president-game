@@ -5786,66 +5786,80 @@ window.notifyAdModeration = notifyAdModeration;
 async function sendVerifyCodeToTelegram(tgHandle, kind, username) {
   const code = String(Math.floor(100000 + Math.random() * 900000));
 
-  const chatId = tgUserId ? parseInt(tgUserId, 10) : null;
-  if (!chatId) {
-    console.warn('[verify] Нет tgUserId — приложение открыто не через Telegram');
+  console.log('[verify] start:', { kind, username, tgHandle, myTg: tgUserId });
+
+  /* ─── 1. Определяем КУДА слать ─── */
+  let targetTgId = null;
+  let realUsername = username;
+
+  if (kind === 'signup') {
+    // регистрация — код идёт на текущий Telegram (тот что открыл приложение)
+    if (tgUserId) targetTgId = parseInt(tgUserId, 10);
+  } else {
+    // логин/2FA — код идёт на Telegram, ПРИВЯЗАННЫЙ К АККАУНТУ
+    try {
+      const r = await sb
+        .from('app_users')
+        .select('username, telegram_id')
+        .ilike('username', String(username || ''))
+        .limit(1)
+        .maybeSingle();
+
+      if (r.error) console.warn('[verify] lookup error:', r.error);
+      if (r.data) {
+        realUsername = r.data.username || realUsername;
+        if (r.data.telegram_id) targetTgId = Number(r.data.telegram_id);
+        console.log('[verify] account found:', { username: realUsername, tg: targetTgId });
+      } else {
+        console.warn('[verify] account not found by username:', username);
+      }
+    } catch (e) {
+      console.warn('[verify] lookup exception:', e);
+    }
+
+    // если у аккаунта нет telegram_id — падаем на текущий Telegram
+    if (!targetTgId && tgUserId) targetTgId = parseInt(tgUserId, 10);
+  }
+
+  if (!targetTgId || isNaN(targetTgId)) {
+    console.warn('[verify] НЕТ telegram_id — некуда слать');
     return { ok: false, error: 'no_tg', code: null };
   }
 
-  if (kind === 'signup') {
-    try {
-      await sb.from('verify_codes').insert({
-        username,
-        code,
-        kind: 'signup',
-        telegram_username: String(tgHandle || '').replace(/^@/, ''),
-        telegram_id: chatId,
-        created_at: new Date().toISOString(),
-        expires_at: new Date(Date.now() + TWOFA_TTL_MS).toISOString()
-      });
-    } catch (e) { console.warn('[verify] insert:', e); }
+  console.log('[verify] sending to tg_id:', targetTgId);
 
-    const sent = await sendToBot('send_signup_code', {
-      telegram_id: chatId,
-      code,
-      username
-    });
-    if (!sent.ok) return { ok: false, error: sent.error, code: null };
-    return { ok: true, code, error: null };
-  }
-
+  /* ─── 2. Сохраняем код в БД (чтобы потом проверить) ─── */
   try {
-    const r = await timeout(sb.rpc('verify_code_request', {
-      p_telegram_username: String(tgHandle || '').replace(/^@/, ''),
-      p_kind: kind,
-      p_username: username
-    }), 8000);
-    if (!r.error && r.data && r.data.ok !== false) {
-      return { ok: true, code: r.data?.code || null, error: null };
-    }
-  } catch (e) { console.warn('[verify] RPC:', e); }
-
-  try {
-    await sb.from('verify_codes').insert({
-      username,
+    const ins = await sb.from('verify_codes').insert({
+      username: realUsername,
       code,
       kind: kind || '2fa',
       telegram_username: String(tgHandle || '').replace(/^@/, ''),
-      telegram_id: chatId,
+      telegram_id: targetTgId,
       created_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + TWOFA_TTL_MS).toISOString()
     });
-    const sent = await sendToBot('send_2fa', {
-      telegram_id: chatId,
-      code,
-      username
-    });
-    if (!sent.ok) return { ok: false, error: sent.error, code: null };
-    return { ok: true, code, error: null };
+    if (ins.error) console.warn('[verify] insert error:', ins.error);
+    else console.log('[verify] code saved to DB');
   } catch (e) {
-    console.warn('[verify] fallback:', e);
-    return { ok: false, error: e.message, code: null };
+    console.warn('[verify] insert exception:', e);
   }
+
+  /* ─── 3. Прямой вызов бота ─── */
+  const action = kind === 'signup' ? 'send_signup_code' : 'send_2fa';
+  const sent = await sendToBot(action, {
+    telegram_id: targetTgId,
+    code,
+    username: realUsername
+  });
+
+  console.log('[verify] bot response:', sent);
+
+  if (!sent.ok) {
+    return { ok: false, error: sent.error || 'send_failed', code };
+  }
+
+  return { ok: true, code, error: null };
 }
 window.sendVerifyCodeToTelegram = sendVerifyCodeToTelegram;
 
